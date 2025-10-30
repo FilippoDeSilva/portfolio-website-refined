@@ -1,6 +1,5 @@
 "use client";
 
-import { EditorContent } from "@tiptap/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,7 +10,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Check, RefreshCw, Send, X, Paperclip, Plus } from "lucide-react";
-import { TiptapMenuBar } from "./tiptap-menu-bar";
+import { AdvancedEditor } from "./advanced-editor";
 import { AttachmentsGrid } from "./attachments-grid";
 import { getFileTypeFromExtension } from "@/lib/blog-utils";
 
@@ -24,7 +23,8 @@ interface PostEditorProps {
     attachments: any[];
   };
   setForm: React.Dispatch<React.SetStateAction<any>>;
-  editor: any;
+  content: string;
+  setContent: (content: string) => void;
   editingId: string | null;
   coverImageUrlInput: string;
   setCoverImageUrlInput: (value: string) => void;
@@ -42,7 +42,8 @@ interface PostEditorProps {
 export function PostEditor({
   form,
   setForm,
-  editor,
+  content,
+  setContent,
   editingId,
   coverImageUrlInput,
   setCoverImageUrlInput,
@@ -145,14 +146,12 @@ export function PostEditor({
             <label className="block text-sm font-medium text-muted-foreground mb-1">
               Content
             </label>
-            <div className="rounded-xl border border-border bg-background/80 shadow-inner">
-              <TiptapMenuBar editor={editor} />
-              <div className="overflow-hidden rounded-b-xl">
-                <div className="prose dark:prose-invert prose-ul:pl-6 prose-ol:pl-6 max-w-none">
-                  <EditorContent editor={editor} key={editingId || "new"} />
-                </div>
-              </div>
-            </div>
+            <AdvancedEditor
+              key={editingId || "new"}
+              content={content}
+              onChange={setContent}
+              placeholder="Start writing your amazing blog post... Type '/' for commands"
+            />
           </div>
 
           <div>

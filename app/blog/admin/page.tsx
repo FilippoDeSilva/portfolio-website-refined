@@ -28,7 +28,7 @@ export default function BlogAdmin() {
   // Custom hooks
   const { user, authLoading, loginLoading, loginError, setLoginError, handleLogin, handleLogout } = useAuth();
   const { posts, setPosts, postsLoading, postsInitialized, setPostsInitialized, currentPage, setCurrentPage, fetchPosts } = useBlogAdmin();
-  const { editor, content, setContent, editingId, setEditingId } = useBlogEditor();
+  const { content, setContent, editingId, setEditingId } = useBlogEditor();
   const {
     form,
     setForm,
@@ -101,7 +101,7 @@ export default function BlogAdmin() {
 
     const postData = {
       ...form,
-      content: editor?.getHTML() || "",
+      content: content || "",
       created_at: new Date().toISOString(),
     };
 
@@ -114,24 +114,26 @@ export default function BlogAdmin() {
 
     resetForm();
     setContent("");
-    if (editor) editor.commands.setContent("");
     fetchPosts();
   }
 
   async function handleEdit(post: any) {
+    // Batch state updates to prevent race conditions
+    const postContent = post.content || "";
+    const postId = post.id;
+    
+    // Set content and editing ID first
+    setEditingId(postId);
+    setContent(postContent);
+    
+    // Then set form data
     setForm({
-      title: post.title,
+      title: post.title || "",
       cover_image: post.cover_image || "",
       media_url: post.media_url || undefined,
       media_type: post.media_type || undefined,
       attachments: post.attachments || [],
     });
-    setContent(post.content || "");
-    setEditingId(post.id);
-    if (editor) {
-      editor.commands.setContent(post.content || "", false);
-      editor.commands.focus();
-    }
   }
 
   // Calculate paginated posts
@@ -272,7 +274,7 @@ export default function BlogAdmin() {
             onClose={() => setAIModalOpen(false)}
             onInsert={(text) => {
               setAIModalOpen(false);
-              editor?.commands.insertContent(text);
+              setContent(content + text);
             }}
           />
           {/* Responsive layout: editor first on mobile, posts second */}
@@ -282,7 +284,8 @@ export default function BlogAdmin() {
               <PostEditor
                 form={form}
                 setForm={setForm}
-                editor={editor}
+                content={content}
+                setContent={setContent}
                 editingId={editingId}
                 coverImageUrlInput={coverImageUrlInput}
                 setCoverImageUrlInput={setCoverImageUrlInput}
@@ -305,7 +308,6 @@ export default function BlogAdmin() {
                   setEditingId(null);
                   resetForm();
                   setContent("");
-                  if (editor) editor.commands.setContent("");
                 }}
                 onCoverImageUpload={handleCoverImageUpload}
                 onAttachmentFiles={handleAttachmentFiles}

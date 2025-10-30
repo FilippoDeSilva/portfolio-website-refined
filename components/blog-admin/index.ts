@@ -5,3 +5,4 @@ export { AttachmentsGrid } from "./attachments-grid";
 export { PostsList } from "./posts-list";
 export { DeleteModal } from "./delete-modal";
 export { MediaLightbox } from "./media-lightbox";
+export { AdvancedEditor } from "./advanced-editor";
