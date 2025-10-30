@@ -12,7 +12,7 @@ import javascript from "highlight.js/lib/languages/javascript";
 import typescript from "highlight.js/lib/languages/typescript";
 import python from "highlight.js/lib/languages/python";
 import TextStyle from "@tiptap/extension-text-style";
-import { Mark, mergeAttributes } from "@tiptap/core";
+import { Mark, Node, mergeAttributes } from "@tiptap/core";
 import {
   Bold,
   Italic,
@@ -31,11 +31,169 @@ import {
   Image as ImageIcon,
   Highlighter,
   ChevronDown,
+  Video as VideoIcon,
+  X,
 } from "lucide-react";
+import { renderToString } from 'react-dom/server';
 import { useEffect, useState, useRef } from "react";
 
 const lowlight = createLowlight();
 lowlight.register({ javascript, typescript, python });
+
+// Custom Video extension with delete button
+const Video = Node.create({
+  name: 'video',
+  
+  group: 'block',
+  
+  draggable: true,
+  
+  atom: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: null,
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'video',
+        getAttrs: (element) => ({
+          src: (element as HTMLElement).getAttribute('src'),
+        }),
+      },
+      {
+        tag: 'div[data-video-wrapper]',
+        getAttrs: (element) => {
+          const video = (element as HTMLElement).querySelector('video');
+          return video ? { src: video.getAttribute('src') } : false;
+        },
+      },
+    ];
+  },
+
+  renderHTML({ node }) {
+    return [
+      'div',
+      {
+        'data-video-wrapper': '',
+        class: 'relative group my-4',
+      },
+      [
+        'video',
+        {
+          src: node.attrs.src,
+          controls: 'controls',
+          class: 'rounded-lg shadow-lg max-w-full h-auto w-full',
+          style: 'max-height: 500px;',
+        },
+      ],
+    ];
+  },
+
+  addNodeView() {
+    return ({ node, getPos, editor }) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative group my-4 inline-block w-full';
+      
+      const video = document.createElement('video');
+      video.src = node.attrs.src;
+      video.controls = true;
+      video.className = 'rounded-lg shadow-lg max-w-full h-auto w-full';
+      video.style.maxHeight = '500px';
+      
+      // Prevent video from opening in new tab
+      video.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+      
+      const deleteButton = document.createElement('button');
+      deleteButton.innerHTML = renderToString(<X size={16} strokeWidth={2} />);
+      deleteButton.className = 'absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-tr-lg rounded-bl-md w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-destructive/90 shadow-md cursor-pointer z-20';
+      deleteButton.contentEditable = 'false';
+      deleteButton.title = 'Delete video';
+      deleteButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const pos = getPos();
+        if (typeof pos === 'number') {
+          editor.commands.deleteRange({ from: pos, to: pos + node.nodeSize });
+        }
+      });
+      
+      wrapper.appendChild(video);
+      wrapper.appendChild(deleteButton);
+      
+      return {
+        dom: wrapper,
+        contentDOM: null,
+        update: (updatedNode) => {
+          if (updatedNode.type.name !== 'video') return false;
+          video.src = updatedNode.attrs.src;
+          return true;
+        },
+      };
+    };
+  },
+
+  addCommands() {
+    return {
+      setVideo: (options: { src: string }) => ({ commands }: any) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs: options,
+        });
+      },
+    } as any;
+  },
+});
+
+// Custom Image extension with delete button
+const CustomImage = Image.extend({
+  addNodeView() {
+    return ({ node, getPos, editor }) => {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'relative group my-4 inline-block';
+      
+      const img = document.createElement('img');
+      img.src = node.attrs.src;
+      img.alt = node.attrs.alt || '';
+      img.className = 'rounded-lg shadow-lg max-w-full h-auto cursor-pointer hover:shadow-xl transition-shadow';
+      
+      const deleteButton = document.createElement('button');
+      deleteButton.innerHTML = renderToString(<X size={16} strokeWidth={2} />);
+      deleteButton.className = 'absolute top-0 right-0 bg-destructive text-destructive-foreground rounded-tr-lg rounded-bl-md w-8 h-8 flex items-center justify-center opacity-0 group-hover:opacity-100 hover:bg-destructive/90 shadow-md cursor-pointer z-20';
+      deleteButton.contentEditable = 'false';
+      deleteButton.title = 'Delete image';
+      deleteButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const pos = getPos();
+        if (typeof pos === 'number') {
+          editor.commands.deleteRange({ from: pos, to: pos + node.nodeSize });
+        }
+      });
+      
+      wrapper.appendChild(img);
+      wrapper.appendChild(deleteButton);
+      
+      return {
+        dom: wrapper,
+        contentDOM: null,
+        update: (updatedNode) => {
+          if (updatedNode.type.name !== 'image') return false;
+          img.src = updatedNode.attrs.src;
+          img.alt = updatedNode.attrs.alt || '';
+          return true;
+        },
+      };
+    };
+  },
+});
 
 // Custom Highlight extension with text color support
 const CustomHighlight = Highlight.extend({
@@ -130,8 +288,12 @@ export function AdvancedEditor({
 }: AdvancedEditorProps) {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
+  const [showMediaModal, setShowMediaModal] = useState<'image' | 'video' | null>(null);
+  const [mediaUrl, setMediaUrl] = useState('');
   const isInitialMount = useRef(true);
   const lastUsedColor = useRef({ color: '#fef08a', textColor: '#854d0e' }); // Default: Yellow
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
   const editor = useEditor({
     extensions: [
@@ -142,11 +304,8 @@ export function AdvancedEditor({
         codeBlock: false, // Disable default codeBlock to use CodeBlockLowlight
       }),
       TextStyle,
-      Image.configure({
+      CustomImage.configure({
         allowBase64: true,
-        HTMLAttributes: {
-          class: "rounded-lg shadow-lg max-w-full h-auto my-4 cursor-pointer hover:shadow-xl transition-shadow",
-        },
       }),
       TiptapLink.configure({
         openOnClick: false,
@@ -155,6 +314,7 @@ export function AdvancedEditor({
         },
       }),
       Underline,
+      Video,
       CustomHighlight.configure({
         multicolor: true,
       }),
@@ -210,10 +370,64 @@ export function AdvancedEditor({
     return null;
   }
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target?.result as string;
+        editor.chain().focus().setImage({ src: url }).run();
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset input
+    if (imageInputRef.current) {
+      imageInputRef.current.value = '';
+    }
+  };
+
+  const handleVideoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith('video/')) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const url = event.target?.result as string;
+        (editor.chain().focus() as any).setVideo({ src: url }).run();
+      };
+      reader.readAsDataURL(file);
+    }
+    // Reset input
+    if (videoInputRef.current) {
+      videoInputRef.current.value = '';
+    }
+  };
+
   const addImage = () => {
-    const url = window.prompt("Enter image URL:");
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run();
+    setShowMediaModal('image');
+  };
+
+  const addVideo = () => {
+    setShowMediaModal('video');
+  };
+
+  const handleMediaUpload = () => {
+    if (showMediaModal === 'image') {
+      imageInputRef.current?.click();
+    } else if (showMediaModal === 'video') {
+      videoInputRef.current?.click();
+    }
+    setShowMediaModal(null);
+  };
+
+  const handleMediaUrl = () => {
+    if (mediaUrl.trim()) {
+      if (showMediaModal === 'image') {
+        editor.chain().focus().setImage({ src: mediaUrl }).run();
+      } else if (showMediaModal === 'video') {
+        (editor.chain().focus() as any).setVideo({ src: mediaUrl }).run();
+      }
+      setMediaUrl('');
+      setShowMediaModal(null);
     }
   };
 
@@ -227,6 +441,22 @@ export function AdvancedEditor({
 
   return (
     <div className="border border-border rounded-xl bg-background shadow-sm">
+      {/* Hidden file inputs */}
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+      <input
+        ref={videoInputRef}
+        type="file"
+        accept="video/*"
+        onChange={handleVideoUpload}
+        className="hidden"
+      />
+      
       {/* Floating Bubble Menu - Appears on text selection */}
       {editor && (
         <BubbleMenu
@@ -526,6 +756,11 @@ export function AdvancedEditor({
             tooltip="Insert Image"
           />
           <ToolbarButton
+            onClick={addVideo}
+            icon={<VideoIcon className="w-4 h-4" />}
+            tooltip="Insert Video"
+          />
+          <ToolbarButton
             onClick={() => editor.chain().focus().toggleCodeBlock().run()}
             isActive={editor.isActive("codeBlock")}
             icon={<Code className="w-4 h-4" />}
@@ -586,6 +821,113 @@ export function AdvancedEditor({
         <span>{editor.getText().length} characters</span>
         <span>{editor.getText().split(/\s+/).filter(word => word.length > 0).length} words</span>
       </div>
+
+      {/* Media Upload/URL Modal */}
+      {showMediaModal && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100]"
+          onClick={() => {
+            setShowMediaModal(null);
+            setMediaUrl('');
+          }}
+        >
+          <div 
+            className="bg-background border border-border rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="bg-muted/50 px-6 py-4 border-b border-border flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-semibold flex items-center gap-2">
+                  {showMediaModal === 'image' ? (
+                    <>
+                      <ImageIcon className="w-5 h-5" />
+                      Insert Image
+                    </>
+                  ) : (
+                    <>
+                      <VideoIcon className="w-5 h-5" />
+                      Insert Video
+                    </>
+                  )}
+                </h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Choose how you want to add your {showMediaModal}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowMediaModal(null);
+                  setMediaUrl('');
+                }}
+                className="p-1.5 hover:bg-muted rounded-md transition-colors"
+                title="Close"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-4">
+              {/* Upload Option */}
+              <button
+                type="button"
+                onClick={handleMediaUpload}
+                className="w-full p-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all group text-left"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-primary/10 rounded-lg group-hover:bg-primary/20 transition-colors">
+                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold mb-1">Upload from Computer</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Select a {showMediaModal} file from your device
+                    </p>
+                  </div>
+                </div>
+              </button>
+
+              {/* URL Option */}
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 p-4 border-2 border-border rounded-lg">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold mb-2">Insert from URL</h3>
+                    <input
+                      type="url"
+                      value={mediaUrl}
+                      onChange={(e) => setMediaUrl(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          handleMediaUrl();
+                        }
+                      }}
+                      placeholder={`https://example.com/${showMediaModal}.${showMediaModal === 'image' ? 'jpg' : 'mp4'}`}
+                      className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleMediaUrl}
+                  disabled={!mediaUrl.trim()}
+                  className="w-full px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                >
+                  Insert {showMediaModal === 'image' ? 'Image' : 'Video'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Keyboard Shortcuts Modal */}
       {showShortcutsModal && (
