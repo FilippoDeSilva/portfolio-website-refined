@@ -104,13 +104,40 @@ export function CustomVideoPlayer({ src, title, fileName }: CustomVideoPlayerPro
         />
       </div>
 
-      {/* Minimal Controls */}
-      <div className="w-full bg-gradient-to-br from-muted/30 to-muted/20 rounded-xl p-4 border border-border/50">
-        <div className="flex items-center gap-3">
+      {/* Responsive Controls */}
+      <div className="w-full bg-gradient-to-br from-muted/30 to-muted/20 rounded-xl p-3 sm:p-4 border border-border/50 space-y-3">
+        {/* Progress Bar with Time - Full Width */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="text-xs text-muted-foreground font-medium min-w-[32px] sm:min-w-[35px] tabular-nums">
+            {formatTime(currentTime)}
+          </span>
+          
+          <div className="relative flex-1 h-2 bg-muted rounded-full overflow-hidden cursor-pointer group">
+            <div 
+              className="absolute inset-y-0 left-0 bg-primary transition-all"
+              style={{ width: `${progress}%` }}
+            />
+            <input
+              type="range"
+              min="0"
+              max={duration || 0}
+              value={currentTime}
+              onChange={handleSeek}
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            />
+          </div>
+          
+          <span className="text-xs text-muted-foreground font-medium min-w-[32px] sm:min-w-[35px] tabular-nums">
+            {formatTime(duration)}
+          </span>
+        </div>
+
+        {/* Control Buttons - Centered */}
+        <div className="flex items-center justify-center gap-2">
           {/* Play/Pause Button */}
           <button
             onClick={togglePlay}
-            className="flex-shrink-0 w-10 h-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center"
+            className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-all flex items-center justify-center"
           >
             {isPlaying ? (
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -123,36 +150,11 @@ export function CustomVideoPlayer({ src, title, fileName }: CustomVideoPlayerPro
             )}
           </button>
 
-          {/* Progress Bar with Time */}
-          <div className="flex-1 flex items-center gap-3">
-            <span className="text-xs text-muted-foreground font-medium min-w-[35px]">
-              {formatTime(currentTime)}
-            </span>
-            
-            <div className="relative flex-1 h-1.5 bg-muted rounded-full overflow-hidden cursor-pointer group">
-              <div 
-                className="absolute inset-y-0 left-0 bg-primary transition-all"
-                style={{ width: `${progress}%` }}
-              />
-              <input
-                type="range"
-                min="0"
-                max={duration || 0}
-                value={currentTime}
-                onChange={handleSeek}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-              />
-            </div>
-            
-            <span className="text-xs text-muted-foreground font-medium min-w-[35px]">
-              {formatTime(duration)}
-            </span>
-          </div>
-
           {/* Volume Control */}
           <button
             onClick={toggleMute}
             className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            title={isMuted ? "Unmute" : "Mute"}
           >
             {isMuted || volume === 0 ? (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

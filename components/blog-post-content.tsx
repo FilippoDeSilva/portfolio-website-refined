@@ -17,6 +17,7 @@ import { BlogContentProcessor } from "@/components/blog-content-processor";
 import { AttachmentGalleryModal } from "@/components/attachment-gallery-modal";
 import { CustomAudioPlayer } from "@/components/custom-audio-player";
 import { CustomVideoPlayer } from "@/components/custom-video-player";
+import { LinkPreviewCard } from "@/components/link-preview-card";
 
 interface BlogPostContentProps {
   postId: string;
@@ -378,7 +379,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                     {post.attachments.length} {post.attachments.length === 1 ? 'file' : 'files'}
                   </span>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {post.attachments.map((att: any, idx: number) => {
                     const isExpanded = expandedAttachments.has(idx);
                     
@@ -402,14 +403,15 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                     const isVideo = att.type?.includes('video');
                     const isAudio = att.type?.includes('audio');
                     const isImage = att.type?.includes('image');
+                    const isUrl = att.type?.includes('html') || att.url?.startsWith('http') && !isVideo && !isAudio && !isImage;
 
                     return (
                       <div
                         key={idx}
-                        className="group relative rounded-2xl border border-border/50 hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 overflow-hidden bg-muted/20"
+                        className="group relative rounded-xl border border-border/50 hover:border-primary/50 transition-all duration-200 overflow-hidden bg-card"
                       >
-                        {/* Thumbnail/Preview - Show for images and audio, hide for video */}
-                        {!isVideo && (
+                        {/* Thumbnail/Preview - Only for Images and Audio */}
+                        {(isImage || isAudio) && (
                           <div className="relative aspect-video bg-gradient-to-br from-muted/50 to-muted/30 overflow-hidden cursor-pointer"
                             onClick={() => {
                               if (isImage) {
@@ -421,12 +423,26 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                             }}
                           >
                             {isImage ? (
-                              <Image
-                                src={att.url}
-                                alt={att.name}
-                                fill
-                                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                              />
+                              <>
+                                <Image
+                                  src={att.url}
+                                  alt={att.name}
+                                  fill
+                                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                                {/* Small Download Button Overlay */}
+                                <a
+                                  href={att.url}
+                                  download={att.name}
+                                  className="absolute bottom-3 right-3 p-2 rounded-lg bg-black/60 hover:bg-black/80 backdrop-blur-sm border border-white/10 transition-all z-10"
+                                  title="Download image"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                  </svg>
+                                </a>
+                              </>
                             ) : isVideo ? (
                               <>
                                 <video
@@ -494,55 +510,52 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                           </div>
                         )}
 
-                        {/* File Info */}
-                        <div className="p-4">
-                          <h3 className="font-semibold text-base mb-2 truncate group-hover:text-primary transition-colors">
-                            {att.name}
-                          </h3>
-                          <p className="text-sm text-muted-foreground mb-4 truncate">{att.type || 'Unknown type'}</p>
+                        {/* File Info or Link Preview */}
+                        {isUrl ? (
+                          <LinkPreviewCard url={att.url} name={att.name} />
+                        ) : (
+                          <div className="p-4">
+                            <div className="flex items-start justify-between gap-3 mb-3">
+                              <div className="flex-1 min-w-0">
+                                <h3 className="font-semibold text-base truncate group-hover:text-primary transition-colors mb-1">
+                                  {att.name}
+                                </h3>
+                                <p className="text-sm text-muted-foreground truncate">{att.type || 'Unknown type'}</p>
+                              </div>
+                              <div className="flex-shrink-0">
+                                <span className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-xs font-bold">
+                                  {getFileExtension(att.name)}
+                                </span>
+                              </div>
+                            </div>
 
-                          {/* Minimal Video Player (Always Visible for Video) */}
-                          {isVideo ? (
-                            <CustomVideoPlayer
-                              src={att.url}
-                              title={att.name}
-                              fileName={att.name}
-                            />
-                          ) : isAudio ? (
-                            <CustomAudioPlayer
-                              src={att.url}
-                              title={att.name}
-                              artist="Unknown Artist"
-                              fileName={att.name}
-                            />
-                          ) : isImage ? (
-                            <button
-                              onClick={() => {
-                                const imageAttachments = post.attachments.filter((a: any) => a.type?.includes('image'));
-                                const imageIndex = imageAttachments.findIndex((a: any) => a.url === att.url);
-                                setGalleryIndex(imageIndex);
-                                setGalleryOpen(true);
-                              }}
-                              className="w-full px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-medium text-sm flex items-center justify-center gap-2"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                              </svg>
-                              View Image
-                            </button>
-                          ) : (
-                            <button
-                              onClick={() => window.open(att.url, "_blank")}
-                              className="w-full px-4 py-2.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all font-medium text-sm flex items-center justify-center gap-2"
-                            >
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                              </svg>
-                              Open File
-                            </button>
-                          )}
-                        </div>
+                            {/* Player for Video and Audio */}
+                            {isVideo ? (
+                              <CustomVideoPlayer
+                                src={att.url}
+                                title={att.name}
+                                fileName={att.name}
+                              />
+                            ) : isAudio ? (
+                              <CustomAudioPlayer
+                                src={att.url}
+                                title={att.name}
+                                artist="Unknown Artist"
+                                fileName={att.name}
+                              />
+                            ) : !isImage && (
+                              <button
+                                onClick={() => window.open(att.url, "_blank")}
+                                className="w-full px-4 py-2.5 rounded-lg border border-border hover:bg-muted transition-all font-medium text-sm flex items-center justify-center gap-2"
+                              >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                </svg>
+                                Open File
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
