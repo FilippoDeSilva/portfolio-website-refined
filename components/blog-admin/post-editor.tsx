@@ -9,7 +9,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Check, RefreshCw, Send, X } from "lucide-react";
+import { Check, Eraser, Send, X } from "lucide-react";
 import { AdvancedEditor, type AdvancedEditorRef } from "./advanced-editor";
 import { CoverImageUpload } from "./cover-image-upload";
 import { AttachmentUpload } from "./attachment-upload";
@@ -168,7 +168,7 @@ export function PostEditor({
             className="flex-1 flex items-center justify-center text-base rounded-lg shadow-md"
             aria-label={editingId ? "Cancel Edit" : "Clear Form"}
           >
-            {editingId ? <X className="w-6 h-6" /> : <RefreshCw className="w-6 h-6" />}
+            {editingId ? <X className="w-6 h-6" /> : <Eraser className="w-6 h-6" />}
           </Button>
         </CardFooter>
       </form>

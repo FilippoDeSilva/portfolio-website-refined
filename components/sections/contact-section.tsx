@@ -30,7 +30,7 @@ export function ContactSection() {
               solutions, let's connect.
             </p>
 
-            <div className="flex justify-center mb-2 animate-bounce text-blue-500">
+            <div className="flex justify-center mb-2 animate-bounce text-primary">
               <MoveDown size={24} />
             </div>
             <div className="flex items-center gap-4 justify-center pt-5">

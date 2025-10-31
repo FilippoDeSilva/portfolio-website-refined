@@ -51,9 +51,8 @@ export default function BlogPage() {
           {/* Header Section */}
           <div className="text-center mb-12">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
             >
               <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-6 backdrop-blur-sm">
                 <span className="relative flex h-2 w-2 mr-2">
@@ -75,7 +74,7 @@ export default function BlogPage() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-4 mb-8">
             {/* Controls Container - Right Aligned on Large Screens */}
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
               className="w-full lg:w-auto"
             >
