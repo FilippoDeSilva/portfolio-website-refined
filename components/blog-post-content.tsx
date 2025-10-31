@@ -405,6 +405,11 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                     const isImage = att.type?.includes('image');
                     const isUrl = att.type?.includes('html') || att.url?.startsWith('http') && !isVideo && !isAudio && !isImage;
 
+                    // For URLs, render LinkPreviewCard directly without wrapper
+                    if (isUrl) {
+                      return <LinkPreviewCard key={idx} url={att.url} name={att.name} />;
+                    }
+
                     return (
                       <div
                         key={idx}
@@ -510,11 +515,8 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                           </div>
                         )}
 
-                        {/* File Info or Link Preview */}
-                        {isUrl ? (
-                          <LinkPreviewCard url={att.url} name={att.name} />
-                        ) : (
-                          <div className="p-4">
+                        {/* File Info */}
+                        <div className="p-4">
                             <div className="flex items-start justify-between gap-3 mb-3">
                               <div className="flex-1 min-w-0">
                                 <h3 className="font-semibold text-base truncate group-hover:text-primary transition-colors mb-1">
@@ -554,8 +556,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                                 Open File
                               </button>
                             )}
-                          </div>
-                        )}
+                        </div>
                       </div>
                     );
                   })}

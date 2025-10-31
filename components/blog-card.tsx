@@ -117,8 +117,8 @@ export function BlogCard({
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.1 }}
-      className="group relative h-full flex flex-col overflow-hidden rounded-xl border bg-card text-card-foreground shadow-sm hover:shadow transition-all duration-150"
-      style={{ minHeight: previewOnly ? 400 : "auto" }}
+      className="group relative h-full flex flex-col overflow-hidden rounded-2xl border border-border/50 bg-card text-card-foreground shadow-lg shadow-black/5 hover:shadow-xl hover:shadow-black/10 hover:border-primary/50 hover:-translate-y-1 transition-all duration-300"
+      style={{ minHeight: previewOnly ? 320 : "auto" }}
     >
       {/* Admin Edit/Delete overlay */}
       {(onEdit || onDelete) && (
@@ -168,7 +168,7 @@ export function BlogCard({
             return (
               <div className="w-full">
                 {thumb ? (
-                  <div className="relative w-full aspect-[16/9] sm:aspect-[4/3]">
+                  <div className="relative w-full aspect-video">
                     <Image
                       src={thumb}
                       alt={post.title}
@@ -177,13 +177,13 @@ export function BlogCard({
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                    <div className="absolute top-3 left-3 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                    <div className="absolute top-3 left-3 p-2 rounded-xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg border border-white/20">
                       {getMediaIcon()}
                     </div>
                   </div>
                 ) : post.cover_image ? (
-                  <div className="relative w-full aspect-[16/9] sm:aspect-[4/3]">
+                  <div className="relative w-full aspect-video">
                     <Image
                       src={post.cover_image}
                       alt={post.title}
@@ -192,8 +192,8 @@ export function BlogCard({
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                       priority
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
-                    <div className="absolute top-3 left-3 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                    <div className="absolute top-3 left-3 p-2 rounded-xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg border border-white/20">
                       {getMediaIcon()}
                     </div>
                   </div>
@@ -300,17 +300,17 @@ export function BlogCard({
       </div>
 
       {/* Content Section */}
-      <div className="p-6 sm:p-8 flex flex-col flex-1 min-h-0 justify-between">
-        <div className="space-y-4">
+      <div className="p-4 sm:p-5 flex flex-col flex-1 min-h-0 justify-between">
+        <div className="space-y-3">
           {/* Title */}
-          <h3 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-gray-100 leading-tight">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-gray-100 leading-tight group-hover:text-primary transition-colors duration-300">
             {post.title}
           </h3>
 
           {/* Content Preview */}
           {post.content && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed line-clamp-3">
-              {getContentPreview(post.content, previewOnly ? 20 : 40)}
+            <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed line-clamp-2">
+              {getContentPreview(post.content, previewOnly ? 15 : 40)}
             </p>
           )}
 
@@ -402,14 +402,14 @@ export function BlogCard({
         </div>
 
         {/* Footer - Timestamp and View Count */}
-        <div className="flex items-center justify-between pt-4 mt-6 border-t border-gray-200/60 dark:border-gray-700/60">
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-            <Clock className="w-4 h-4" />
-            <span className="text-sm font-medium">{formatDate(post.created_at)}</span>
+        <div className="flex items-center justify-between pt-3 mt-4 border-t border-border/50">
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Clock className="w-3.5 h-3.5" />
+            <span className="text-xs font-medium">{formatDate(post.created_at)}</span>
           </div>
-          <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-            <Eye className="w-4 h-4" />
-            <span className="text-sm font-medium">{post.view_count ?? 0}</span>
+          <div className="flex items-center gap-1.5 text-muted-foreground">
+            <Eye className="w-3.5 h-3.5" />
+            <span className="text-xs font-medium">{post.view_count ?? 0}</span>
           </div>
         </div>
       </div>

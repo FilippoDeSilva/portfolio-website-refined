@@ -8,7 +8,7 @@ import { Footer } from "@/components/footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Filter, Grid3X3, List } from "lucide-react";
-const POSTS_PER_PAGE = 9;
+const POSTS_PER_PAGE = 8;
 
 export default function BlogPage() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,19 +46,29 @@ export default function BlogPage() {
     <>
     <main className="flex-1 pt-2">
       <TitleBar title="Blog"/>
-      <section className="py-24 bg-background">
-        <div className="container mx-auto px-4">
-          {/* Header Section - Centered on Large Screens */}
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm text-primary mb-6">
-              Blog
-            </div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-              Latest Blog Posts
-            </h2>
-            <p className="max-w-2xl mx-auto text-muted-foreground">
-              Thoughts, stories, and ideas from the things that spark my curiosity.
-            </p>
+      <section className="py-16 sm:py-24 bg-background">
+        <div className="container mx-auto px-4 max-w-7xl">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-6 backdrop-blur-sm">
+                <span className="relative flex h-2 w-2 mr-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                </span>
+                Blog
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Latest Stories
+              </h1>
+              <p className="max-w-2xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed">
+                Thoughts, stories, and ideas from the things that spark my curiosity.
+              </p>
+            </motion.div>
           </div>
 
           {/* Search and Controls - Right Aligned on Large Screens */}
@@ -70,48 +80,48 @@ export default function BlogPage() {
               className="w-full lg:w-auto"
             >
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:justify-end">
-                {/* Search Input - Full width on mobile, auto width on larger screens */}
-                <div className="relative w-full lg:w-64">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                {/* Search Input */}
+                <div className="relative w-full lg:w-80">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input
                     type="text"
                     placeholder="Search posts..."
                     value={searchTerm}
                     onChange={handleSearchChange}
-                    className="pl-9 h-9 text-sm w-full"
+                    className="pl-10 h-10 text-sm w-full rounded-xl border-border/50 bg-background/50 backdrop-blur-sm focus:border-primary/50 transition-colors"
                   />
                 </div>
 
-                {/* Controls row - Stays together on all screen sizes */}
+                {/* Controls row */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   {/* Sort Dropdown */}
                   <select
                     value={sortBy}
                     onChange={(e) => handleSortChange(e.target.value as "newest" | "oldest" | "popular")}
-                    className="h-9 px-3 text-sm bg-background border rounded-md focus:outline-none focus:ring-2 focus:ring-ring w-full sm:w-auto"
+                    className="h-10 px-4 text-sm bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 w-full sm:w-auto transition-all"
                   >
-                    <option value="newest">Newest</option>
-                    <option value="oldest">Oldest</option>
-                    <option value="popular">Popular</option>
+                    <option value="newest">Newest First</option>
+                    <option value="oldest">Oldest First</option>
+                    <option value="popular">Most Popular</option>
                   </select>
 
                   {/* View Mode Toggle */}
-                  <div className="flex bg-muted rounded-md p-1">
+                  <div className="flex bg-muted/50 backdrop-blur-sm rounded-xl p-1 border border-border/50">
                     <Button
                       variant={viewMode === "grid" ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handleViewModeChange("grid")}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-9 p-0 rounded-lg"
                     >
-                      <Grid3X3 className="w-3.5 h-3.5" />
+                      <Grid3X3 className="w-4 h-4" />
                     </Button>
                     <Button
                       variant={viewMode === "list" ? "default" : "ghost"}
                       size="sm"
                       onClick={() => handleViewModeChange("list")}
-                      className="h-8 w-8 p-0"
+                      className="h-8 w-9 p-0 rounded-lg"
                     >
-                      <List className="w-3.5 h-3.5" />
+                      <List className="w-4 h-4" />
                     </Button>
                   </div>
                 </div>

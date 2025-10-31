@@ -1,9 +1,46 @@
-import { Suspense, use } from "react";
+import { Suspense, use, cache } from "react";
 import { BlogPostContent } from "@/components/blog-post-content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Metadata } from "next";
+import { unstable_cacheLife as cacheLife } from "next/cache";
 
 // PPR is enabled globally via cacheComponents in next.config.mjs
+// Using Next.js 16's new caching with cacheLife
+
+// Cache the post fetch with 60-second revalidation
+const getPost = cache(async (id: string) => {
+  "use cache";
+  cacheLife("minutes");
+  
+  const { data: post } = await supabase
+    .from("blogposts")
+    .select("*")
+    .eq("id", id)
+    .single();
+  
+  return post;
+});
+
+// Generate static params - Pre-render top posts at build time
+export async function generateStaticParams() {
+  try {
+    // Fetch the most recent 20 posts to pre-render at build time
+    const { data: posts } = await supabase
+      .from("blogposts")
+      .select("id")
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (!posts) return [];
+
+    return posts.map((post) => ({
+      id: post.id,
+    }));
+  } catch (error) {
+    console.error("Error generating static params:", error);
+    return [];
+  }
+}
 
 // Generate dynamic metadata for SEO
 export async function generateMetadata({
@@ -13,11 +50,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const { id } = await params;
-    const { data: post } = await supabase
-      .from("blogposts")
-      .select("id, title, content, cover_image, created_at")
-      .eq("id", id)
-      .single();
+    const post = await getPost(id);
 
     if (!post) {
       return {

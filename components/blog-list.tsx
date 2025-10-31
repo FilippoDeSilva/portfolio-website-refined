@@ -8,8 +8,9 @@ import { useRouter } from "next/navigation";
 import { Calendar, TrendingUp, FileText, Search, Filter, Grid3X3, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { blogCache, getCacheKey } from "@/lib/blog-cache";
 
-const POSTS_PER_PAGE = 9;
+const POSTS_PER_PAGE = 8;
 
 // Memoized blog card component to prevent unnecessary re-renders
 const MemoizedBlogCard = memo(({ post, viewMode }: { post: BlogPost; viewMode: "grid" | "list" }) => {
@@ -23,47 +24,53 @@ const MemoizedBlogCard = memo(({ post, viewMode }: { post: BlogPost; viewMode: "
   if (viewMode === "list") {
     return (
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
         className="group cursor-pointer"
         onClick={handleClick}
       >
-        <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-gray-200/60 dark:border-gray-700/60 rounded-2xl p-6 hover:shadow-md transition-all duration-300">
-          <div className="flex gap-6">
-            {/* Thumbnail - Hidden on small screens */}
-            <div className="hidden sm:block w-32 h-24 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700 flex-shrink-0 overflow-hidden">
+        <div className="relative bg-card border border-border/50 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-black/5 transition-all duration-300">
+          <div className="flex gap-4 sm:gap-6 p-4 sm:p-5">
+            {/* Thumbnail */}
+            <div className="relative w-24 sm:w-40 h-24 sm:h-28 rounded-xl flex-shrink-0 overflow-hidden bg-muted">
               {post.cover_image ? (
-                <img
-                  src={post.cover_image}
-                  alt={post.title}
-                  className="w-full h-full object-cover"
-                />
+                <>
+                  <img
+                    src={post.cover_image}
+                    alt={post.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
+                </>
               ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <FileText className="w-8 h-8 text-gray-400" />
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                  <FileText className="w-8 h-8 text-primary/40" />
                 </div>
               )}
             </div>
             
             {/* Content */}
-            <div className="flex-1 min-w-0">
-              <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2 line-clamp-2">
-                {post.title}
-              </h3>
-              {post.content && (
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-2 mb-3">
-                  {getContentPreview(post.content, 25)}
-                </p>
-              )}
-              <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+            <div className="flex-1 min-w-0 flex flex-col justify-between">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-foreground mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                  {post.title}
+                </h3>
+                {post.content && (
+                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-2 mb-3">
+                    {getContentPreview(post.content, 30)}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground">
                 <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" />
-                  {formatDate(post.created_at)}
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">{formatDate(post.created_at)}</span>
+                  <span className="sm:hidden">{formatDate(post.created_at).split(' ')[0]}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <TrendingUp className="w-4 h-4" />
-                  {post.view_count ?? 0} views
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  {post.view_count ?? 0}
                 </div>
               </div>
             </div>
@@ -183,7 +190,8 @@ export function BlogList({
   postsPerPage?: number;
 }) {
   const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false); // Start as false, will check cache first
+  const [isRevalidating, setIsRevalidating] = useState(false); // Background refresh indicator
   const [error, setError] = useState<string | null>(null);
   
   // Internal state for when controls are shown
@@ -225,6 +233,9 @@ export function BlogList({
         (payload) => {
           console.log('Real-time update:', payload);
           
+          // Invalidate cache on any change
+          blogCache.invalidateAll();
+          
           if (payload.eventType === 'INSERT') {
             const newPost = payload.new as BlogPost;
             setPosts(prevPosts => {
@@ -243,9 +254,8 @@ export function BlogList({
               )
             );
           } else if (payload.eventType === 'DELETE') {
-            setPosts(prevPosts => 
-              prevPosts.filter(post => post.id !== payload.old.id)
-            );
+            const deletedId = payload.old.id;
+            setPosts(prevPosts => prevPosts.filter(post => post.id !== deletedId));
           }
         }
       )
@@ -256,10 +266,36 @@ export function BlogList({
     };
   }, [sortBy]);
 
-  // Fetch posts with optimized query
+  // Fetch posts with caching
   useEffect(() => {
     async function fetchPosts() {
-      setLoading(true);
+      const cacheKey = getCacheKey(currentPage, searchTerm, sortBy);
+      
+      // Check cache first (stale-while-revalidate pattern)
+      const { data: cachedData, isStale } = blogCache.getStale<{ posts: BlogPost[]; count: number }>(cacheKey);
+      
+      // If we have cached data (fresh or stale), show it immediately
+      if (cachedData) {
+        let filtered = cachedData.posts;
+        if (excludeId) filtered = filtered.filter((p) => p.id !== excludeId);
+        setPosts(filtered);
+        if (onDataLoaded) onDataLoaded(cachedData.count);
+        
+        // If data is fresh, we're done - no need to fetch
+        if (!isStale) {
+          setLoading(false);
+          return;
+        }
+        
+        // Data is stale, but we're showing it - fetch fresh in background
+        setLoading(false); // Don't show loading, we have data to display
+        setIsRevalidating(true); // Indicate background refresh
+      } else {
+        // No cached data at all - show loading
+        setLoading(true);
+        setIsRevalidating(false);
+      }
+      
       setError(null);
       
       try {
@@ -298,6 +334,9 @@ export function BlogList({
         }
         
         if (data) {
+          // Cache the result
+          blogCache.set(cacheKey, { posts: data as BlogPost[], count: count || 0 });
+          
           let filtered = data as BlogPost[];
           if (excludeId) filtered = filtered.filter((p) => p.id !== excludeId);
           setPosts(filtered);
@@ -305,9 +344,12 @@ export function BlogList({
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch posts');
-        setPosts([]);
+        if (!cachedData) {
+          setPosts([]);
+        }
       } finally {
         setLoading(false);
+        setIsRevalidating(false);
       }
     }
     
@@ -435,9 +477,15 @@ export function BlogList({
     );
   }
 
-
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 relative">
+      {/* Revalidating Indicator */}
+      {isRevalidating && (
+        <div className="fixed top-4 right-4 z-50 px-4 py-2 rounded-full bg-primary/10 backdrop-blur-sm border border-primary/20 flex items-center gap-2 animate-in fade-in slide-in-from-top-2">
+          <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+          <span className="text-xs font-medium text-primary">Updating...</span>
+        </div>
+      )}
       {/* Search and Filter Controls - Only show when showControls is true */}
       {showControls && (
         <motion.div 
