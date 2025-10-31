@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, X, Send as Telegram, StopCircle, Plus, ChevronDown, Trash2, History } from "lucide-react";
+import { Sparkles, X, Send as Telegram, StopCircle, Plus, ChevronDown, Trash2, History, Paperclip, FileText } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { marked } from "marked";
@@ -42,8 +42,10 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [attachedFiles, setAttachedFiles] = useState<Array<{name: string; content: string; type: string}>>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
 
   // Available models with descriptions - updated with latest options
@@ -332,16 +334,88 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
     setMessages([]);
     setError(null);
     setStreamedContent("");
+    setAttachedFiles([]);
+  };
+
+  // Handle file upload
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    const MAX_FILE_SIZE = 50000; // ~50KB max per file (roughly 12,000 tokens)
+    const MAX_CHARS = 20000; // Max characters per file
+    const newFiles: Array<{name: string; content: string; type: string}> = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        setError(`File "${file.name}" is too large. Maximum size is 50KB. Please use a smaller file or text excerpt.`);
+        continue;
+      }
+
+      const reader = new FileReader();
+
+      await new Promise<void>((resolve) => {
+        reader.onload = (event) => {
+          let content = event.target?.result as string;
+          
+          // Truncate if too long
+          if (content.length > MAX_CHARS) {
+            content = content.substring(0, MAX_CHARS) + '\n\n[... Content truncated due to length ...]';
+            setError(`File "${file.name}" was truncated to fit token limits.`);
+          }
+          
+          newFiles.push({
+            name: file.name,
+            content: content,
+            type: file.type || 'text/plain'
+          });
+          resolve();
+        };
+        
+        reader.onerror = () => {
+          setError(`Failed to read file "${file.name}". Please try a text-based file.`);
+          resolve();
+        };
+        
+        reader.readAsText(file);
+      });
+    }
+
+    if (newFiles.length > 0) {
+      setAttachedFiles(prev => [...prev, ...newFiles]);
+    }
+    
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  // Auto-resize textarea
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setInput(e.target.value);
+    
+    // Auto-resize
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 200) + 'px';
   };
 
   async function handleSend() {
-    if (!input.trim()) return;
+    if (!input.trim() && attachedFiles.length === 0) return;
 
     if (!activeChatId) startNewChat();
 
     const userMessage: Message = { role: "user", content: input, timestamp: new Date() };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
+    
+    // Store attached files for this request
+    const currentFiles = [...attachedFiles];
+    setAttachedFiles([]); // Clear attachments after sending
+    
     setLoading(true);
     setStreaming(true);
     setError(null);
@@ -365,6 +439,7 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
     );
 
     let prompt = input;
+    
     if (isBlogRequest) {
       const blogInstruction = `Write the response as a ready-to-publish Markdown blog post written by the blog's human author. 
 Use clear headings, bullet points or numbered lists when helpful, and include relevant links where appropriate. 
@@ -373,7 +448,7 @@ Maintain a warm, cozy, and professional tone throughout.
 Do not refer to the AI or explain the writing process. 
 Write naturally, as if the blog author is speaking directly to their readers. 
 The final post should be polished and require little to no editing before publishing.`;
-      prompt = `${blogInstruction}\n\n${input}`;
+      prompt = `${blogInstruction}\n\n${prompt}`;
     }
 
     // Prepare conversation context for memory
@@ -398,7 +473,8 @@ The final post should be polished and require little to no editing before publis
           prompt, 
           stream: true, 
           model: selectedModel,
-          conversationHistory: conversationContext
+          conversationHistory: conversationContext,
+          attachedFiles: currentFiles
         }),
         signal: abortControllerRef.current.signal,
       });
@@ -497,19 +573,22 @@ The final post should be polished and require little to no editing before publis
 
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-background/30 dark:bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="bg-background dark:bg-zinc-900 rounded-lg shadow-lg max-w-2xl w-full p-0 relative flex flex-col border border-border h-[90vh] max-h-[800px]">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <div className="flex items-center gap-2 font-semibold text-lg">
-            <Sparkles className="w-6 h-6 text-primary animate-pulse" />
-            AI Writing Assistant
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
+      <div className="bg-gradient-to-br from-background via-background to-muted/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[90vh] max-h-[850px] animate-in zoom-in-95 duration-300">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 backdrop-blur-sm">
+          <div className="flex items-center gap-3 font-bold text-xl">
+            <div className="relative">
+              <Sparkles className="w-7 h-7 text-primary animate-pulse" />
+              <div className="absolute inset-0 w-7 h-7 text-primary animate-ping opacity-20" />
+            </div>
+            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">AI Writing Assistant</span>
             {isAuthenticated && (
-              <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full">
+              <span className="text-xs bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full font-medium backdrop-blur-sm">
                 🔒 Synced
               </span>
             )}
             {!isAuthenticated && !authLoading && (
-              <span className="text-xs bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 px-2 py-1 rounded-full">
+              <span className="text-xs bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-3 py-1.5 rounded-full font-medium backdrop-blur-sm">
                 💾 Local Only
               </span>
             )}
@@ -517,7 +596,7 @@ The final post should be polished and require little to no editing before publis
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowHistory(v => !v)}
-              className="p-2 text-gray-500 hover:text-primary focus:outline-none transition-colors"
+              className="p-2.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 focus:outline-none transition-all duration-200 hover:scale-110"
               title="Chat history"
               aria-label="Chat history"
             >
@@ -525,7 +604,7 @@ The final post should be polished and require little to no editing before publis
             </button>
             <button
               onClick={startNewChat}
-              className="p-2 text-gray-500 hover:text-green-600 focus:outline-none transition-colors"
+              className="p-2.5 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
               title="New chat"
               aria-label="New chat"
             >
@@ -534,7 +613,7 @@ The final post should be polished and require little to no editing before publis
             {messages.length > 0 && (
               <button
                 onClick={clearChat}
-                className="p-2 text-gray-500 hover:text-red-600 focus:outline-none transition-colors"
+                className="p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
                 title="Clear current chat"
                 aria-label="Clear chat"
               >
@@ -543,7 +622,7 @@ The final post should be polished and require little to no editing before publis
             )}
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-red-600 focus:outline-none transition-colors"
+              className="p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
               aria-label="Close"
             >
               <X className="w-6 h-6" />
@@ -683,7 +762,7 @@ The final post should be polished and require little to no editing before publis
         )}
         
         {/* Model Selection UI */}
-        <div className="px-6 py-3 border-b border-border bg-muted/20">
+        <div className="px-6 py-3 border-b border-border/50 bg-gradient-to-r from-muted/10 via-muted/20 to-muted/10">
           <div className="flex items-center justify-between">
             <div>
               <span className="text-sm font-medium text-muted-foreground">AI Model:</span>
@@ -737,7 +816,15 @@ The final post should be polished and require little to no editing before publis
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-muted/40" style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
+        <div 
+          className="flex-1 px-6 py-4 space-y-4 bg-gradient-to-b from-muted/20 to-muted/5"
+          style={{ 
+            overflowY: 'scroll',
+            overflowX: 'hidden',
+            maxHeight: '100%',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
           {messages.length === 0 && !streamedContent && (
             <div className="text-center text-muted-foreground text-sm space-y-3">
               <div className="mb-2 text-base font-semibold">⌨️ Keyboard Shortcuts</div>
@@ -791,8 +878,8 @@ The final post should be polished and require little to no editing before publis
           {/* AI/Chat messages */}
           {messages.map((msg, idx) => {
             return (
-              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`relative rounded-xl px-4 py-2 max-w-[80%] whitespace-pre-line break-words ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 border border-border"}`}>
+              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-2 duration-300`}>
+                <div className={`relative rounded-2xl px-5 py-3 max-w-[80%] whitespace-pre-line break-words shadow-sm ${msg.role === "user" ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground" : "bg-white dark:bg-zinc-800/80 text-gray-900 dark:text-gray-100 border border-border/50 backdrop-blur-sm"}`}>
                   {msg.role === "assistant" ? (
                     <>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
@@ -847,42 +934,85 @@ The final post should be polished and require little to no editing before publis
         
         {error && <div className="text-red-600 px-6 pb-2 text-sm">{error}</div>}
         
-        <div className="px-6 pt-2 pb-0 text-xs text-muted-foreground"></div>
+        {/* Attached Files Preview */}
+        {attachedFiles.length > 0 && (
+          <div className="px-6 py-3 border-t border-border/50 bg-gradient-to-r from-primary/5 to-muted/10 backdrop-blur-sm">
+            <div className="flex flex-wrap gap-2">
+              {attachedFiles.map((file, idx) => (
+                <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-background/80 border border-border/50 rounded-xl text-sm shadow-sm backdrop-blur-sm hover:shadow-md transition-shadow duration-200">
+                  <FileText className="w-4 h-4 text-primary" />
+                  <span className="max-w-[150px] truncate">{file.name}</span>
+                  <button
+                    onClick={() => setAttachedFiles(prev => prev.filter((_, i) => i !== idx))}
+                    className="text-muted-foreground hover:text-red-600 transition-colors"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
         
         <form
-          className="flex items-center gap-2 px-6 py-4 border-t border-border bg-background"
+          className="px-6 py-4 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background backdrop-blur-sm"
           onSubmit={e => { e.preventDefault(); if (!loading) handleSend(); }}
         >
-          <textarea
-            ref={textareaRef}
-            className="flex-1 rounded border border-border p-2 resize-none min-h-[80px] max-h-[100px] text-base px-4 py-3 bg-white dark:bg-zinc-900 shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30 transition placeholder:text-gray-400 dark:placeholder:text-gray-400"
-            rows={4}
-            placeholder="Type your message..."
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            disabled={loading}
-            style={{ height: '80px', overflow: 'auto' }}
-          />
-          {streaming ? (
+          <div className="flex items-end gap-2">
+            {/* File attachment button */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".txt"
+              multiple
+              onChange={handleFileUpload}
+              className="hidden"
+            />
             <button
               type="button"
-              className="px-3 py-2 rounded bg-red-600 text-white font-semibold flex items-center justify-center"
-              onClick={stopGenerating}
-              aria-label="Stop"
+              onClick={() => fileInputRef.current?.click()}
+              className="p-3 rounded-xl hover:bg-primary/10 transition-all duration-200 text-muted-foreground hover:text-primary self-end mb-1 hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Attach text files (.txt only, max 50KB)"
+              disabled={loading}
             >
-              <StopCircle className="w-5 h-5 fill-red-600" />
+              <Paperclip className="w-5 h-5" />
             </button>
-          ) : (
-            <button
-              type="submit"
-              className="px-3 py-2 rounded bg-primary text-white font-semibold disabled:opacity-60 flex items-center justify-center"
-              disabled={loading || !input.trim()}
-              aria-label="Send"
-            >
-              <Telegram className="w-5 h-5" />
-            </button>
-          )}
+            
+            {/* ChatGPT-style input */}
+            <div className="flex-1 relative">
+              <textarea
+                ref={textareaRef}
+                className="w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 max-h-[200px] shadow-sm hover:shadow-md"
+                rows={1}
+                placeholder="Message AI Assistant..."
+                value={input}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                disabled={loading}
+                style={{ minHeight: '56px' }}
+              />
+              {/* Send button inside textarea */}
+              {streaming ? (
+                <button
+                  type="button"
+                  className="absolute right-3 bottom-3 p-2.5 rounded-xl bg-gradient-to-br from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105"
+                  onClick={stopGenerating}
+                  aria-label="Stop"
+                >
+                  <StopCircle className="w-5 h-5" />
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="absolute right-3 bottom-3 p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary/90 text-primary-foreground hover:from-primary/90 hover:to-primary transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                  disabled={loading || (!input.trim() && attachedFiles.length === 0)}
+                  aria-label="Send"
+                >
+                  <Telegram className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
         </form>
       </div>
     </div>

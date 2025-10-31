@@ -24,11 +24,10 @@ You are a helpful AI writing assistant for a personal blog, chatting with the bl
 - If the user wants you to improve, fix, or iterate on something you previously wrote, use that context to make the changes.
 `;
 
-export const runtime = "edge";
 
 export async function POST(req: NextRequest) {
   try {
-    const { prompt, model: requestedModel = "gpt-4o", stream = false, conversationHistory = [] } = await req.json();
+    const { prompt, model: requestedModel = "gpt-4o", stream = false, conversationHistory = [], attachedFiles = [] } = await req.json();
     const token = process.env["GITHUB_TOKEN"];
     if (!token) {
       return new Response(JSON.stringify({ error: "GitHub API token not set." }), { status: 500 });
@@ -45,13 +44,23 @@ export async function POST(req: NextRequest) {
     const client = new OpenAI({ baseURL: endpoint, apiKey: token });
     console.log(`[AI API] Sending request to GitHub AI with model: ${requestedModel} (${model})...`);
     console.log(`[AI API] Conversation history: ${conversationHistory.length} messages`);
-    console.log(`[AI API] Full conversation history:`, JSON.stringify(conversationHistory, null, 2));
+    console.log(`[AI API] Attached files: ${attachedFiles.length} files`);
+    
+    // Build the user prompt with file context if files are attached
+    let userPrompt = prompt;
+    if (attachedFiles.length > 0) {
+      const fileContext = attachedFiles.map((file: any) => 
+        `\n\n--- File: ${file.name} ---\n${file.content}\n--- End of ${file.name} ---`
+      ).join('\n');
+      userPrompt = `${prompt}\n\nAttached files:${fileContext}`;
+      console.log(`[AI API] Added ${attachedFiles.length} files to context`);
+    }
     
     // Build messages array with conversation history
     const messages = [
       { role: "system", content: systemPrompt },
       ...conversationHistory,
-      { role: "user", content: prompt }
+      { role: "user", content: userPrompt }
     ];
     
     console.log(`[AI API] Final messages array:`, JSON.stringify(messages, null, 2));
