@@ -252,3 +252,24 @@ html {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
   }
 }
+
+/* AI Chat Modal - Hide textarea scrollbar */
+.ai-chat-textarea::-webkit-scrollbar {
+  display: none;
+}
+
+.ai-chat-textarea {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* AI Chat Modal - Ensure scrolling works */
+.ai-chat-scroll-container {
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  isolation: isolate;
+  will-change: scroll-position;
+}

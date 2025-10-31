@@ -22,7 +22,8 @@ export function useMediaLightbox(deleteModalOpen: boolean, aiModalOpen: boolean)
       const preventScroll = (e: WheelEvent) => {
         const target = e.target as Element;
         const isImageViewer = target?.closest("[data-image-viewer]");
-        if (!isImageViewer) {
+        const isAIChatScroll = target?.closest(".ai-chat-scroll-container");
+        if (!isImageViewer && !isAIChatScroll) {
           e.preventDefault();
         }
       };

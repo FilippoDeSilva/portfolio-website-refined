@@ -44,6 +44,7 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [attachedFiles, setAttachedFiles] = useState<Array<{name: string; content: string; type: string}>>([]);
   const chatEndRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -205,8 +206,8 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
   }, [open]);
 
   useEffect(() => {
-    if (open && chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (open && scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = scrollContainerRef.current.scrollHeight;
     }
     if (open) {
       setTimeout(() => textareaRef.current?.focus(), 100);
@@ -573,8 +574,8 @@ The final post should be polished and require little to no editing before publis
 
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200">
-      <div className="bg-gradient-to-br from-background via-background to-muted/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[90vh] max-h-[850px] animate-in zoom-in-95 duration-300">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
+      <div className="bg-gradient-to-br from-background via-background to-muted/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[90vh] max-h-[850px]" onClick={(e) => e.stopPropagation()} style={{ animation: 'none' }}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 backdrop-blur-sm">
           <div className="flex items-center gap-3 font-bold text-xl">
             <div className="relative">
@@ -817,13 +818,9 @@ The final post should be polished and require little to no editing before publis
         </div>
 
         <div 
-          className="flex-1 px-6 py-4 space-y-4 bg-gradient-to-b from-muted/20 to-muted/5"
-          style={{ 
-            overflowY: 'scroll',
-            overflowX: 'hidden',
-            maxHeight: '100%',
-            WebkitOverflowScrolling: 'touch'
-          }}
+          ref={scrollContainerRef}
+          className="ai-chat-scroll-container flex-1 min-h-0 px-6 py-4 space-y-4 bg-gradient-to-b from-muted/20 to-muted/5"
+          style={{ overflow: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}
         >
           {messages.length === 0 && !streamedContent && (
             <div className="text-center text-muted-foreground text-sm space-y-3">
@@ -982,7 +979,7 @@ The final post should be polished and require little to no editing before publis
             <div className="flex-1 relative">
               <textarea
                 ref={textareaRef}
-                className="w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 max-h-[200px] shadow-sm hover:shadow-md"
+                className="ai-chat-textarea w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 max-h-[200px] shadow-sm hover:shadow-md"
                 rows={1}
                 placeholder="Message AI Assistant..."
                 value={input}
