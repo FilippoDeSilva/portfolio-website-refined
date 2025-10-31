@@ -466,6 +466,12 @@ The final post should be polished and require little to no editing before publis
       if (!loading) handleSend();
     }
     
+    // Escape to close modal
+    if (e.key === "Escape") {
+      e.preventDefault();
+      onClose();
+    }
+    
     // Keyboard shortcuts for model selection
     if (e.ctrlKey || e.metaKey) {
       switch (e.key) {
@@ -491,7 +497,7 @@ The final post should be polished and require little to no editing before publis
 
   if (!open) return null;
   return (
-      <div className="fixed inset-0 z-50 bg-background/30 dark:bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-background/30 dark:bg-black/30 backdrop-blur-sm flex items-center justify-center p-4">
       <div className="bg-background dark:bg-zinc-900 rounded-lg shadow-lg max-w-2xl w-full p-0 relative flex flex-col border border-border h-[90vh] max-h-[800px]">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
           <div className="flex items-center gap-2 font-semibold text-lg">
@@ -731,10 +737,45 @@ The final post should be polished and require little to no editing before publis
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-muted/40">
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4 bg-muted/40" style={{ overflowY: 'auto', WebkitOverflowScrolling: 'touch' }}>
           {messages.length === 0 && !streamedContent && (
-            <div className="text-center text-muted-foreground text-sm">
-              <div className="mb-2">💡Tip: Use Ctrl+1-4 to quickly switch models</div>
+            <div className="text-center text-muted-foreground text-sm space-y-3">
+              <div className="mb-2 text-base font-semibold">⌨️ Keyboard Shortcuts</div>
+              <div className="grid grid-cols-2 gap-2 max-w-md mx-auto text-xs">
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Enter</kbd>
+                  <span className="ml-2">Send message</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Shift+Enter</kbd>
+                  <span className="ml-2">New line</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Ctrl+1</kbd>
+                  <span className="ml-2">GPT-4 Omni</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Ctrl+2</kbd>
+                  <span className="ml-2">GPT-4 Mini</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Ctrl+3</kbd>
+                  <span className="ml-2">GPT-4 Turbo</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Ctrl+4</kbd>
+                  <span className="ml-2">GPT-3.5</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Esc</kbd>
+                  <span className="ml-2">Close modal</span>
+                </div>
+                <div className="bg-background/50 p-2 rounded border border-border">
+                  <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Click +</kbd>
+                  <span className="ml-2">Insert to editor</span>
+                </div>
+              </div>
+              <div className="mt-3 text-xs opacity-75">💡 Tip: Click the + button on any AI response to insert it into your blog editor</div>
             </div>
           )}
           
@@ -788,8 +829,15 @@ The final post should be polished and require little to no editing before publis
           
           {streamedContent && (
             <div className="flex justify-start">
-              <div className="rounded-xl px-4 py-2 max-w-[80%] bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 border border-border animate-pulse break-words">
+              <div className="relative rounded-xl px-4 py-2 max-w-[80%] bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-100 border border-border animate-pulse break-words">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>{streamedContent}</ReactMarkdown>
+                <button
+                  className="absolute bottom-0 -right-2 p-1 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all duration-200 hover:scale-110"
+                  title="Insert this response into the blog editor"
+                  onClick={() => handleInsert(streamedContent)}
+                >
+                  <Plus className="w-4 h-4" />
+                </button>
               </div>
             </div>
           )}

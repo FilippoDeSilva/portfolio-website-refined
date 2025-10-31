@@ -10,11 +10,21 @@ class BlogCache {
   private defaultTTL = 5 * 60 * 1000; // 5 minutes
   private storageKey = 'blog-cache';
   private isClient = typeof window !== 'undefined';
+  private isLoaded = false;
 
   constructor() {
     // Load cache from localStorage on initialization
     if (this.isClient) {
       this.loadFromStorage();
+      this.isLoaded = true;
+    }
+  }
+  
+  // Ensure cache is loaded before any operation
+  private ensureLoaded(): void {
+    if (this.isClient && !this.isLoaded) {
+      this.loadFromStorage();
+      this.isLoaded = true;
     }
   }
 
@@ -61,6 +71,7 @@ class BlogCache {
   }
 
   get<T>(key: string): T | null {
+    this.ensureLoaded();
     const entry = this.cache.get(key);
     
     if (!entry) {
@@ -78,6 +89,7 @@ class BlogCache {
   }
 
   has(key: string): boolean {
+    this.ensureLoaded();
     const entry = this.cache.get(key);
     if (!entry) return false;
     
@@ -105,6 +117,7 @@ class BlogCache {
 
   // Get stale data while revalidating
   getStale<T>(key: string): { data: T | null; isStale: boolean } {
+    this.ensureLoaded();
     const entry = this.cache.get(key);
     
     if (!entry) {
@@ -126,4 +139,9 @@ export const getCacheKey = (
   sortBy: string
 ): string => {
   return `blog-posts-${page}-${searchTerm}-${sortBy}`;
+};
+
+// Helper to generate cache key for individual blog post
+export const getPostCacheKey = (postId: string): string => {
+  return `blog-post-${postId}`;
 };

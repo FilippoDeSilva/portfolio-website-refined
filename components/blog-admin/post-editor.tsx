@@ -10,10 +10,11 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Check, RefreshCw, Send, X } from "lucide-react";
-import { AdvancedEditor } from "./advanced-editor";
+import { AdvancedEditor, type AdvancedEditorRef } from "./advanced-editor";
 import { CoverImageUpload } from "./cover-image-upload";
 import { AttachmentUpload } from "./attachment-upload";
 import { getFileTypeFromExtension } from "@/lib/blog-utils";
+import { useRef } from "react";
 
 interface PostEditorProps {
   form: {
@@ -38,6 +39,8 @@ interface PostEditorProps {
   onCoverImageUpload: (file: File) => void;
   onAttachmentFiles: (files: FileList | null) => void;
   onPreviewAttachment: (att: any) => void;
+  onOpenAI: () => void;
+  editorRef?: React.RefObject<AdvancedEditorRef | null>;
 }
 
 export function PostEditor({
@@ -57,7 +60,12 @@ export function PostEditor({
   onCoverImageUpload,
   onAttachmentFiles,
   onPreviewAttachment,
+  onOpenAI,
+  editorRef: externalEditorRef,
 }: PostEditorProps) {
+  const internalEditorRef = useRef<AdvancedEditorRef | null>(null);
+  const editorRef = externalEditorRef || internalEditorRef;
+  
   return (
     <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-background via-muted/60 to-background/80 shadow-xl border-0 rounded-2xl">
       <CardHeader className="pb-2">
@@ -103,10 +111,12 @@ export function PostEditor({
               Content
             </label>
             <AdvancedEditor
+              ref={editorRef}
               key={editingId || "new"}
               content={content}
               onChange={setContent}
               placeholder="Start writing your amazing blog post... Type '/' for commands"
+              onOpenAI={onOpenAI}
             />
           </div>
 

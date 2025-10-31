@@ -18,6 +18,7 @@ import { AttachmentGalleryModal } from "@/components/attachment-gallery-modal";
 import { CustomAudioPlayer } from "@/components/custom-audio-player";
 import { CustomVideoPlayer } from "@/components/custom-video-player";
 import { LinkPreviewCard } from "@/components/link-preview-card";
+import { blogCache, getPostCacheKey } from "@/lib/blog-cache";
 
 interface BlogPostContentProps {
   postId: string;
@@ -53,8 +54,19 @@ function BlogPostSkeleton() {
 export function BlogPostContent({ postId }: BlogPostContentProps) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [post, setPost] = useState<BlogPost | null>(null);
-  const [loading, setLoading] = useState(true);
+  
+  // Initialize with cached data if available
+  const [post, setPost] = useState<BlogPost | null>(() => {
+    const cacheKey = getPostCacheKey(postId);
+    const cachedPost = blogCache.get<BlogPost>(cacheKey);
+    return cachedPost;
+  });
+  
+  const [loading, setLoading] = useState(() => {
+    const cacheKey = getPostCacheKey(postId);
+    return !blogCache.has(cacheKey); // Only show loading if no cache
+  });
+  
   const [error, setError] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState<{
     open: boolean;
@@ -79,7 +91,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
     if (!post?.attachments) return;
 
     const fetchAudioThumbnails = async () => {
-      const audioAttachments = post.attachments.filter((att: any) => att.type?.includes('audio'));
+      const audioAttachments = post.attachments?.filter((att: any) => att.type?.includes('audio'));
       
       for (let i = 0; i < post.attachments.length; i++) {
         const att = post.attachments[i];
@@ -115,6 +127,31 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
 
   useEffect(() => {
     async function fetchPost() {
+      const cacheKey = getPostCacheKey(postId);
+      
+      // Check cache first (stale-while-revalidate)
+      const { data: cachedPost, isStale } = blogCache.getStale<BlogPost>(cacheKey);
+      
+      if (cachedPost && !isStale) {
+        // Use fresh cached data
+        setPost(cachedPost);
+        const text = cachedPost.content?.replace(/<[^>]*>/g, "") || "";
+        const wordCount = text.split(/\s+/).filter(Boolean).length;
+        setReadingTime(Math.ceil(wordCount / 200));
+        setLoading(false);
+        return;
+      }
+      
+      // Show cached data immediately if available (even if stale)
+      if (cachedPost) {
+        setPost(cachedPost);
+        const text = cachedPost.content?.replace(/<[^>]*>/g, "") || "";
+        const wordCount = text.split(/\s+/).filter(Boolean).length;
+        setReadingTime(Math.ceil(wordCount / 200));
+        setLoading(false);
+      }
+      
+      // Fetch fresh data
       const { data, error } = await supabase
         .from("blogposts")
         .select(
@@ -122,13 +159,21 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
         )
         .eq("id", postId)
         .single();
+        
       if (error) {
         setError(error.message);
-        setPost(null);
+        if (!cachedPost) {
+          setPost(null);
+        }
       } else if (data) {
-        setPost(data as BlogPost);
+        const blogPost = data as BlogPost;
+        
+        // Cache the result (5 minutes TTL)
+        blogCache.set(cacheKey, blogPost, 5 * 60 * 1000);
+        
+        setPost(blogPost);
         // Calculate reading time (average 200 words per minute)
-        const text = data.content?.replace(/<[^>]*>/g, "") || "";
+        const text = blogPost.content?.replace(/<[^>]*>/g, "") || "";
         const wordCount = text.split(/\s+/).filter(Boolean).length;
         const minutes = Math.ceil(wordCount / 200);
         setReadingTime(minutes);
@@ -357,7 +402,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
             {/* Drop Cap & Content with Auto-Embedding */}
             <BlogContentProcessor 
-              content={post.content} 
+              content={post?.content || ""} 
               onMediaClick={(src, type) => {
                 if (type === 'image') {
                   setLightbox({ open: true, src, name: 'Image' });
@@ -420,9 +465,9 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                           <div className="relative aspect-video bg-gradient-to-br from-muted/50 to-muted/30 overflow-hidden cursor-pointer"
                             onClick={() => {
                               if (isImage) {
-                                const imageAttachments = post.attachments.filter((a: any) => a.type?.includes('image'));
-                                const imageIndex = imageAttachments.findIndex((a: any) => a.url === att.url);
-                                setGalleryIndex(imageIndex);
+                                const imageAttachments = post?.attachments?.filter((a: any) => a.type?.includes('image'));
+                                const imageIndex = imageAttachments?.findIndex((a: any) => a.url === att.url);
+                                setGalleryIndex(imageIndex || 0);
                                 setGalleryOpen(true);
                               }
                             }}

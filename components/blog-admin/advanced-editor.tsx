@@ -33,9 +33,10 @@ import {
   ChevronDown,
   Video as VideoIcon,
   X,
+  Sparkles,
 } from "lucide-react";
 import { renderToString } from 'react-dom/server';
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
 
 const lowlight = createLowlight();
 lowlight.register({ javascript, typescript, python });
@@ -265,6 +266,11 @@ interface AdvancedEditorProps {
   onChange: (content: string) => void;
   editable?: boolean;
   placeholder?: string;
+  onOpenAI?: () => void;
+}
+
+export interface AdvancedEditorRef {
+  insertContent: (html: string) => void;
 }
 
 const HIGHLIGHT_COLORS = [
@@ -280,12 +286,13 @@ const HIGHLIGHT_COLORS = [
   { name: "Indigo", color: "#c7d2fe", textColor: "#312e81", class: "bg-indigo-200" },
 ];
 
-export function AdvancedEditor({
+export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>(function AdvancedEditor({
   content,
   onChange,
   editable = true,
   placeholder = "Start writing your blog post... Type '/' for commands",
-}: AdvancedEditorProps) {
+  onOpenAI,
+}, ref) {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showMediaModal, setShowMediaModal] = useState<'image' | 'video' | null>(null);
@@ -366,6 +373,15 @@ export function AdvancedEditor({
     }
   }, [showColorPicker]);
 
+  // Expose insertContent method via ref - MUST be before early return
+  useImperativeHandle(ref, () => ({
+    insertContent: (html: string) => {
+      if (editor) {
+        editor.chain().focus().insertContent(html).run();
+      }
+    }
+  }), [editor]);
+
   if (!editor) {
     return null;
   }
@@ -437,7 +453,6 @@ export function AdvancedEditor({
       editor.chain().focus().setLink({ href: url }).run();
     }
   };
-
 
   return (
     <div className="border border-border rounded-xl bg-background shadow-sm">
@@ -796,8 +811,19 @@ export function AdvancedEditor({
           />
         </div>
 
-        {/* Help Button */}
+        {/* AI Assistant & Help */}
         <div className="flex gap-1 ml-auto">
+          {onOpenAI && (
+            <button
+              type="button"
+              onClick={onOpenAI}
+              className="p-2 rounded-md bg-primary/10 hover:bg-primary/20 transition-colors text-primary hover:text-primary flex items-center gap-1.5 px-3"
+              title="AI Writing Assistant"
+            >
+              <Sparkles className="w-4 h-4 animate-pulse" />
+              <span className="text-xs font-medium hidden sm:inline">AI Assistant</span>
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setShowShortcutsModal(true)}
@@ -1156,7 +1182,7 @@ export function AdvancedEditor({
       )}
     </div>
   );
-}
+});
 
 interface ToolbarButtonProps {
   onClick: () => void;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import TitleBar from "@/components/titlebar";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,13 @@ import {
   useBlogForm,
   useMediaLightbox,
 } from "@/hooks";
+import type { AdvancedEditorRef } from "@/components/blog-admin/advanced-editor";
 
 
 export default function BlogAdmin() {
+  // Editor ref for AI insertion
+  const editorRef = useRef<AdvancedEditorRef | null>(null);
+  
   // Custom hooks
   const { user, authLoading, loginLoading, loginError, setLoginError, handleLogin, handleLogout } = useAuth();
   const { posts, setPosts, postsLoading, postsInitialized, setPostsInitialized, currentPage, setCurrentPage, fetchPosts } = useBlogAdmin();
@@ -54,12 +58,15 @@ export default function BlogAdmin() {
   const [aiModalOpen, setAIModalOpen] = useState(false);
   const { lightbox, setLightbox, isPIPActive, setIsPIPActive } = useMediaLightbox(deleteModal.open, aiModalOpen);
 
-  const POSTS_PER_PAGE = 4;
+  const POSTS_PER_PAGE = 6;
 
   // Fetch posts when user logs in
   useEffect(() => {
     if (user && !postsInitialized) {
-      fetchPosts();
+      // Only fetch if we don't have cached data
+      if (posts.length === 0) {
+        fetchPosts();
+      }
       setPostsInitialized(true);
     } else if (!user && postsInitialized) {
       setPosts([]);
@@ -115,7 +122,7 @@ export default function BlogAdmin() {
 
     resetForm();
     setContent("");
-    fetchPosts();
+    fetchPosts(true); // Force refresh to invalidate all caches
   }
 
   async function handleEdit(post: any) {
@@ -260,22 +267,12 @@ export default function BlogAdmin() {
         />
       ) : (
         <div>
-          {/* Floating AI button */}
-          <Button
-            variant="default"
-            size="icon"
-            className="fixed bottom-6 right-6 z-50 shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary"
-            onClick={() => setAIModalOpen(true)}
-            aria-label="Open AI Assistant"
-          >
-            <Sparkles className="w-7 h-7 animate-pulse" />
-          </Button>
           <AIChatModal
             open={aiModalOpen}
             onClose={() => setAIModalOpen(false)}
-            onInsert={(text) => {
+            onInsert={(html) => {
+              editorRef.current?.insertContent(html);
               setAIModalOpen(false);
-              setContent(content + text);
             }}
           />
           {/* Responsive layout: editor first on mobile, posts second */}
@@ -326,6 +323,8 @@ export default function BlogAdmin() {
                 onCoverImageUpload={handleCoverImageUpload}
                 onAttachmentFiles={handleAttachmentFiles}
                 onPreviewAttachment={handlePreviewAttachment}
+                onOpenAI={() => setAIModalOpen(true)}
+                editorRef={editorRef}
               />
                 </div>
               </div>
@@ -388,7 +387,7 @@ export default function BlogAdmin() {
                   .from("blogposts")
                   .delete()
                   .eq("id", deleteModal.postId);
-                fetchPosts();
+                fetchPosts(true); // Force refresh to invalidate all caches
               } catch (err) {
                 console.error("Error during post deletion:", err);
               } finally {
