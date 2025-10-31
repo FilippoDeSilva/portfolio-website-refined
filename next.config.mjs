@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -23,7 +20,7 @@ const nextConfig = {
       { protocol: "https", hostname: "www.dailymotion.com", pathname: "/**" }, // Dailymotion
       { protocol: "https", hostname: "scontent.cdninstagram.com", pathname: "/**" }, // Instagram CDN
       { protocol: "https", hostname: "instagram.fxyz1-1.fna.fbcdn.net", pathname: "/**" }, // Instagram
-      { protocol: "https", hostname: "scontent.xx.fbcdn.net", pathname: "/**" }, // Facebook CDN
+      // { protocol: "https", hostname: "scontent.xx.fbcdn.net", pathname: "/**" }, // Facebook CDN
       { protocol: "https", hostname: "pbs.twimg.com", pathname: "/**" }, // Twitter/X
       { protocol: "https", hostname: "video.twimg.com", pathname: "/**" }, // Twitter/X Video
       { protocol: "https", hostname: "p16-sign-va.tiktokcdn.com", pathname: "/**" }, // TikTok
@@ -66,8 +63,12 @@ const nextConfig = {
       { protocol: "https", hostname: "image.thum.io", pathname: "/**" }, // Thumb.io
       { protocol: "https", hostname: "api.microlink.io", pathname: "/**" }, // Microlink
       { protocol: "https", hostname: "cdn.microlink.io", pathname: "/**" }, // Microlink CDN
+      { protocol: "https", hostname: "cloudfront-us-east-1.images.arcpublishing.com", pathname: "/**" }, // Arc Publishing CloudFront
     ], 
   },
+
+  // Enable Partial Prerendering (PPR)
+  cacheComponents: true,
 
   experimental: {
     webpackBuildWorker: true,

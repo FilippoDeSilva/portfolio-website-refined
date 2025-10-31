@@ -61,11 +61,12 @@ export default function BlogAdmin() {
     if (user && !postsInitialized) {
       fetchPosts();
       setPostsInitialized(true);
-    } else if (!user) {
+    } else if (!user && postsInitialized) {
       setPosts([]);
       setPostsInitialized(false);
     }
-  }, [user, postsInitialized, fetchPosts, setPostsInitialized, setPosts]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, postsInitialized]);
 
   // --- Upload Handlers ---
   async function handleCoverImageUpload(file: File) {
@@ -198,25 +199,30 @@ export default function BlogAdmin() {
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 bg-background text-foreground min-h-screen">
+    <>
       <MediaLightbox
         lightbox={lightbox}
         isPIPActive={isPIPActive}
         onClose={() => setLightbox(null)}
         onPIPChange={setIsPIPActive}
       />
+      
+      {/* Fixed Responsive Header */}
       <TitleBar title="Blog Admin">
         {user && (
           <Button
             variant="ghost"
-            className="ml-4 p-2 rounded-full text-primary dark:text-primary-foreground hover:bg-primary/10 dark:hover:bg-primary/20 hover:scale-110 hover:opacity-80 transition-all duration-150"
+            size="icon"
+            className="rounded-full hover:bg-primary/10 transition-colors"
             onClick={handleLogout}
             aria-label="Sign Out"
           >
-            <LogOut className="w-6 h-6" />
+            <LogOut className="w-5 h-5" />
           </Button>
         )}
       </TitleBar>
+
+      <div className="p-4 sm:p-6 lg:p-8 bg-background text-foreground min-h-screen">
       {authLoading ? (
         <div className="flex items-center justify-center min-h-screen">
           <div className="flex flex-col items-center gap-4">
@@ -254,11 +260,6 @@ export default function BlogAdmin() {
         />
       ) : (
         <div>
-          <div className="mb-4">
-            <span className="text-sm text-gray-500">
-              Logged in as <strong>{user.email}</strong>
-            </span>
-          </div>
           {/* Floating AI button */}
           <Button
             variant="default"
@@ -278,10 +279,23 @@ export default function BlogAdmin() {
             }}
           />
           {/* Responsive layout: editor first on mobile, posts second */}
-          <div className="flex flex-col md:grid md:grid-cols-2 gap-4">
-            {/* Post Editor */}
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
+            {/* Post Editor - Modern Card */}
             <div className="order-1 md:order-none">
-              <PostEditor
+              <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-b border-border px-6 py-4">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    {editingId ? "Edit Post" : "Create New Post"}
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {editingId ? "Update your blog post" : "Share your thoughts with the world"}
+                  </p>
+                </div>
+                <div className="p-6">
+                  <PostEditor
                 form={form}
                 setForm={setForm}
                 content={content}
@@ -313,10 +327,26 @@ export default function BlogAdmin() {
                 onAttachmentFiles={handleAttachmentFiles}
                 onPreviewAttachment={handlePreviewAttachment}
               />
+                </div>
+              </div>
             </div>
-            {/* Posts List */}
+            
+            {/* Posts List - Modern Card */}
             <div className="order-2 md:order-none">
-              <PostsList
+              <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-b border-border px-6 py-4">
+                  <h2 className="text-xl font-semibold flex items-center gap-2">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                    </svg>
+                    All Posts
+                  </h2>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Manage and preview your published content
+                  </p>
+                </div>
+                <div className="p-6">
+                  <PostsList
                 posts={posts}
                 postsLoading={postsLoading}
                 currentPage={currentPage}
@@ -327,8 +357,11 @@ export default function BlogAdmin() {
                   setDeleteModal({ open: true, postId })
                 }
               />
+                </div>
+              </div>
             </div>
           </div>
+          
           <DeleteModal
             isOpen={deleteModal.open}
             isDeleting={deleting}
@@ -371,5 +404,6 @@ export default function BlogAdmin() {
         <Footer />
       </div>
     </div>
+    </>
   );
 }

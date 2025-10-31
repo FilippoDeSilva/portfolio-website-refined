@@ -30,10 +30,9 @@ export function PostsList({
   );
 
   return (
-    <div className="mb-4">
-      <h2 className="text-lg font-semibold mb-4">All Posts</h2>
+    <div>
       {postsLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4">
           {[...Array(postsPerPage)].map((_, i) => (
             <div
               key={i}
@@ -58,7 +57,7 @@ export function PostsList({
         <p className="text-gray-500 text-sm">No posts found.</p>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4">
             {paginatedPosts.map((post) => (
               <Link
                 href={`/blog/${post.id}`}
