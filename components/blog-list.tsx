@@ -189,11 +189,6 @@ export function BlogList({
   showControls?: boolean;
   postsPerPage?: number;
 }) {
-  const [posts, setPosts] = useState<BlogPost[]>([]);
-  const [loading, setLoading] = useState(false); // Start as false, will check cache first
-  const [isRevalidating, setIsRevalidating] = useState(false); // Background refresh indicator
-  const [error, setError] = useState<string | null>(null);
-  
   // Internal state for when controls are shown
   const [internalSearchTerm, setInternalSearchTerm] = useState("");
   const [internalSortBy, setInternalSortBy] = useState<"newest" | "oldest" | "popular">("newest");
@@ -203,6 +198,22 @@ export function BlogList({
   const searchTerm = showControls ? internalSearchTerm : externalSearchTerm;
   const sortBy = showControls ? internalSortBy : externalSortBy;
   const viewMode = showControls ? internalViewMode : externalViewMode;
+  
+  // Initialize state with cached data if available
+  const [posts, setPosts] = useState<BlogPost[]>(() => {
+    const cacheKey = getCacheKey(currentPage, searchTerm, sortBy);
+    const { data: cachedData } = blogCache.getStale<{ posts: BlogPost[]; count: number }>(cacheKey);
+    return cachedData?.posts || [];
+  });
+  
+  const [loading, setLoading] = useState(() => {
+    const cacheKey = getCacheKey(currentPage, searchTerm, sortBy);
+    const hasCachedData = blogCache.has(cacheKey);
+    return !hasCachedData; // Only show loading if no cache
+  });
+  
+  const [isRevalidating, setIsRevalidating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   const router = useRouter();
   

@@ -2,7 +2,7 @@ import { Suspense, use, cache } from "react";
 import { BlogPostContent } from "@/components/blog-post-content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Metadata } from "next";
-import { unstable_cacheLife as cacheLife } from "next/cache";
+import { cacheLife } from "next/cache";
 
 // PPR is enabled globally via cacheComponents in next.config.mjs
 // Using Next.js 16's new caching with cacheLife
