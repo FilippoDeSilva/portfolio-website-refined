@@ -1,11 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import { useState, useRef } from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Github } from "lucide-react"
-import Image from "next/image"
+import { ExternalLink, Github, Star, GitFork } from "lucide-react"
 import Link from "next/link"
 
 interface Project {
@@ -23,141 +21,151 @@ interface Project {
 }
 
 export function ProjectCard({ project }: { project: Project }) {
-  const [isHovered, setIsHovered] = useState(false)
-  const [imgSrc, setImgSrc] = useState(project.image)
-  const [hasError, setHasError] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [imgError, setImgError] = useState(false)
+  const [showAllTags, setShowAllTags] = useState(false)
+  const [isImageHovered, setIsImageHovered] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  // Reset to original image when project changes
-  useEffect(() => {
-    setImgSrc(project.image)
-    setHasError(false)
-  }, [project.image])
-
-  useEffect(() => {
-    console.log("Rendering ProjectCard image src:", imgSrc);
-  }, [imgSrc]);
-
-  // Always reset to screenshot on hover, so user can retry loading screenshot
-  useEffect(() => {
-    if (isHovered && project.image && !hasError) {
-      setImgSrc(project.image)
-    }
-  }, [isHovered, project.image, hasError])
-
-  useEffect(() => {
-    console.log("ProjectCard project prop:", project);
-    console.log("Initial imgSrc for", project.title, ":", project.image);
-  }, [project]);
-
-  function handleImgError(e: React.SyntheticEvent<HTMLImageElement, Event>) {
-    if (!hasError) {
-      setHasError(true);
-      // Fallback: if deployed and screenshot fails, use GitHub OG image
-      if (project.isDeployed && project.githubOgImage && imgSrc !== project.githubOgImage) {
-        setImgSrc(project.githubOgImage);
-        console.warn("Screenshot failed, switching to GitHub OG image for:", project.title, imgSrc);
-      } else if (imgSrc !== "/placeholder.svg") {
-        setImgSrc("/placeholder.svg");
-        console.warn("All images failed, using placeholder for:", project.title, imgSrc);
-      }
-    } else {
-      setImgSrc("/placeholder.svg");
-      console.warn("All image fallbacks failed for:", project.title, imgSrc);
-    }
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+    const rect = cardRef.current.getBoundingClientRect()
+    setMousePosition({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    })
   }
 
-  // Utility to check for valid URL
-  const isValidUrl = (url?: string) => {
-    if (!url) return false;
-    try {
-      new URL(url);
-      return true;
-    } catch {
-      return false;
-    }
-  };
-
-  // Always use the backend-provided image for deployed, GitHub logo for non-deployed
-  const githubLogo = "/github-mark.svg";
-  const computedImgSrc = project.isDeployed && isValidUrl(project.image)
-    ? project.image
-    : githubLogo;
-
-  useEffect(() => {
-    console.log("ProjectCard project prop:", project);
-    console.log("Computed image src for", project.title, ":", computedImgSrc);
-  }, [project, computedImgSrc]);
-
   // Validate URLs
-  const hasValidLiveLink = isValidUrl(project.link) && project.link !== '#';
-  const hasValidGithubLink = isValidUrl(project.github);
+  const hasValidLiveLink = project.link && project.link !== '#'
+  const hasValidGithubLink = project.github && project.github !== '#'
+  
+  // Use screenshot for deployed, GitHub mark for non-deployed
+  const displayImage = imgError 
+    ? '/placeholder.svg' 
+    : (project.isDeployed ? project.image : '/github-mark.svg')
 
   return (
     <Card
-      className="overflow-hidden group h-full flex flex-col border border-border bg-card text-card-foreground transition-all duration-300 hover:shadow-md"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      className="group relative overflow-hidden h-full flex flex-col border-border/50 bg-card/50 backdrop-blur-sm transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
     >
-      <div className="relative aspect-video overflow-hidden">
+      {/* Mouse spotlight effect */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+        style={{
+          background: `radial-gradient(circle 200px at ${mousePosition.x}px ${mousePosition.y}px, rgba(var(--primary-rgb, 99, 102, 241), 0.1), transparent 80%)`,
+        }}
+      />
+
+      {/* Project Image */}
+      <div 
+        className="relative h-48 overflow-hidden bg-muted/20 group/image"
+        onMouseEnter={() => setIsImageHovered(true)}
+        onMouseLeave={() => setIsImageHovered(false)}
+      >
+        {/* Loading Skeleton */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-r from-muted/20 via-muted/40 to-muted/20 animate-pulse">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-shimmer" />
+          </div>
+        )}
+        
         <img
-          src={computedImgSrc}
+          src={displayImage}
           alt={project.title}
-          className={`w-full h-full absolute inset-0 ${project.isDeployed ? 'object-cover' : 'object-contain p-8 dark:invert'}`}
-          style={{ aspectRatio: "16/9", background: !project.isDeployed ? 'transparent' : undefined }}
-          onError={handleImgError}
+          className={`w-full h-full transition-opacity duration-500 ${imageLoaded ? 'opacity-100' : 'opacity-0'} ${project.isDeployed ? 'object-cover' : 'object-contain p-8 dark:brightness-0 dark:invert'}`}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            setImgError(true)
+            setImageLoaded(true)
+          }}
         />
         
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center gap-3"
-        >
-          {hasValidLiveLink && (
-            <Button asChild size="sm">
-              <Link href={project.link!} target="_blank" rel="noopener noreferrer">
-                <svg className="mr-2 size-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" d="M18 13v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                View Live
-              </Link>
-            </Button>
-          )}
+        {/* Theme-aware Overlay on Hover */}
+        <div className={`absolute inset-0 bg-white/70 dark:bg-black/50 transition-opacity duration-300 ${isImageHovered ? 'opacity-100' : 'opacity-0'}`} />
+        
+        {/* Hover Overlay with Actions */}
+        <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 ${isImageHovered ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
           {hasValidGithubLink && (
-            <Button asChild variant={hasValidLiveLink ? "outline" : "default"} size="sm">
+            <Button 
+              asChild 
+              size="sm" 
+              variant="secondary" 
+              className="!bg-secondary hover:!bg-secondary hover:brightness-110 !opacity-100 backdrop-blur-sm transition-all duration-200"
+            >
               <Link href={project.github!} target="_blank" rel="noopener noreferrer">
-                <Github className="mr-2 size-4" />
+                <Github className="w-4 h-4 mr-2" />
                 Code
               </Link>
             </Button>
           )}
-        </motion.div>
-      </div>
-      <CardContent className="p-6 flex flex-col flex-1">
-        <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-        <p className="text-muted-foreground mb-4 flex-1">{project.description}</p>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {(project.tags || []).map((tag: string) => (
-            <span
-              key={tag}
-              className="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
+          {hasValidLiveLink && (
+            <Button 
+              asChild 
+              size="sm" 
+              className="!bg-primary hover:!bg-primary hover:brightness-110 !opacity-100 backdrop-blur-sm transition-all duration-200"
             >
-              {tag}
-            </span>
-          ))}
+              <Link href={project.link!} target="_blank" rel="noopener noreferrer">
+                <ExternalLink className="w-4 h-4 mr-2" />
+                Live
+              </Link>
+            </Button>
+          )}
         </div>
-        {/* GitHub stats */}
-        {(project.stars !== undefined || project.forks !== undefined) && (
-          <div className="flex gap-4 mt-auto text-xs text-muted-foreground">
-            {project.stars !== undefined && (
-              <span title="Stars">⭐ {project.stars}</span>
-            )}
-            {project.forks !== undefined && (
-              <span title="Forks">🍴 {project.forks}</span>
-            )}
-            {project.watchers !== undefined && (
-              <span title="Watchers">👁️ {project.watchers}</span>
-            )}
+      </div>
+
+      <CardContent className="relative p-6 flex flex-col flex-1 z-10">
+        {/* Title & Description */}
+        <h3 className="text-xl font-semibold mb-2">{project.title}</h3>
+        <p className="text-muted-foreground text-sm mb-4 flex-1 line-clamp-3">
+          {project.description || "No description available"}
+        </p>
+
+        {/* Tags - Collapsible */}
+        {project.tags && project.tags.length > 0 && (
+          <div className="mb-4">
+            <div className="flex flex-wrap gap-1.5">
+              {(showAllTags ? project.tags : project.tags.slice(0, 4)).map((tag: string) => (
+                <span
+                  key={tag}
+                  className="text-xs px-2 py-0.5 rounded bg-muted/60 text-muted-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
+              {project.tags.length > 4 && (
+                <button
+                  onClick={() => setShowAllTags(!showAllTags)}
+                  className="text-xs px-2 py-0.5 text-primary hover:text-primary/80 transition-colors"
+                >
+                  {showAllTags ? 'Show less' : `+${project.tags.length - 4} more`}
+                </button>
+              )}
+            </div>
           </div>
         )}
+
+        {/* Stats & Actions */}
+        <div className="flex items-center pt-4 border-t border-border/50">
+          {/* GitHub Stats */}
+          <div className="flex gap-3 text-xs text-muted-foreground">
+            {project.stars !== undefined && (
+              <span className="flex items-center gap-1">
+                <Star className="w-3 h-3" />
+                {project.stars}
+              </span>
+            )}
+            {project.forks !== undefined && (
+              <span className="flex items-center gap-1">
+                <GitFork className="w-3 h-3" />
+                {project.forks}
+              </span>
+            )}
+          </div>
+        </div>
       </CardContent>
     </Card>
   )

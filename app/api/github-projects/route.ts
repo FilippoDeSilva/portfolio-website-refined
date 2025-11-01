@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   const mapped = filtered.map((repo: any) => {
     const isDeployed = repo.homepage && repo.homepage !== '' && repo.homepage !== '#';
     const projectImage = isDeployed
-      ? `https://api.microlink.io/?url=${encodeURIComponent(repo.homepage)}&screenshot=true&meta=false&embed=screenshot.url`
+      ? `https://api.microlink.io/?url=${encodeURIComponent(repo.homepage)}&screenshot=true&meta=false&embed=screenshot.url&delay=5000&viewport.width=1920&viewport.height=1080&viewport.deviceScaleFactor=2&screenshot.type=jpeg`
       : `https://opengraph.githubassets.com/1/${repo.owner.login}/${repo.name}`;
     console.log('[Project Mapping]', {
       name: repo.name,

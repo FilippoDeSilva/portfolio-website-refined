@@ -11,28 +11,30 @@ interface ProjectsSectionProps {
 export const ProjectsSection = forwardRef<HTMLElement, ProjectsSectionProps>(
   ({ githubProjects }, ref) => {
     return (
-      <section id="projects" className="py-24" ref={ref}>
+      <section id="projects" className="py-32" ref={ref}>
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16"
+            className="max-w-4xl mx-auto"
           >
-            <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-sm text-primary mb-6">
-              Portfolio
+            {/* Section Label */}
+            <div className="mb-12">
+              <span className="text-sm font-medium text-primary">Projects</span>
+              <h2 className="text-3xl sm:text-4xl font-bold mt-2 mb-4">
+                Selected Work
+              </h2>
+              <div className="w-12 h-1 bg-primary"></div>
             </div>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl mb-4">
-              Selected Projects
-            </h2>
-            <p className="max-w-2xl mx-auto text-muted-foreground">
-              A collection of my most impactful works, showcasing my approach
-              to solving complex problems.
-            </p>
-          </motion.div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <p className="text-lg text-muted-foreground leading-relaxed mb-12">
+              A collection of my most impactful projects, showcasing my approach to solving 
+              complex problems with clean code and thoughtful design.
+            </p>
+
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {githubProjects.length > 0 ? (
               githubProjects.map((repo: any, index: number) => {
                 return (
@@ -82,7 +84,8 @@ export const ProjectsSection = forwardRef<HTMLElement, ProjectsSectionProps>(
                 ))}
               </>
             )}
-          </div>
+            </div>
+          </motion.div>
         </div>
       </section>
     );
