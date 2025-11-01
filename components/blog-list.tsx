@@ -24,53 +24,49 @@ const MemoizedBlogCard = memo(({ post, viewMode }: { post: BlogPost; viewMode: "
   if (viewMode === "list") {
     return (
       <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.3 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
         className="group cursor-pointer"
         onClick={handleClick}
       >
-        <div className="relative bg-card border border-border/50 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-lg hover:shadow-black/5 transition-all duration-300">
-          <div className="flex gap-4 sm:gap-6 p-4 sm:p-5">
+        <div className="relative bg-card border border-border/50 rounded-2xl overflow-hidden hover:border-primary/50 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300">
+          <div className="flex flex-col sm:flex-row gap-0 sm:gap-6">
             {/* Thumbnail */}
-            <div className="relative w-24 sm:w-40 h-24 sm:h-28 rounded-xl flex-shrink-0 overflow-hidden bg-muted">
+            <div className="relative w-full sm:w-72 h-48 sm:h-auto flex-shrink-0 overflow-hidden bg-muted">
               {post.cover_image ? (
-                <>
-                  <img
-                    src={post.cover_image}
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent opacity-60 group-hover:opacity-40 transition-opacity duration-300" />
-                </>
+                <img
+                  src={post.cover_image}
+                  alt={post.title}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                  <FileText className="w-8 h-8 text-primary/40" />
+                  <FileText className="w-12 h-12 text-primary/40" />
                 </div>
               )}
             </div>
             
             {/* Content */}
-            <div className="flex-1 min-w-0 flex flex-col justify-between">
+            <div className="flex-1 min-w-0 flex flex-col justify-between p-6 sm:py-6 sm:pr-6 sm:pl-0">
               <div>
-                <h3 className="text-base sm:text-lg font-bold text-foreground mb-1.5 sm:mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-300">
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300">
                   {post.title}
                 </h3>
                 {post.content && (
-                  <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-2 mb-3">
-                    {getContentPreview(post.content, 30)}
+                  <p className="text-muted-foreground text-sm sm:text-base leading-relaxed line-clamp-3 mb-4">
+                    {getContentPreview(post.content, 50)}
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-3 sm:gap-4 text-xs text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">{formatDate(post.created_at)}</span>
-                  <span className="sm:hidden">{formatDate(post.created_at).split(' ')[0]}</span>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground pt-4 border-t border-border/50">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4" />
+                  <span>{formatDate(post.created_at)}</span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  {post.view_count ?? 0}
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="w-4 h-4" />
+                  <span>{post.view_count ?? 0} views</span>
                 </div>
               </div>
             </div>
@@ -538,7 +534,7 @@ export function BlogList({
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6 max-w-5xl mx-auto">
             {filteredPosts.map((post) => (
               <MemoizedBlogCard 
                 key={post.id}

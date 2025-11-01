@@ -47,106 +47,110 @@ export default function BlogPage() {
     <>
     <main className="flex-1 pt-2">
       <TitleBar title="Blog"/>
-      <section className="py-16 sm:py-24 bg-background">
-        <div className="container mx-auto px-4 max-w-7xl">
-          {/* Header Section */}
-          <div className="text-center mb-12">
-            <motion.div
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary mb-6 backdrop-blur-sm">
-                <span className="relative flex h-2 w-2 mr-2">
+      <section className="py-24 sm:py-32">
+        <div className="container mx-auto px-4 max-w-6xl">
+          {/* Hero Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-20"
+          >
+            <div className="max-w-4xl mx-auto">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
+                <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
                 </span>
                 Blog
               </div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              <h1 className="text-xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight mb-6 leading-[1.1]">
                 Latest Stories
               </h1>
-              <p className="max-w-2xl mx-auto text-base sm:text-lg text-muted-foreground leading-relaxed">
+              <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 Thoughts, stories, and ideas from the things that spark my curiosity.
               </p>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
 
-          {/* Search and Controls - Right Aligned on Large Screens */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-end gap-4 mb-8">
-            {/* Controls Container - Right Aligned on Large Screens */}
-            <motion.div 
-              initial={{ opacity: 1, y: 0 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="w-full lg:w-auto"
-            >
-              <div className="flex flex-col sm:flex-row gap-3 w-full lg:justify-end">
-                {/* Search Input */}
-                <div className="relative w-full lg:w-80">
-                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                  <Input
-                    type="text"
-                    placeholder="Search posts..."
-                    value={searchTerm}
-                    onChange={handleSearchChange}
-                    className="pl-10 h-10 text-sm w-full rounded-xl border-border/50 bg-background/50 backdrop-blur-sm focus:border-primary/50 transition-colors"
+          {/* Modern Controls */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="mb-16"
+          >
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-4xl mx-auto">
+              {/* Search */}
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Search posts..."
+                  value={searchTerm}
+                  onChange={handleSearchChange}
+                  className="pl-11 h-12 text-sm rounded-full border-border bg-muted/30 hover:bg-muted/50 focus:bg-background transition-colors"
+                />
+              </div>
+
+              {/* Controls Group */}
+              <div className="flex items-center gap-3">
+                {/* Sort Dropdown */}
+                <div className="relative">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => {
+                      handleSortChange(e.target.value as "newest" | "oldest" | "popular");
+                      setIsDropdownOpen(false);
+                    }}
+                    onMouseDown={(e) => {
+                      if (isDropdownOpen) {
+                        e.preventDefault();
+                        setIsDropdownOpen(false);
+                      } else {
+                        setIsDropdownOpen(true);
+                      }
+                    }}
+                    onBlur={() => setIsDropdownOpen(false)}
+                    className="appearance-none h-12 pl-4 pr-10 text-sm font-medium bg-muted/30 hover:bg-muted/50 border border-border rounded-full focus:outline-none focus:border-primary transition-colors cursor-pointer [&>option]:rounded-lg [&>option]:py-2 [&>option]:px-4"
+                  >
+                    <option value="newest" className="rounded-lg">Newest</option>
+                    <option value="oldest" className="rounded-lg">Oldest</option>
+                    <option value="popular" className="rounded-lg">Popular</option>
+                  </select>
+                  <ChevronDown 
+                    className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none transition-transform duration-200 ${
+                      isDropdownOpen ? 'rotate-180' : 'rotate-0'
+                    }`} 
                   />
                 </div>
 
-                {/* Controls row */}
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  {/* Sort Dropdown */}
-                  <div className="relative w-full sm:w-auto">
-                    <select
-                      value={sortBy}
-                      onChange={(e) => {
-                        handleSortChange(e.target.value as "newest" | "oldest" | "popular");
-                        setIsDropdownOpen(false);
-                      }}
-                      onMouseDown={(e) => {
-                        if (isDropdownOpen) {
-                          e.preventDefault();
-                          setIsDropdownOpen(false);
-                        } else {
-                          setIsDropdownOpen(true);
-                        }
-                      }}
-                      onBlur={() => setIsDropdownOpen(false)}
-                      className="appearance-none h-10 pl-4 pr-10 text-sm font-medium bg-background border border-border hover:border-primary/50 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-full sm:w-auto transition-all cursor-pointer"
-                    >
-                      <option value="newest">Newest First</option>
-                      <option value="oldest">Oldest First</option>
-                      <option value="popular">Most Popular</option>
-                    </select>
-                    <ChevronDown 
-                      className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none transition-transform duration-300 ease-out ${
-                        isDropdownOpen ? 'rotate-180' : 'rotate-0'
-                      }`} 
-                    />
-                  </div>
-
-                  {/* View Mode Toggle */}
-                  <div className="flex bg-muted/50 backdrop-blur-sm rounded-xl p-1 border border-border/50">
-                    <Button
-                      variant={viewMode === "grid" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => handleViewModeChange("grid")}
-                      className="h-8 w-9 p-0 rounded-lg"
-                    >
-                      <Grid3X3 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant={viewMode === "list" ? "default" : "ghost"}
-                      size="sm"
-                      onClick={() => handleViewModeChange("list")}
-                      className="h-8 w-9 p-0 rounded-lg"
-                    >
-                      <List className="w-4 h-4" />
-                    </Button>
-                  </div>
+                {/* View Toggle */}
+                <div className="flex items-center bg-muted/30 rounded-full p-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleViewModeChange("grid")}
+                    className={`h-10 w-10 p-0 rounded-full transition-all ${
+                      viewMode === "grid" ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    <Grid3X3 className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleViewModeChange("list")}
+                    className={`h-10 w-10 p-0 rounded-full transition-all ${
+                      viewMode === "list" ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-muted/50'
+                    }`}
+                  >
+                    <List className="w-4 h-4" />
+                  </Button>
                 </div>
               </div>
-            </motion.div>
-          </div>
+            </div>
+          </motion.div>
 
           <BlogList 
             currentPage={currentPage} 
