@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { parseBuffer } from 'music-metadata';
 import sharp from 'sharp';
@@ -8,16 +8,15 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
+export async function POST(req: NextRequest) {
   try {
-    const { audioUrl, audioName } = req.body;
+    const { audioUrl, audioName } = await req.json();
 
     if (!audioUrl || !audioName) {
-      return res.status(400).json({ error: 'audioUrl and audioName are required' });
+      return NextResponse.json(
+        { error: 'audioUrl and audioName are required' },
+        { status: 400 }
+      );
     }
 
     // Download the audio file from Supabase
@@ -33,7 +32,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const metadata = await parseBuffer(buffer);
     
     if (!metadata.common.picture || metadata.common.picture.length === 0) {
-      return res.status(404).json({ error: 'No embedded artwork found in audio file' });
+      return NextResponse.json(
+        { error: 'No embedded artwork found in audio file' },
+        { status: 404 }
+      );
     }
 
     // Get the first available picture (usually the album art)
@@ -63,7 +65,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (uploadError) {
       console.error('Thumbnail upload error:', uploadError);
-      return res.status(500).json({ error: 'Failed to upload thumbnail' });
+      return NextResponse.json(
+        { error: 'Failed to upload thumbnail' },
+        { status: 500 }
+      );
     }
 
     // Get the public URL for the uploaded thumbnail
@@ -83,7 +88,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       thumbnailPath
     };
 
-    return res.status(200).json({
+    return NextResponse.json({
       success: true,
       thumbnail: {
         url: thumbnailUrl,
@@ -95,17 +100,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   } catch (error: any) {
     console.error('Thumbnail extraction error:', error);
-    return res.status(500).json({ 
-      error: 'Failed to extract thumbnail', 
-      details: error.message 
-    });
+    return NextResponse.json(
+      { 
+        error: 'Failed to extract thumbnail', 
+        details: error.message 
+      },
+      { status: 500 }
+    );
   }
-}
-
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-  },
 }

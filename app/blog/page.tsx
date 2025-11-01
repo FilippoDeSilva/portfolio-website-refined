@@ -7,7 +7,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { Footer } from "@/components/footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, Grid3X3, List } from "lucide-react";
+import { Search, ChevronDown, Grid3X3, List } from "lucide-react";
 const POSTS_PER_PAGE = 8;
 
 export default function BlogPage() {
@@ -16,6 +16,7 @@ export default function BlogPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"newest" | "oldest" | "popular">("newest");
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const totalPages = Math.ceil(totalPosts / POSTS_PER_PAGE);
 
@@ -94,15 +95,34 @@ export default function BlogPage() {
                 {/* Controls row */}
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   {/* Sort Dropdown */}
-                  <select
-                    value={sortBy}
-                    onChange={(e) => handleSortChange(e.target.value as "newest" | "oldest" | "popular")}
-                    className="h-10 px-4 text-sm bg-background/50 backdrop-blur-sm border border-border/50 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50 w-full sm:w-auto transition-all"
-                  >
-                    <option value="newest">Newest First</option>
-                    <option value="oldest">Oldest First</option>
-                    <option value="popular">Most Popular</option>
-                  </select>
+                  <div className="relative w-full sm:w-auto">
+                    <select
+                      value={sortBy}
+                      onChange={(e) => {
+                        handleSortChange(e.target.value as "newest" | "oldest" | "popular");
+                        setIsDropdownOpen(false);
+                      }}
+                      onMouseDown={(e) => {
+                        if (isDropdownOpen) {
+                          e.preventDefault();
+                          setIsDropdownOpen(false);
+                        } else {
+                          setIsDropdownOpen(true);
+                        }
+                      }}
+                      onBlur={() => setIsDropdownOpen(false)}
+                      className="appearance-none h-10 pl-4 pr-10 text-sm font-medium bg-background border border-border hover:border-primary/50 rounded-xl focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 w-full sm:w-auto transition-all cursor-pointer"
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="popular">Most Popular</option>
+                    </select>
+                    <ChevronDown 
+                      className={`absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none transition-transform duration-300 ease-out ${
+                        isDropdownOpen ? 'rotate-180' : 'rotate-0'
+                      }`} 
+                    />
+                  </div>
 
                   {/* View Mode Toggle */}
                   <div className="flex bg-muted/50 backdrop-blur-sm rounded-xl p-1 border border-border/50">
