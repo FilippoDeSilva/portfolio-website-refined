@@ -14,8 +14,7 @@ import ShinyText from "./ui/shiny-text"
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
+    name: "",
     email: "",
     subject: "",
     message: "",
@@ -34,13 +33,24 @@ export function ContactForm() {
     e.preventDefault()
     setIsSubmitting(true)
 
+    // Split name into firstName and lastName
+    const nameParts = formData.name.trim().split(' ')
+    const firstName = nameParts[0] || ''
+    const lastName = nameParts.slice(1).join(' ') || ''
+
     try {
       const response = await fetch("/api/contact", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        }),
       })
 
       if (response.ok) {
@@ -50,8 +60,7 @@ export function ContactForm() {
           variant: "default",
         })
         setFormData({
-          firstName: "",
-          lastName: "",
+          name: "",
           email: "",
           subject: "",
           message: "",
@@ -71,76 +80,67 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <label htmlFor="firstName" className="text-sm font-medium">
-            First name
+          <label htmlFor="name" className="text-sm font-medium text-foreground flex items-center gap-2">
+            Name
           </label>
           <Input
-            id="firstName"
-            placeholder="John"
+            id="name"
+            placeholder="John Doe"
             required
-            className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary/20"
-            value={formData.firstName}
+            className="h-11 bg-background border-border hover:border-primary/50 focus:border-primary transition-colors"
+            value={formData.name}
             onChange={handleChange}
           />
         </div>
+        
         <div className="space-y-2">
-          <label htmlFor="lastName" className="text-sm font-medium">
-            Last name
+          <label htmlFor="email" className="text-sm font-medium text-foreground flex items-center gap-2">
+            Email
           </label>
           <Input
-            id="lastName"
-            placeholder="Doe"
+            id="email"
+            type="email"
+            placeholder="john@example.com"
             required
-            className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary/20"
-            value={formData.lastName}
+            className="h-11 bg-background border-border hover:border-primary/50 focus:border-primary transition-colors"
+            value={formData.email}
             onChange={handleChange}
           />
         </div>
       </div>
+      
       <div className="space-y-2">
-        <label htmlFor="email" className="text-sm font-medium">
-          Email
-        </label>
-        <Input
-          id="email"
-          type="email"
-          placeholder="john.doe@example.com"
-          required
-          className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary/20"
-          value={formData.email}
-          onChange={handleChange}
-        />
-      </div>
-      <div className="space-y-2">
-        <label htmlFor="subject" className="text-sm font-medium">
+        <label htmlFor="subject" className="text-sm font-medium text-foreground flex items-center gap-2">
           Subject
         </label>
         <Input
           id="subject"
           placeholder="Project Inquiry"
           required
-          className="border-border/50 bg-background/50 focus:border-primary focus:ring-primary/20"
+          className="h-11 bg-background border-border hover:border-primary/50 focus:border-primary transition-colors"
           value={formData.subject}
           onChange={handleChange}
         />
       </div>
+      
       <div className="space-y-2">
-        <label htmlFor="message" className="text-sm font-medium">
+        <label htmlFor="message" className="text-sm font-medium text-foreground flex items-center gap-2">
           Message
         </label>
         <Textarea
           id="message"
           placeholder="Tell me about your project..."
           required
-          className="min-h-[120px] border-border/50 bg-background/50 focus:border-primary focus:ring-primary/20"
+          className="min-h-[120px] resize-none bg-background border-2 border-border hover:border-primary/50 focus:border-primary transition-colors"
           value={formData.message}
           onChange={handleChange}
         />
       </div>
-      <Button type="submit" className="w-full group" disabled={isSubmitting}>
+      
+      <Button type="submit" className="w-full group shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300" disabled={isSubmitting}>
         {isSubmitting ? (
           <span className="flex items-center">
             <svg
