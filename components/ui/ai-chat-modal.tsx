@@ -215,6 +215,18 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
     }
   }, [messages, streamedContent, open]);
 
+  // Global ESC key handler
+  useEffect(() => {
+    const handleEscKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && open) {
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleEscKey);
+    return () => window.removeEventListener('keydown', handleEscKey);
+  }, [open, onClose]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -543,6 +555,20 @@ The final post should be polished and require little to no editing before publis
     onClose();
   }
 
+  // Delete a specific message (and its response if it's a user message)
+  function deleteMessage(index: number) {
+    setMessages(prev => {
+      const newMessages = [...prev];
+      // If deleting a user message, also delete the next assistant message if it exists
+      if (newMessages[index].role === 'user' && newMessages[index + 1]?.role === 'assistant') {
+        newMessages.splice(index, 2);
+      } else {
+        newMessages.splice(index, 1);
+      }
+      return newMessages;
+    });
+  }
+
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -865,7 +891,11 @@ The final post should be polished and require little to no editing before publis
                   <span className="ml-2">Insert to editor</span>
                 </div>
               </div>
-              <div className="mt-3 text-xs opacity-75">💡 Tip: Click the + button on any AI response to insert it into your blog editor</div>
+              <div className="mt-3 space-y-1 text-xs opacity-75">
+                <div>💡 <strong>Tip:</strong> Click the + button on any AI response to insert it into your blog editor</div>
+                <div>🗑️ <strong>Tip:</strong> Hover over any message to delete it (deletes user message + AI response together)</div>
+                <div>⌨️ <strong>Tip:</strong> Press ESC anywhere to close this modal</div>
+              </div>
             </div>
           )}
           
@@ -881,11 +911,20 @@ The final post should be polished and require little to no editing before publis
           {/* AI/Chat messages */}
           {messages.map((msg, idx) => {
             return (
-              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-2 duration-300`}>
+              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-2 duration-300 group`}>
                 <div className={`relative rounded-2xl px-5 py-3 max-w-[80%] whitespace-pre-line break-words shadow-sm ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-card dark:bg-zinc-800/80 text-foreground border border-border/50"}`}>
                   {msg.role === "assistant" ? (
                     <>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
+                      <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button
+                          className="p-1.5 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-110"
+                          title="Delete this message"
+                          onClick={() => deleteMessage(idx)}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                       <button
                         className="absolute bottom-0 -right-2 p-1 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all duration-200 hover:scale-110"
                         title="Insert this response into the blog editor"
@@ -896,6 +935,15 @@ The final post should be polished and require little to no editing before publis
                     </>
                   ) : (
                     <>
+                      <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                        <button
+                          className="p-1.5 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-110"
+                          title="Delete this message and its response"
+                          onClick={() => deleteMessage(idx)}
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                       {msg.attachedFiles && msg.attachedFiles.length > 0 && (
                         <div className="mb-3 space-y-2">
                           {msg.attachedFiles.map((file, fileIdx) => (
