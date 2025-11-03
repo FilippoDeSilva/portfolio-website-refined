@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff, Lock, Mail, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface LoginFormProps {
@@ -9,6 +9,7 @@ interface LoginFormProps {
   loginLoading: boolean;
   loginError: string | null;
   setLoginError: (error: string | null) => void;
+  userName?: string | null;
 }
 
 export function LoginForm({
@@ -16,6 +17,7 @@ export function LoginForm({
   loginLoading,
   loginError,
   setLoginError,
+  userName,
 }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -56,33 +58,28 @@ export function LoginForm({
         className="w-full max-w-md mx-4 relative z-10"
       >
         <div className="rounded-3xl bg-gradient-to-br from-background/95 via-background/90 to-background/95 backdrop-blur-2xl shadow-2xl border border-border/50 p-8 sm:p-10">
-          {/* Header with Icon */}
+          {/* Header */}
           <div className="text-center mb-8">
-            <motion.div
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-              className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-blue-500/20 mb-4"
-            >
-              <Lock className="w-8 h-8 text-primary" />
-            </motion.div>
             <motion.h2
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-3xl sm:text-4xl font-bold mb-2 bg-gradient-to-r from-primary via-blue-500 to-primary bg-clip-text text-transparent"
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-2xl sm:text-3xl font-bold text-foreground mb-2"
             >
-              Admin Portal
+              Welcome back,
             </motion.h2>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="text-sm sm:text-base text-muted-foreground flex items-center justify-center gap-2"
-            >
-              <Sparkles className="w-4 h-4" />
-              Welcome back! Sign in to continue
-            </motion.p>
+            <div className="min-h-[2rem] sm:min-h-[2.5rem]">
+              {userName && (
+                <motion.p
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3, duration: 0.5 }}
+                  className="text-xl sm:text-2xl font-semibold bg-gradient-to-r from-primary via-blue-500 to-primary bg-clip-text text-transparent"
+                >
+                  {userName.split(" ")[0]}
+                </motion.p>
+              )}
+            </div>
           </div>
           <motion.form
             onSubmit={onLogin}
@@ -106,8 +103,9 @@ export function LoginForm({
                   name="email"
                   id="email"
                   required
-                  className="w-full rounded-xl border-2 border-border bg-background/50 pl-12 pr-4 py-3 text-base focus:outline-none focus:border-primary focus:bg-background transition-all duration-200 hover:border-primary/50"
+                  className="w-full rounded-xl border-2 border-border bg-background/50 pl-12 pr-4 py-3 text-base outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-primary focus:bg-background transition-all duration-200 hover:border-primary/50"
                   placeholder="admin@example.com"
+                  style={{ boxShadow: 'none' }}
                 />
               </div>
             </div>
@@ -127,8 +125,9 @@ export function LoginForm({
                   name="password"
                   id="password"
                   required
-                  className="w-full rounded-xl border-2 border-border bg-background/50 pl-12 pr-12 py-3 text-base focus:outline-none focus:border-primary focus:bg-background transition-all duration-200 hover:border-primary/50"
+                  className="w-full rounded-xl border-2 border-border bg-background/50 pl-12 pr-12 py-3 text-base outline-none focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 focus:border-primary focus:bg-background transition-all duration-200 hover:border-primary/50"
                   placeholder="••••••••"
+                  style={{ boxShadow: 'none' }}
                 />
                 <button
                   type="button"

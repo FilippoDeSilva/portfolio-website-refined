@@ -8,6 +8,7 @@ import { LogOut, Sparkles } from "lucide-react";
 import AIChatModal from "@/components/ui/ai-chat-modal";
 import { Footer } from "@/components/footer";
 import { BlogUploadService } from "@/services/blog-upload.service";
+import { useUserLocationInfo } from "@/components/userLocationInfo";
 import {
   LoginForm,
   PostEditor,
@@ -31,6 +32,7 @@ export default function BlogAdmin() {
   
   // Custom hooks
   const { user, authLoading, loginLoading, loginError, setLoginError, handleLogin, handleLogout } = useAuth();
+  const userInfo = useUserLocationInfo();
   const { posts, setPosts, postsLoading, postsInitialized, setPostsInitialized, currentPage, setCurrentPage, fetchPosts } = useBlogAdmin();
   const { content, setContent, editingId, setEditingId } = useBlogEditor();
   const {
@@ -267,6 +269,7 @@ export default function BlogAdmin() {
           loginLoading={loginLoading}
           loginError={loginError}
           setLoginError={setLoginError}
+          userName={userInfo?.name}
         />
       ) : (
         <div>

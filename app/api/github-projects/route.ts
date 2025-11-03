@@ -19,7 +19,8 @@ export async function GET(req: NextRequest) {
     "portfolio-website",
     "dotfiles",
     "Next.js-Docs",
-    "yaya-wallet"
+    "yaya-wallet",
+    "portfolio-website-refined"
   ];
   const filtered = data.filter((repo: any) => !repo.fork && !excludedNames.includes(repo.name));
   // Map to include only relevant fields, including stars, forks, etc.
