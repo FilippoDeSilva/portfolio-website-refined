@@ -476,30 +476,42 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
       {editor && (
         <BubbleMenu
           editor={editor}
-          tippyOptions={{ 
-            duration: 100, 
+          shouldShow={({ editor, state }) => {
+            // Only show when there's a text selection
+            const { from, to } = state.selection;
+            const isTextSelected = from !== to;
+            
+            // Check if selection is within the editor
+            const isInEditor = editor.view.hasFocus();
+            
+            return isTextSelected && isInEditor;
+          }}
+          tippyOptions={{
+            duration: 100,
             placement: 'top',
             maxWidth: 'none',
-            appendTo: () => document.body,
             popperOptions: {
+              strategy: 'absolute',
               modifiers: [
                 {
                   name: 'preventOverflow',
                   options: {
-                    boundary: 'viewport',
+                    boundary: 'clippingAncestors',
                     padding: 8,
+                    altAxis: true,
                   },
                 },
                 {
                   name: 'flip',
                   options: {
                     fallbackPlacements: ['bottom', 'top'],
+                    padding: 8,
                   },
                 },
               ],
             },
           }}
-          className="bg-popover border border-border rounded-lg shadow-xl p-1.5 flex flex-wrap gap-1 items-center z-50 max-w-[600px] overflow-x-auto"
+          className="bg-popover border border-border rounded-lg shadow-xl p-1 xs:p-1.5 flex flex-wrap gap-0.5 xs:gap-1 items-center z-[9999] max-w-[calc(100vw-16px)] xs:max-w-[600px] overflow-hidden"
         >
           {/* Text Formatting */}
           <ToolbarButton
@@ -838,7 +850,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
       </div>
 
       {/* Editor Content */}
-      <div className="overflow-auto max-h-[600px]">
+      <div className="overflow-auto max-h-[600px] relative">
         <EditorContent editor={editor} />
       </div>
 
