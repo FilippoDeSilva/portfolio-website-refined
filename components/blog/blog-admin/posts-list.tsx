@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BlogCard } from "@/components/blog-card";
+import { BlogCard } from "@/components/blog";
 import { Pagination } from "@/components/ui/pagination";
 
 interface PostsListProps {

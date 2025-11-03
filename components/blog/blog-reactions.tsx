@@ -4,7 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Heart, ThumbsUp, SmilePlus, Flame, Sparkles, Lightbulb, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BlogMeta } from "@/components/blog-meta";
+import { BlogMeta } from "@/components/blog";
 
 interface BlogReactionsProps {
   postId: string;

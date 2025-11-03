@@ -1,5 +1,5 @@
 import { Suspense, use, cache } from "react";
-import { BlogPostContent } from "@/components/blog-post-content";
+import { BlogPostContent } from "@/components/blog/blog-post-content";
 import { supabase } from "@/lib/supabaseClient";
 import type { Metadata } from "next";
 import { cacheLife } from "next/cache";
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
 
     if (!posts) return [];
 
-    return posts.map((post) => ({
+    return posts.map((post: { id: string }) => ({
       id: post.id,
     }));
   } catch (error) {

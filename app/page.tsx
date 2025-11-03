@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useEffect, useState, Suspense } from "react";
-import { useUserLocationInfo } from "@/components/userLocationInfo";
-import TitleBar from "@/components/titlebar";
-import { Footer } from "@/components/footer";
+import { useUserLocationInfo } from "@/components/shared";
+import TitleBar from "@/components/layout/titlebar";
+import { Footer } from "@/components/layout";
 import { HeroSection } from "@/components/sections/hero-section";
 import { AboutSection } from "@/components/sections/about-section";
 import { SkillsSection } from "@/components/sections/skills-section";

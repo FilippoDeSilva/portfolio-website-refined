@@ -8,8 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Send } from "lucide-react"
 import { useToast } from "@/components/ui/use-toast"
-import Typewriter from "./fancy/text/typewriter"
-import ShinyText from "./ui/shiny-text"
+// import Typewriter from "./fancy/text/typewriter"
+import ShinyText from "@/components/ui/shiny-text"
 
 export function ContactForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)

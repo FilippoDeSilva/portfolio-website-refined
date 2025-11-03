@@ -1,10 +1,10 @@
 "use client"
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { BlogList } from "@/components/blog-list";
-import TitleBar from "@/components/titlebar";
+import { BlogList } from "@/components/blog";
+import TitleBar from "@/components/layout/titlebar";
 import { Pagination } from "@/components/ui/pagination";
-import { Footer } from "@/components/footer";
+import { Footer } from "@/components/layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, ChevronDown, Grid3X3, List, Check } from "lucide-react";

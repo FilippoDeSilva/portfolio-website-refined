@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { MoveDown } from "lucide-react";
-import { ContactForm } from "@/components/contact-form";
+import { ContactForm } from "@/components/shared";
 import { SocialLinks } from "./social-links";
 
 export function ContactSection() {

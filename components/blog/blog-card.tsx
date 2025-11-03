@@ -4,7 +4,7 @@ import { Trash2, Edit3, Eye, Clock, FileText, Play, Music, Image as ImageIcon, V
 import { motion } from "framer-motion";
 import { BlogReactions } from "./blog-reactions";
 import BlogComments from "./blog-comments";
-import MediaModal from "./ui/media-modal";
+import MediaModal from "@/components/ui/media-modal";
 
 export type BlogPost = {
   fire: number;
@@ -395,6 +395,7 @@ export function BlogCard({
                   wow: post.wow || 0,
                   coffee: post.coffee || 0,
                 }}
+                viewCount={post.view_count || 0}
               />
               <BlogComments postId={post.id} />
             </div>

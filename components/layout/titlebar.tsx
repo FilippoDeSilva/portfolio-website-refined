@@ -3,11 +3,11 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { Menu, User, X, LogOut } from "lucide-react";
-import { useUserLocationInfo } from "@/components/userLocationInfo";
+import { useUserLocationInfo } from "@/components/shared";
 import { usePathname, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { useIsMobile } from "@/components/ui/use-mobile";
-import { BrandLogo } from "./brand-logo";
+import { BrandLogo } from "@/components/shared/brand-logo";
 
 const NAV_ITEMS = [
   { id: "home", label: "Home", href: "/#" },

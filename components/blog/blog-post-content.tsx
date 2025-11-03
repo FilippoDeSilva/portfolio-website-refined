@@ -3,21 +3,21 @@
 import { useEffect, useState, Suspense } from "react";
 import { useTheme } from "next-themes";
 import { supabase } from "@/lib/supabaseClient";
-import { BlogPost } from "@/components/blog-card";
-import BlogComments from "@/components/blog-comments";
-import { BlogReactions } from "@/components/blog-reactions";
+import { BlogPost } from "@/components/blog/blog-card";
+import BlogComments from "@/components/blog/blog-comments";
+import { BlogReactions } from "@/components/blog/blog-reactions";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { BlogList } from "@/components/blog-list";
+import { BlogList } from "@/components/blog";
 import Image from "next/image";
 import ImageViewer from "@/components/ui/image-viewer";
 import NativeVideoPlayer from "@/components/ui/native-video-player";
 import NativeAudioPlayer from "@/components/ui/native-audio-player";
-import { BlogContentProcessor } from "@/components/blog-content-processor";
-import { AttachmentGalleryModal } from "@/components/attachment-gallery-modal";
-import { CustomAudioPlayer } from "@/components/custom-audio-player";
-import { CustomVideoPlayer } from "@/components/custom-video-player";
-import { LinkPreviewCard } from "@/components/link-preview-card";
+import { BlogContentProcessor } from "@/components/blog";
+import { AttachmentGalleryModal } from "@/components/media";
+import { CustomAudioPlayer } from "@/components/media";
+import { CustomVideoPlayer } from "@/components/media";
+import { LinkPreviewCard } from "@/components/media";
 import { blogCache, getPostCacheKey } from "@/lib/blog-cache";
 
 interface BlogPostContentProps {
@@ -91,7 +91,9 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
     if (!post?.attachments) return;
 
     const fetchAudioThumbnails = async () => {
-      const audioAttachments = post.attachments?.filter((att: any) => att.type?.includes('audio'));
+      if (!post.attachments) return;
+      
+      const audioAttachments = post.attachments.filter((att: any) => att.type?.includes('audio'));
       
       for (let i = 0; i < post.attachments.length; i++) {
         const att = post.attachments[i];
@@ -192,7 +194,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
         .select("view_count")
         .eq("id", post.id)
         .single()
-        .then(({ data }) => {
+        .then(({ data }: { data: { view_count: number } | null }) => {
           if (data && typeof data.view_count === "number") {
             setPost((prev) =>
               prev ? { ...prev, view_count: data.view_count } : prev

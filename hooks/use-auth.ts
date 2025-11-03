@@ -9,7 +9,7 @@ export function useAuth() {
 
   useEffect(() => {
     // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }: any) => {
       if (session && session.user) {
         setUser({ email: session.user.email || "" });
       } else {
@@ -20,7 +20,7 @@ export function useAuth() {
 
     // Listen for auth state changes
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (_event: any, session: any) => {
         if (session && session.user) {
           setUser({ email: session.user.email || "" });
         } else {

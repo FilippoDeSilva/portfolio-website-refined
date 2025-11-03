@@ -2,20 +2,20 @@
 
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import TitleBar from "@/components/titlebar";
+import { TitleBar } from "@/components/layout";
 import { Button } from "@/components/ui/button";
 import { LogOut, Sparkles } from "lucide-react";
 import AIChatModal from "@/components/ui/ai-chat-modal";
-import { Footer } from "@/components/footer";
+import { Footer } from "@/components/layout";
 import { BlogUploadService } from "@/services/blog-upload.service";
-import { useUserLocationInfo } from "@/components/userLocationInfo";
+import { useUserLocationInfo } from "@/components/shared";
 import {
   LoginForm,
   PostEditor,
   PostsList,
   DeleteModal,
   MediaLightbox,
-} from "@/components/blog-admin";
+} from "@/components/blog/blog-admin";
 import {
   useAuth,
   useBlogAdmin,
@@ -23,7 +23,7 @@ import {
   useBlogForm,
   useMediaLightbox,
 } from "@/hooks";
-import type { AdvancedEditorRef } from "@/components/blog-admin/advanced-editor";
+import type { AdvancedEditorRef } from "@/components/blog/blog-admin/advanced-editor";
 
 
 export default function BlogAdmin() {

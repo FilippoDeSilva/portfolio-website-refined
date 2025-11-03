@@ -2,7 +2,7 @@
 
 import { forwardRef } from "react";
 import { motion } from "framer-motion";
-import { ProjectCard } from "@/components/project-card";
+import { ProjectCard } from "@/components/shared";
 
 interface ProjectsSectionProps {
   githubProjects: any[];

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { SkillCard } from "@/components/skill-card";
+import { SkillCard } from "@/components/shared";
 import { skills } from "@/lib/constants";
 
 export function SkillsSection() {
