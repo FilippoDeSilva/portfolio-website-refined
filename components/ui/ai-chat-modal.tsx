@@ -10,6 +10,7 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  attachedFiles?: Array<{name: string; content: string; type: string}>;
 }
 
 interface Chat {
@@ -409,7 +410,12 @@ export default function AIChatModal({ open, onClose, onInsert }: { open: boolean
 
     if (!activeChatId) startNewChat();
 
-    const userMessage: Message = { role: "user", content: input, timestamp: new Date() };
+    const userMessage: Message = { 
+      role: "user", 
+      content: input, 
+      timestamp: new Date(),
+      attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined
+    };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     
@@ -575,8 +581,8 @@ The final post should be polished and require little to no editing before publis
   if (!open) return null;
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-2 xs:p-3 sm:p-4 animate-in fade-in duration-200" onClick={onClose}>
-      <div className="bg-gradient-to-br from-background via-background to-muted/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-xl sm:rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[95vh] sm:h-[90vh] max-h-[850px]" onClick={(e) => e.stopPropagation()} style={{ animation: 'none' }}>
-        <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 xs:py-4 sm:py-5 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 backdrop-blur-sm">
+      <div className="bg-background dark:bg-zinc-900 rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[95vh] sm:h-[90vh] max-h-[850px]" onClick={(e) => e.stopPropagation()} style={{ animation: 'none' }}>
+        <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 xs:py-4 sm:py-5 border-b border-border/50 bg-primary/5 rounded-t-2xl">
           <div className="flex items-center gap-2 xs:gap-3 font-bold text-base xs:text-lg sm:text-xl">
             <div className="relative">
               <Sparkles className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 text-primary animate-pulse" />
@@ -633,7 +639,7 @@ The final post should be polished and require little to no editing before publis
         
         {/* History panel */}
         {showHistory && (
-          <div className="absolute right-2 xs:right-3 top-14 xs:top-16 bottom-2 xs:bottom-3 w-64 xs:w-72 bg-white dark:bg-zinc-800 border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
+          <div className="absolute right-2 xs:right-3 top-14 xs:top-16 bottom-2 xs:bottom-3 w-64 xs:w-72 bg-background dark:bg-zinc-800 border border-border rounded-2xl shadow-xl z-50 overflow-hidden flex flex-col">
             <div className="px-4 py-3 border-b border-border flex items-center justify-between">
               <div>
                 <span className="text-sm font-semibold">Chat History</span>
@@ -763,7 +769,7 @@ The final post should be polished and require little to no editing before publis
         )}
         
         {/* Model Selection UI */}
-        <div className="px-3 xs:px-4 sm:px-6 py-2 xs:py-3 border-b border-border/50 bg-gradient-to-r from-muted/10 via-muted/20 to-muted/10">
+        <div className="px-3 xs:px-4 sm:px-6 py-2 xs:py-3 border-b border-border/50 bg-muted/10">
           <div className="flex items-center justify-between gap-2">
             <div className="min-w-0 flex-1">
               <span className="text-xs xs:text-sm font-medium text-muted-foreground">AI Model:</span>
@@ -775,7 +781,7 @@ The final post should be polished and require little to no editing before publis
               <button
                 type="button"
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
-                className="flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1.5 xs:py-2 text-xs xs:text-sm bg-white dark:bg-zinc-800 border border-border rounded-md hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
+                className="flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1.5 xs:py-2 text-xs xs:text-sm bg-background dark:bg-zinc-800 border border-border rounded-xl hover:bg-muted/50 dark:hover:bg-zinc-700 transition-colors"
               >
                 <span className="font-medium truncate max-w-[80px] xs:max-w-none">
                   {availableModels.find(m => m.id === selectedModel)?.name}
@@ -784,7 +790,7 @@ The final post should be polished and require little to no editing before publis
               </button>
               
               {showModelDropdown && (
-                <div className="absolute right-0 top-full mt-1 w-64 bg-white dark:bg-zinc-800 border border-border rounded-md shadow-lg z-10">
+                <div className="absolute right-0 top-full mt-1 w-64 bg-background dark:bg-zinc-800 border border-border rounded-2xl shadow-lg z-10 overflow-hidden">
                   {availableModels.map((model) => (
                     <button
                       key={model.id}
@@ -819,7 +825,7 @@ The final post should be polished and require little to no editing before publis
 
         <div 
           ref={scrollContainerRef}
-          className="ai-chat-scroll-container flex-1 min-h-0 px-3 xs:px-4 sm:px-6 py-3 xs:py-4 space-y-3 xs:space-y-4 bg-gradient-to-b from-muted/20 to-muted/5"
+          className="ai-chat-scroll-container flex-1 min-h-0 px-3 xs:px-4 sm:px-6 py-3 xs:py-4 space-y-3 xs:space-y-4 bg-muted/5"
           style={{ overflow: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}
         >
           {messages.length === 0 && !streamedContent && (
@@ -876,7 +882,7 @@ The final post should be polished and require little to no editing before publis
           {messages.map((msg, idx) => {
             return (
               <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in slide-in-from-bottom-2 duration-300`}>
-                <div className={`relative rounded-2xl px-5 py-3 max-w-[80%] whitespace-pre-line break-words shadow-sm ${msg.role === "user" ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground" : "bg-white dark:bg-zinc-800/80 text-gray-900 dark:text-gray-100 border border-border/50 backdrop-blur-sm"}`}>
+                <div className={`relative rounded-2xl px-5 py-3 max-w-[80%] whitespace-pre-line break-words shadow-sm ${msg.role === "user" ? "bg-primary text-primary-foreground" : "bg-card dark:bg-zinc-800/80 text-foreground border border-border/50"}`}>
                   {msg.role === "assistant" ? (
                     <>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
@@ -889,9 +895,21 @@ The final post should be polished and require little to no editing before publis
                       </button>
                     </>
                   ) : (
-                    msg.content
+                    <>
+                      {msg.attachedFiles && msg.attachedFiles.length > 0 && (
+                        <div className="mb-3 space-y-2">
+                          {msg.attachedFiles.map((file, fileIdx) => (
+                            <div key={fileIdx} className="flex items-center gap-2 px-3 py-2 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-sm">
+                              <FileText className="w-4 h-4" />
+                              <span className="max-w-[200px] truncate">{file.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {msg.content}
+                    </>
                   )}
-                  <div className="text-xs text-muted-foreground mt-2 opacity-60">
+                  <div className="text-xs opacity-60 mt-2">
                     {msg.timestamp.toLocaleTimeString()}
                   </div>
                 </div>
@@ -933,10 +951,10 @@ The final post should be polished and require little to no editing before publis
         
         {/* Attached Files Preview */}
         {attachedFiles.length > 0 && (
-          <div className="px-6 py-3 border-t border-border/50 bg-gradient-to-r from-primary/5 to-muted/10 backdrop-blur-sm">
+          <div className="px-6 py-3 border-t border-border/50 bg-primary/5">
             <div className="flex flex-wrap gap-2">
               {attachedFiles.map((file, idx) => (
-                <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-background/80 border border-border/50 rounded-xl text-sm shadow-sm backdrop-blur-sm hover:shadow-md transition-shadow duration-200">
+                <div key={idx} className="flex items-center gap-2 px-3 py-2 bg-card border border-border/50 rounded-xl text-sm shadow-sm hover:shadow-md transition-shadow duration-200">
                   <FileText className="w-4 h-4 text-primary" />
                   <span className="max-w-[150px] truncate">{file.name}</span>
                   <button
@@ -952,7 +970,7 @@ The final post should be polished and require little to no editing before publis
         )}
         
         <form
-          className="px-6 py-4 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background backdrop-blur-sm"
+          className="px-6 py-4 border-t border-border/50 bg-muted/5 rounded-b-2xl"
           onSubmit={e => { e.preventDefault(); if (!loading) handleSend(); }}
         >
           <div className="flex items-end gap-2">
@@ -979,7 +997,7 @@ The final post should be polished and require little to no editing before publis
             <div className="flex-1 relative">
               <textarea
                 ref={textareaRef}
-                className="ai-chat-textarea w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-white/50 dark:bg-zinc-900/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 max-h-[200px] shadow-sm hover:shadow-md"
+                className="ai-chat-textarea w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-background dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 placeholder:text-muted-foreground max-h-[200px] shadow-sm hover:shadow-md"
                 rows={1}
                 placeholder="Message AI Assistant..."
                 value={input}

@@ -338,7 +338,7 @@ export default function BlogAdmin() {
             
             {/* Posts List - Modern Card */}
             <div className="order-2 md:order-none md:sticky md:top-6">
-              <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col" style={{ minHeight: '800px' }}>
+              <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col" style={{ height: '800px' }}>
                 <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-b border-border px-6 py-4">
                   <h2 className="text-xl font-semibold flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,7 +350,7 @@ export default function BlogAdmin() {
                     Manage and preview your published content
                   </p>
                 </div>
-                <div className="p-6 flex-1 flex flex-col">
+                <div className="p-6 flex-1 flex flex-col min-h-0">
                   <PostsList
                 posts={posts}
                 postsLoading={postsLoading}
