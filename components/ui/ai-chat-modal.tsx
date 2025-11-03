@@ -924,7 +924,7 @@ The final post should be polished and require little to no editing before publis
                         <Plus className="w-4 h-4" />
                       </button>
                       <button
-                        className="absolute bottom-3 -right-12 opacity-0 group-hover:opacity-100 group-hover:-right-10 p-2 rounded-lg transition-all duration-300 ease-out hover:scale-110"
+                        className="absolute bottom-3 -right-10 -translate-x-16 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 p-2 rounded-lg transition-all duration-300 ease-out hover:scale-110"
                         title="Delete this message"
                         onClick={() => deleteMessage(idx)}
                       >
@@ -948,7 +948,7 @@ The final post should be polished and require little to no editing before publis
                       )}
                       {msg.content}
                       <button
-                        className="absolute bottom-3 -left-12 opacity-0 group-hover:opacity-100 group-hover:-left-10 p-2 rounded-lg transition-all duration-300 ease-out hover:scale-110"
+                        className="absolute bottom-3 -left-10 translate-x-16 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 p-2 rounded-lg transition-all duration-300 ease-out hover:scale-110"
                         title="Delete this message and its response"
                         onClick={() => deleteMessage(idx)}
                       >
