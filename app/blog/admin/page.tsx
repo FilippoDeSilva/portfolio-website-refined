@@ -215,7 +215,10 @@ export default function BlogAdmin() {
       />
       
       {/* Fixed Responsive Header */}
-      <TitleBar title="Blog Admin">
+      <TitleBar 
+        title="Blog Admin"
+        onLogout={user ? handleLogout : undefined}
+      >
         {user && (
           <Button
             variant="ghost"
