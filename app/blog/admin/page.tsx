@@ -214,9 +214,9 @@ export default function BlogAdmin() {
         onPIPChange={setIsPIPActive}
       />
       
-      {/* Fixed Responsive Header */}
+      {/* Header */}
       <TitleBar 
-        title="Blog Admin"
+        title=""
         onLogout={user ? handleLogout : undefined}
       >
         {user && (

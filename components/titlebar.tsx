@@ -117,7 +117,7 @@ export default function TitleBar({
           </div>
 
           <span className="hidden xs:block text-base sm:text-lg font-medium tracking-tight truncate max-w-[120px] sm:max-w-[200px]">
-            {userInfo?.name ? <>{userInfo?.name || title}</> : title}
+            {userInfo?.name || ""}
           </span>
         </Link>
         <nav className="hidden md:flex gap-8">

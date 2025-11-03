@@ -58,21 +58,6 @@ export function BrandLogo({ name }: { name?: string | null }) {
           {initials}
         </motion.text>
       </motion.svg>
-
-      <AnimatePresence>
-        {name && (
-          <motion.span
-            key={name}
-            initial={{ opacity: 0, x: 0 }}
-            animate={{ opacity: 1, x: 3 }}
-            exit={{ opacity: 0, x: 0 }}
-            transition={{ delay: 1, duration: 0.6, ease: "easeOut" }}
-            className="absolute left-full ml-1 whitespace-nowrap text-lg font-medium tracking-tight text-gray-800 dark:text-white"
-          >
-            {name}
-          </motion.span>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
