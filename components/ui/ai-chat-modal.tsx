@@ -632,6 +632,7 @@ The final post should be polished and require little to no editing before publis
               className="p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 focus:outline-none transition-all duration-200 hover:scale-110"
               title="Chat history"
               aria-label="Chat history"
+              style={{ outline: 'none' }}
             >
               <History className="w-4 h-4 xs:w-5 xs:h-5" />
             </button>
@@ -640,6 +641,7 @@ The final post should be polished and require little to no editing before publis
               className="hidden xs:block p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
               title="New chat"
               aria-label="New chat"
+              style={{ outline: 'none' }}
             >
               <Plus className="w-4 h-4 xs:w-5 xs:h-5" />
             </button>
@@ -649,6 +651,7 @@ The final post should be polished and require little to no editing before publis
                 className="hidden xs:block p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
                 title="Clear current chat"
                 aria-label="Clear chat"
+                style={{ outline: 'none' }}
               >
                 <Trash2 className="w-4 h-4 xs:w-5 xs:h-5" />
               </button>
@@ -657,6 +660,7 @@ The final post should be polished and require little to no editing before publis
               onClick={onClose}
               className="p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
               aria-label="Close"
+              style={{ outline: 'none' }}
             >
               <X className="w-5 h-5 xs:w-6 xs:h-6" />
             </button>
@@ -1044,14 +1048,14 @@ The final post should be polished and require little to no editing before publis
             <div className="flex-1 relative">
               <textarea
                 ref={textareaRef}
-                className="ai-chat-textarea w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-background dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/50 transition-all duration-200 placeholder:text-muted-foreground max-h-[200px] shadow-sm hover:shadow-md"
+                className="focus:ring-2 ai-chat-textarea w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-background dark:bg-zinc-900 focus:outline-none focus:border-primary/50 transition-all duration-200 placeholder:text-muted-foreground max-h-[200px] shadow-sm hover:shadow-md"
                 rows={1}
                 placeholder="Message AI Assistant..."
                 value={input}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 disabled={loading}
-                style={{ minHeight: '56px' }}
+                style={{ minHeight: '56px', outline: 'none' }}
               />
               {/* Send button inside textarea */}
               {streaming ? (
