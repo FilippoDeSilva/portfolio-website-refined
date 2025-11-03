@@ -27,56 +27,56 @@ export function AttachmentsGrid({
   onRemove,
 }: AttachmentsGridProps) {
   return (
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className="mt-4 grid grid-cols-1 gap-2 sm:gap-3">
       {attachments.map((att, idx) => {
         return (
           <div
             key={idx}
-            className="group relative flex items-center gap-3 rounded-xl bg-gradient-to-br from-card to-muted/50 p-4 border border-border hover:border-primary/50 shadow-sm hover:shadow-md transition-all duration-200"
+            className="group relative flex items-center gap-2 sm:gap-3 rounded-xl bg-gradient-to-br from-card to-muted/50 p-3 sm:p-4 border border-border hover:border-primary/50 shadow-sm hover:shadow-md transition-all duration-200"
           >
             {/* File Icon */}
-            <div className="flex-shrink-0 p-3 bg-background rounded-lg border border-border">
+            <div className="flex-shrink-0 p-2 sm:p-3 bg-background rounded-lg border border-border">
               {getFileIcon(att.type, att.ext)}
             </div>
             
             {/* File Info */}
             <div className="min-w-0 flex-1">
-              <div className="truncate text-sm font-semibold text-foreground mb-1">
+              <div className="truncate text-xs sm:text-sm font-semibold text-foreground mb-1">
                 {att.name}
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+                <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
                   {att.type || att.ext || "file"}
                 </span>
               </div>
             </div>
             
             {/* Action Buttons */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <button
                 type="button"
-                className="p-2 rounded-lg hover:bg-background border border-transparent hover:border-border transition-all"
+                className="p-1.5 sm:p-2 rounded-lg hover:bg-background border border-transparent hover:border-border transition-all"
                 onClick={() => onPreview?.(att)}
                 title="Preview"
               >
-                <Eye className="w-4 h-4 text-muted-foreground hover:text-foreground" />
+                <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground hover:text-foreground" />
               </button>
               <a
                 href={att.url}
                 download={att.name || true}
-                className="p-2 rounded-lg hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all"
+                className="p-1.5 sm:p-2 rounded-lg hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all"
                 title="Download"
               >
-                <Download className="w-4 h-4 text-primary" />
+                <Download className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
               </a>
               <button
                 type="button"
                 onClick={() => onRemove(idx)}
-                className="p-2 rounded-lg hover:bg-destructive/10 border border-transparent hover:border-destructive/20 transition-all"
+                className="p-1.5 sm:p-2 rounded-lg hover:bg-destructive/10 border border-transparent hover:border-destructive/20 transition-all"
                 aria-label="Remove Attachment"
                 title="Remove"
               >
-                <Trash2 className="w-4 h-4 text-muted-foreground hover:text-destructive" />
+                <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground hover:text-destructive" />
               </button>
             </div>
           </div>

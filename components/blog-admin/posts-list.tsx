@@ -30,7 +30,7 @@ export function PostsList({
   );
 
   return (
-    <div>
+    <div className="relative flex flex-col h-full pb-16">
       {postsLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4">
           {[...Array(postsPerPage)].map((_, i) => (
@@ -54,33 +54,39 @@ export function PostsList({
           ))}
         </div>
       ) : posts.length === 0 ? (
-        <p className="text-gray-500 text-sm">No posts found.</p>
+        <div className="flex-1 flex items-center justify-center">
+          <p className="text-gray-500 text-sm">No posts found.</p>
+        </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4">
-            {paginatedPosts.map((post) => (
-              <Link
-                href={`/blog/${post.id}`}
-                key={post.id}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block group"
-              >
-                <BlogCard
-                  post={post}
-                  previewOnly={true}
-                  onEdit={() => onEdit(post)}
-                  onDelete={() => onDelete(post.id)}
-                />
-              </Link>
-            ))}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-4 gap-4">
+          {paginatedPosts.map((post) => (
+            <Link
+              href={`/blog/${post.id}`}
+              key={post.id}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block group"
+            >
+              <BlogCard
+                post={post}
+                previewOnly={true}
+                onEdit={() => onEdit(post)}
+                onDelete={() => onDelete(post.id)}
+              />
+            </Link>
+          ))}
+        </div>
+      )}
+      
+      {/* Fixed Pagination at Bottom */}
+      {!postsLoading && posts.length > 0 && (
+        <div className="absolute bottom-0 left-0 right-0">
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={onPageChange}
           />
-        </>
+        </div>
       )}
     </div>
   );

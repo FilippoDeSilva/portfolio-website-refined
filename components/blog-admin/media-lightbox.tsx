@@ -27,7 +27,7 @@ export function MediaLightbox({
 
   return (
     <div
-      className={`fixed inset-0 z-50 grid place-items-center p-4 transition-opacity duration-200 ${
+      className={`fixed inset-0 z-50 grid place-items-center p-2 sm:p-4 transition-opacity duration-200 ${
         lightbox.type?.startsWith("video")
           ? isPIPActive
             ? "bg-transparent opacity-0 pointer-events-none"
@@ -43,7 +43,7 @@ export function MediaLightbox({
             className={
               isPIPActive
                 ? "absolute -left-[9999px] w-[1px] h-[1px] opacity-0 pointer-events-none"
-                : "w-full h-[60vh] sm:h-[70vh] rounded-xl overflow-hidden"
+                : "w-full h-[50vh] sm:h-[60vh] md:h-[70vh] rounded-xl overflow-hidden"
             }
             onClose={() => {
               onClose();
@@ -52,7 +52,7 @@ export function MediaLightbox({
             onPIPChange={onPIPChange}
           />
         ) : lightbox.type?.startsWith("audio") ? (
-          <div className="relative w-full max-w-2xl mx-auto">
+          <div className="relative w-full max-w-2xl mx-auto px-2 sm:px-0">
             <NativeAudioPlayer
               src={lightbox.src}
               name={lightbox.name}
@@ -65,7 +65,7 @@ export function MediaLightbox({
           <ImageViewer
             src={lightbox.src}
             alt={lightbox.name}
-            className="w-full h-[60vh] sm:h-[70vh] rounded-xl overflow-hidden"
+            className="w-full h-[50vh] sm:h-[60vh] md:h-[70vh] rounded-xl overflow-hidden"
             onClose={onClose}
           />
         )}

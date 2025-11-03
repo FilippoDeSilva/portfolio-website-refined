@@ -574,66 +574,66 @@ The final post should be polished and require little to no editing before publis
 
   if (!open) return null;
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-200" onClick={onClose}>
-      <div className="bg-gradient-to-br from-background via-background to-muted/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[90vh] max-h-[850px]" onClick={(e) => e.stopPropagation()} style={{ animation: 'none' }}>
-        <div className="flex items-center justify-between px-6 py-5 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 backdrop-blur-sm">
-          <div className="flex items-center gap-3 font-bold text-xl">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md flex items-center justify-center p-2 xs:p-3 sm:p-4 animate-in fade-in duration-200" onClick={onClose}>
+      <div className="bg-gradient-to-br from-background via-background to-muted/30 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 rounded-xl sm:rounded-2xl shadow-2xl max-w-3xl w-full p-0 relative flex flex-col border border-border/50 h-[95vh] sm:h-[90vh] max-h-[850px]" onClick={(e) => e.stopPropagation()} style={{ animation: 'none' }}>
+        <div className="flex items-center justify-between px-3 xs:px-4 sm:px-6 py-3 xs:py-4 sm:py-5 border-b border-border/50 bg-gradient-to-r from-primary/5 via-primary/10 to-primary/5 backdrop-blur-sm">
+          <div className="flex items-center gap-2 xs:gap-3 font-bold text-base xs:text-lg sm:text-xl">
             <div className="relative">
-              <Sparkles className="w-7 h-7 text-primary animate-pulse" />
-              <div className="absolute inset-0 w-7 h-7 text-primary animate-ping opacity-20" />
+              <Sparkles className="w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 text-primary animate-pulse" />
+              <div className="absolute inset-0 w-5 h-5 xs:w-6 xs:h-6 sm:w-7 sm:h-7 text-primary animate-ping opacity-20" />
             </div>
-            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">AI Writing Assistant</span>
+            <span className="bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent truncate">AI Writing Assistant</span>
             {isAuthenticated && (
-              <span className="text-xs bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 px-3 py-1.5 rounded-full font-medium backdrop-blur-sm">
+              <span className="hidden xs:inline-block text-[10px] xs:text-xs bg-green-500/10 border border-green-500/20 text-green-600 dark:text-green-400 px-2 xs:px-3 py-1 xs:py-1.5 rounded-full font-medium backdrop-blur-sm">
                 🔒 Synced
               </span>
             )}
             {!isAuthenticated && !authLoading && (
-              <span className="text-xs bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-3 py-1.5 rounded-full font-medium backdrop-blur-sm">
+              <span className="hidden xs:inline-block text-[10px] xs:text-xs bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-400 px-2 xs:px-3 py-1 xs:py-1.5 rounded-full font-medium backdrop-blur-sm">
                 💾 Local Only
               </span>
             )}
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 xs:gap-2">
             <button
               onClick={() => setShowHistory(v => !v)}
-              className="p-2.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 focus:outline-none transition-all duration-200 hover:scale-110"
+              className="p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-primary hover:bg-primary/10 focus:outline-none transition-all duration-200 hover:scale-110"
               title="Chat history"
               aria-label="Chat history"
             >
-              <History className="w-5 h-5" />
+              <History className="w-4 h-4 xs:w-5 xs:h-5" />
             </button>
             <button
               onClick={startNewChat}
-              className="p-2.5 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
+              className="hidden xs:block p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-green-600 hover:bg-green-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
               title="New chat"
               aria-label="New chat"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4 xs:w-5 xs:h-5" />
             </button>
             {messages.length > 0 && (
               <button
                 onClick={clearChat}
-                className="p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
+                className="hidden xs:block p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
                 title="Clear current chat"
                 aria-label="Clear chat"
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="w-4 h-4 xs:w-5 xs:h-5" />
               </button>
             )}
             <button
               onClick={onClose}
-              className="p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
+              className="p-1.5 xs:p-2 sm:p-2.5 rounded-lg text-muted-foreground hover:text-red-600 hover:bg-red-500/10 focus:outline-none transition-all duration-200 hover:scale-110"
               aria-label="Close"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 xs:w-6 xs:h-6" />
             </button>
           </div>
         </div>
         
         {/* History panel */}
         {showHistory && (
-          <div className="absolute right-3 top-16 bottom-3 w-72 bg-white dark:bg-zinc-800 border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
+          <div className="absolute right-2 xs:right-3 top-14 xs:top-16 bottom-2 xs:bottom-3 w-64 xs:w-72 bg-white dark:bg-zinc-800 border border-border rounded-lg shadow-xl z-50 overflow-hidden flex flex-col">
             <div className="px-4 py-3 border-b border-border flex items-center justify-between">
               <div>
                 <span className="text-sm font-semibold">Chat History</span>
@@ -763,24 +763,24 @@ The final post should be polished and require little to no editing before publis
         )}
         
         {/* Model Selection UI */}
-        <div className="px-6 py-3 border-b border-border/50 bg-gradient-to-r from-muted/10 via-muted/20 to-muted/10">
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-sm font-medium text-muted-foreground">AI Model:</span>
-              <p className="text-xs text-muted-foreground mt-1">
+        <div className="px-3 xs:px-4 sm:px-6 py-2 xs:py-3 border-b border-border/50 bg-gradient-to-r from-muted/10 via-muted/20 to-muted/10">
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0 flex-1">
+              <span className="text-xs xs:text-sm font-medium text-muted-foreground">AI Model:</span>
+              <p className="text-[10px] xs:text-xs text-muted-foreground mt-0.5 xs:mt-1 truncate">
                 {availableModels.find(m => m.id === selectedModel)?.description}
               </p>
             </div>
-            <div className="relative model-dropdown">
+            <div className="relative model-dropdown flex-shrink-0">
               <button
                 type="button"
                 onClick={() => setShowModelDropdown(!showModelDropdown)}
-                className="flex items-center gap-2 px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-border rounded-md hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
+                className="flex items-center gap-1 xs:gap-2 px-2 xs:px-3 py-1.5 xs:py-2 text-xs xs:text-sm bg-white dark:bg-zinc-800 border border-border rounded-md hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
               >
-                <span className="font-medium">
+                <span className="font-medium truncate max-w-[80px] xs:max-w-none">
                   {availableModels.find(m => m.id === selectedModel)?.name}
                 </span>
-                <ChevronDown className="w-4 h-4" />
+                <ChevronDown className="w-3 h-3 xs:w-4 xs:h-4 flex-shrink-0" />
               </button>
               
               {showModelDropdown && (
@@ -819,13 +819,13 @@ The final post should be polished and require little to no editing before publis
 
         <div 
           ref={scrollContainerRef}
-          className="ai-chat-scroll-container flex-1 min-h-0 px-6 py-4 space-y-4 bg-gradient-to-b from-muted/20 to-muted/5"
+          className="ai-chat-scroll-container flex-1 min-h-0 px-3 xs:px-4 sm:px-6 py-3 xs:py-4 space-y-3 xs:space-y-4 bg-gradient-to-b from-muted/20 to-muted/5"
           style={{ overflow: 'auto', overflowX: 'hidden', WebkitOverflowScrolling: 'touch' }}
         >
           {messages.length === 0 && !streamedContent && (
             <div className="text-center text-muted-foreground text-sm space-y-3">
               <div className="mb-2 text-base font-semibold">⌨️ Keyboard Shortcuts</div>
-              <div className="grid grid-cols-2 gap-2 max-w-md mx-auto text-xs">
+              <div className="grid grid-cols-1 xs:grid-cols-2 gap-2 max-w-md mx-auto text-xs">
                 <div className="bg-background/50 p-2 rounded border border-border">
                   <kbd className="px-2 py-1 bg-muted rounded text-xs font-mono">Enter</kbd>
                   <span className="ml-2">Send message</span>

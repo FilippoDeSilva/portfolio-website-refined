@@ -37,10 +37,10 @@ export function AttachmentUpload({
       </label>
 
       {/* Upload Section */}
-      <div className="rounded-xl border-2 border-dashed border-border hover:border-primary/50 transition-colors p-4 bg-gradient-to-br from-muted/30 to-muted/10">
-        <div className="flex flex-col sm:flex-row gap-3">
+      <div className="rounded-xl border-2 border-dashed border-border hover:border-primary/50 transition-colors p-3 sm:p-4 bg-gradient-to-br from-muted/30 to-muted/10">
+        <div className="flex flex-col gap-3">
           {/* Upload Button */}
-          <label className="cursor-pointer group flex-shrink-0">
+          <label className="cursor-pointer group w-full">
             <input
               type="file"
               multiple
@@ -49,20 +49,20 @@ export function AttachmentUpload({
               }}
               className="sr-only"
             />
-            <div className="flex items-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-lg border border-primary/30 transition-all group-hover:scale-105">
+            <div className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary/10 hover:bg-primary/20 rounded-lg border border-primary/30 transition-all group-hover:scale-105 w-full">
               <Paperclip className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">
+              <span className="text-xs sm:text-sm font-medium text-primary">
                 Upload Files
               </span>
             </div>
           </label>
 
           {/* URL Input */}
-          <div className="flex-1 flex gap-2">
+          <div className="flex flex-col xs:flex-row gap-2 w-full">
             <input
               type="text"
               placeholder="Or paste file URL..."
-              className="flex-1 px-3 py-2 border border-border rounded-lg text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+              className="flex-1 px-3 py-2 border border-border rounded-lg text-xs sm:text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all min-w-0"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => {
@@ -76,7 +76,7 @@ export function AttachmentUpload({
               type="button"
               onClick={handleAddUrl}
               disabled={!urlInput.trim()}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-sm font-medium"
+              className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all text-xs sm:text-sm font-medium whitespace-nowrap"
             >
               Add
             </button>
