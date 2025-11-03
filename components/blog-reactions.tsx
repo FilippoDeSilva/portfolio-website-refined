@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
-import { Heart, ThumbsUp, Laugh, Flame, Sparkles, Coffee, Star } from "lucide-react";
+import { Heart, ThumbsUp, SmilePlus, Flame, Sparkles, Lightbulb, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BlogMeta } from "@/components/blog-meta";
@@ -120,16 +120,6 @@ export function BlogReactions({
       activeColor: "bg-pink-100 dark:bg-pink-900/50 border-pink-300 dark:border-pink-700"
     },
     {
-      key: "laugh" as const,
-      // label: "Laugh",
-      icon: Laugh,
-      color: "text-yellow-500",
-      bgColor: "bg-yellow-50 dark:bg-yellow-950/30",
-      borderColor: "border-yellow-200 dark:border-yellow-800",
-      hoverColor: "hover:bg-yellow-100 dark:hover:bg-yellow-900/50",
-      activeColor: "bg-yellow-100 dark:bg-yellow-900/50 border-yellow-300 dark:border-yellow-700"
-    },
-    {
       key: "fire" as const,
       // label: "Fire",
       icon: Flame,
@@ -142,18 +132,18 @@ export function BlogReactions({
     {
       key: "wow" as const,
      // label: "Wow",
-      icon: Sparkles,
-      color: "text-purple-500",
-      bgColor: "bg-purple-50 dark:bg-purple-950/30",
-      borderColor: "border-purple-200 dark:border-purple-800",
-      hoverColor: "hover:bg-purple-100 dark:hover:bg-purple-900/50",
-      activeColor: "bg-purple-100 dark:bg-purple-900/50 border-purple-300 dark:border-purple-700"
+      icon: Lightbulb,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-50 dark:bg-yellow-950/30",
+      borderColor: "border-yellow-200 dark:border-yellow-800",
+      hoverColor: "hover:bg-yellow-100 dark:hover:bg-yellow-900/50",
+      activeColor: "bg-yellow-100 dark:bg-yellow-900/50 border-yellow-300 dark:border-yellow-700"
     },
     {
-      key: "coffee" as const,
-      // label: "Coffee",
-      icon: Coffee,
-      color: "text-amber-600",
+      key: "laugh" as const,
+      // label: "Laugh",
+      icon: SmilePlus,
+      color: "text-amber-500",
       bgColor: "bg-amber-50 dark:bg-amber-950/30",
       borderColor: "border-amber-200 dark:border-amber-800",
       hoverColor: "hover:bg-amber-100 dark:hover:bg-amber-900/50",
@@ -213,8 +203,8 @@ export function BlogReactions({
     <div className="space-y-4 w-full">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         {/* Reaction Buttons */}
-        <div className="flex flex-wrap items-center gap-3">
-          {reactionTypes.map(({ key, icon: Icon, color, bgColor, borderColor, hoverColor, activeColor }) => {
+        <div className="flex flex-wrap items-center gap-2">
+          {reactionTypes.map(({ key, icon: Icon, color }) => {
             const isActive = userReacted === key;
             const isAnimatingThis = isAnimating === key;
             const count = reactions[key];
@@ -224,20 +214,19 @@ export function BlogReactions({
                 key={key}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="relative"
               >
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="sm"
                   onClick={() => handleReact(key)}
-                  className={`
-                    h-10 px-4 rounded-full border-2 transition-all duration-300 font-medium
-                    ${isActive ? 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 shadow-lg' : `${bgColor} ${borderColor} ${hoverColor} shadow-sm hover:shadow-md`}
-                    group
-                  `}
+                  className={`h-9 px-3 rounded-full transition-all ${
+                    isActive 
+                      ? 'bg-primary/10 border border-primary/20' 
+                      : 'hover:bg-muted'
+                  }`}
                   disabled={isAnimatingThis}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <motion.div
                       animate={isAnimatingThis ? {
                         scale: [1, 1.3, 1],
@@ -246,25 +235,16 @@ export function BlogReactions({
                       transition={{ duration: 0.6, ease: "easeOut" }}
                     >
                       <Icon 
-                        className={`w-5 h-5 transition-all duration-300 ${
-                          isActive 
-                            ? `${color}` 
-                            : `${color} fill-transparent hover:fill-current hover:opacity-70`
-                        }`} 
-                        fill={isActive ? "currentColor" : "none"}
-                        style={isActive ? { color: color.replace('text-', '').replace('-500', '') === 'yellow' ? '#eab308' : undefined } : undefined}
+                        className={`w-4 h-4 transition-all ${isActive ? color : 'text-muted-foreground'}`}
+                        strokeWidth={isActive ? 2.5 : 2}
                       />
                     </motion.div>
                     {count > 0 && (
-                      <Badge 
-                        variant="secondary" 
-                        className={`
-                          ml-1 px-2 py-0.5 text-xs font-bold
-                          ${isActive ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'bg-gray-100/80 dark:bg-gray-700/80 text-gray-700 dark:text-gray-300'}
-                        `}
-                      >
+                      <span className={`text-xs font-medium transition-colors ${
+                        isActive ? 'text-foreground' : 'text-muted-foreground'
+                      }`}>
                         {count}
-                      </Badge>
+                      </span>
                     )}
                   </div>
                 </Button>

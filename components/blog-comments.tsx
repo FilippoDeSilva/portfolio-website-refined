@@ -16,7 +16,7 @@ import {
   Heart,
   Flame,
   Lightbulb,
-  Laugh,
+  SmilePlus,
   MessageCircle,
   Clock,
   User,
@@ -107,12 +107,12 @@ const REACTIONS: {
   { 
     key: "lol", 
     // label: "LOL", 
-    Icon: Laugh, 
-    color: "text-green-500",
-    bgColor: "bg-green-50 dark:bg-green-950/30",
-    borderColor: "border-green-200 dark:border-green-800",
-    hoverColor: "hover:bg-green-100 dark:hover:bg-green-900/50",
-    activeColor: "bg-green-100 dark:bg-green-900/50 border-green-300 dark:border-green-700"
+    Icon: SmilePlus, 
+    color: "text-amber-500",
+    bgColor: "bg-amber-50 dark:bg-amber-950/30",
+    borderColor: "border-amber-200 dark:border-amber-800",
+    hoverColor: "hover:bg-amber-100 dark:hover:bg-amber-900/50",
+    activeColor: "bg-amber-100 dark:bg-amber-900/50 border-amber-300 dark:border-amber-700"
   },
 ];
 
@@ -279,7 +279,7 @@ const IsolatedCommentInput = memo(({
           />
         </div>
         
-        <div className="mt-2 flex justify-end items-center gap-2">
+        <div className="mt-4 flex justify-end items-center gap-2">
           <Button 
             type="submit" 
             size="sm" 
@@ -331,13 +331,13 @@ export default function BlogComments({ postId }: { postId: string }) {
   // Modern responsive theme classes
   const themeClasses = {
     container: "max-w-4xl mx-auto",
-    card: "bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl shadow-lg hover:shadow-xl rounded-2xl p-4 sm:p-6 border border-gray-200/60 dark:border-gray-800/60 transition-all duration-300",
-    username: "font-semibold text-gray-900 dark:text-gray-100 text-sm sm:text-base",
-    date: "text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1",
-    content: "prose prose-sm dark:prose-invert max-w-none text-gray-800 dark:text-gray-200 leading-relaxed",
-    actions: "flex flex-wrap items-center gap-2 mt-3 text-sm",
-    reactionBtn: "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 hover:scale-105",
-    button: "px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:scale-105 active:scale-95",
+    card: "bg-card border border-border rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:border-primary/30",
+    username: "font-semibold text-foreground text-sm sm:text-base",
+    date: "text-xs text-muted-foreground flex items-center gap-1.5",
+    content: "prose prose-sm dark:prose-invert max-w-none text-foreground/90 leading-relaxed mt-3",
+    actions: "flex flex-wrap items-center gap-2 mt-4 text-sm",
+    reactionBtn: "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
+    button: "px-4 py-2.5 rounded-xl font-medium transition-all duration-200",
   };
 
   // Stable event handlers that don't cause re-renders
@@ -866,35 +866,29 @@ export default function BlogComments({ postId }: { postId: string }) {
         animate={{ opacity: 1 }}
         className={indentClass}
       >
-        <Card className={`${themeClasses.card} ${isReply ? 'border-l-4 border-l-primary/30' : ''}`}>
-          <div className="flex gap-3 sm:gap-4">
-            <Avatar className="size-10 sm:size-12 shrink-0 ring-2 ring-primary/10">
+        <Card className={`${themeClasses.card} ${isReply ? 'border-l-2 border-l-primary' : ''}`}>
+          <div className="flex gap-4">
+            <Avatar className="size-10 sm:size-11 shrink-0">
               <AvatarImage src={authorAvatar} alt={c.name || "Avatar"} />
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/10 text-primary font-semibold">
+              <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                 {(c.name || "A").charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
 
             <div className="flex-1 min-w-0">
               {/* Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2 gap-1">
-                <div className="flex items-center gap-2">
+              <div className="flex items-start justify-between mb-1">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className={themeClasses.username}>{c.name || "Anonymous"}</span>
                   {c.user_id === userId && (
-                    <Badge variant="secondary" className="text-xs px-2 py-0.5">
+                    <Badge variant="secondary" className="text-xs px-2 py-0.5 rounded-md">
                       You
-                    </Badge>
-                  )}
-                  {isReply && (
-                    <Badge variant="outline" className="text-xs px-2 py-0.5">
-                      Reply
                     </Badge>
                   )}
                 </div>
                 <span className={themeClasses.date}>
                   <Clock className="w-3 h-3" />
-                  {new Date(c.created_at).toLocaleDateString()} ·{" "}
-                  {new Date(c.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                  {new Date(c.created_at).toLocaleDateString([], { hour: "2-digit", minute: "2-digit" })}
                 </span>
               </div>
 
@@ -930,13 +924,13 @@ export default function BlogComments({ postId }: { postId: string }) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}
-                  className={`gap-2 text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-primary/10 ${replyTo === c.id ? 'bg-primary/10 text-primary' : ''}`}
+                  className={`h-8 gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full ${replyTo === c.id ? 'bg-primary/10 text-primary' : ''}`}
                 >
-                  <CornerUpLeft size={16} />
-                  <span className="hidden sm:inline">{replyTo === c.id ? 'Cancel' : 'Reply'}</span>
+                  <CornerUpLeft size={14} />
+                  <span className="text-xs">{replyTo === c.id ? 'Cancel' : 'Reply'}</span>
                 </Button>
 
-                {/* Show Replies Button for comments/replies that have replies */}
+                {/* Show Replies Button */}
                 {hasReplies && (
                   <Button
                     variant="ghost"
@@ -950,39 +944,26 @@ export default function BlogComments({ postId }: { postId: string }) {
                       }
                       return newSet;
                     })}
-                    className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-primary/10"
+                    className="h-8 gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
                   >
-                    {showRepliesForThis ? (
-                      <>
-                        <ChevronUp size={16} />
-                        <span className="hidden sm:inline">Hide Replies</span>
-                      </>
-                    ) : (
-                      <>
-                        <ChevronDown size={16} />
-                        <span className="hidden sm:inline">Show Replies</span>
-                      </>
-                    )}
-                    <Badge variant="secondary" className="ml-1 text-xs px-1.5 py-0.5">
-                      {replies.filter(r => r.parent_id === c.id).length}
-                    </Badge>
+                    {showRepliesForThis ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    <span className="text-xs">{showRepliesForThis ? 'Hide' : 'Show'} ({replies.filter(r => r.parent_id === c.id).length})</span>
                   </Button>
                 )}
 
                 {userId && c.user_id === userId && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="gap-2 text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-primary/10">
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
                         <MoreHorizontal size={16} />
-                        <span className="hidden sm:inline">More</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-40">
-                      <DropdownMenuItem onClick={() => handleEditComment(c.id, c.content)} className="gap-2">
-                        <Edit2 size={16} /> Edit
+                    <DropdownMenuContent align="end" className="w-36 rounded-xl">
+                      <DropdownMenuItem onClick={() => handleEditComment(c.id, c.content)} className="gap-2 rounded-lg">
+                        <Edit2 size={14} /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteComment(c.id)} className="gap-2 text-red-600">
-                        <Trash2 size={16} /> Delete
+                      <DropdownMenuItem onClick={() => handleDeleteComment(c.id)} className="gap-2 text-destructive rounded-lg">
+                        <Trash2 size={14} /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -990,8 +971,8 @@ export default function BlogComments({ postId }: { postId: string }) {
               </div>
 
               {/* Reactions */}
-              <div className="flex flex-wrap gap-1 mt-3">
-                {REACTIONS.map(({ key, Icon, color, bgColor, borderColor, hoverColor, activeColor }) => {
+              <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/50">
+                {REACTIONS.map(({ key, Icon, color }) => {
                   const count = reactionCounts[key];
                   const isSelected = userReaction === key;
                   
@@ -1000,41 +981,28 @@ export default function BlogComments({ postId }: { postId: string }) {
                       key={key}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="relative"
                     >
                       <Button
-                        variant="outline"
+                        variant="ghost"
                         size="sm"
                         onClick={() => handleReaction(c.id, key)}
-                        className={`
-                          h-8 px-3 rounded-full border-2 transition-all duration-300 font-medium
-                          ${isSelected ? 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 shadow-lg' : `${bgColor} ${borderColor} ${hoverColor} shadow-sm hover:shadow-md`}
-                          group
-                        `}
+                        className={`h-8 px-2.5 rounded-full transition-all ${
+                          isSelected 
+                            ? 'bg-primary/10 border border-primary/20' 
+                            : 'hover:bg-muted'
+                        }`}
                       >
                         <div className="flex items-center gap-1.5">
                           <Icon 
-                            className={`w-4 h-4 transition-all duration-300 ${
-                              isSelected 
-                                ? `${color}` 
-                                : `${color} fill-transparent hover:fill-current hover:opacity-70`
-                            }`} 
-                            fill={isSelected ? "currentColor" : "none"}
-                            style={isSelected ? { color: color.replace('text-', '').replace('-500', '') === 'yellow' ? '#eab308' : color.replace('text-', '').replace('-500', '') === 'green' ? '#22c55e' : undefined } : undefined}
+                            className={`w-4 h-4 transition-all ${isSelected ? color : 'text-muted-foreground'}`}
+                            strokeWidth={isSelected ? 2.5 : 2}
                           />
-                          {/* <span className={`text-xs font-medium hidden xs:inline ${isSelected ? 'text-gray-900 dark:text-gray-100' : 'text-gray-700 dark:text-gray-300'}`}>
-                            {label}
-                          </span> */}
                           {count > 0 && (
-                            <Badge 
-                              variant="secondary" 
-                              className={`
-                                ml-0.5 px-1.5 py-0.5 text-xs font-bold
-                                ${isSelected ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100' : 'bg-gray-100/80 dark:bg-gray-700/80 text-gray-700 dark:text-gray-300'}
-                              `}
-                            >
+                            <span className={`text-xs font-medium transition-colors ${
+                              isSelected ? 'text-foreground' : 'text-muted-foreground'
+                            }`}>
                               {count}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       </Button>
@@ -1176,11 +1144,13 @@ export default function BlogComments({ postId }: { postId: string }) {
 
       {/* Top-level composer - Always visible */}
       {!showNamePrompt && (
-        <IsolatedCommentInput
-          onSubmit={handleCommentSubmit}
-          placeholder="Add a comment (Markdown supported)..."
-          submitText="Post"
-        />
+        <div className="mb-8">
+          <IsolatedCommentInput
+            onSubmit={handleCommentSubmit}
+            placeholder="Add a comment (Markdown supported)..."
+            submitText="Post"
+          />
+        </div>
       )}
 
       {/* Error display */}

@@ -14,7 +14,11 @@ export default function BlogPostLayout({
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    // Set default theme to system if not already set
+    if (!theme) {
+      setTheme("system");
+    }
+  }, [theme, setTheme]);
 
   const cycleTheme = () => {
     if (theme === "dark") {

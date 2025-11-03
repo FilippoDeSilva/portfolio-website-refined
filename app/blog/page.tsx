@@ -7,7 +7,13 @@ import { Pagination } from "@/components/ui/pagination";
 import { Footer } from "@/components/footer";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, ChevronDown, Grid3X3, List } from "lucide-react";
+import { Search, ChevronDown, Grid3X3, List, Check } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 const POSTS_PER_PAGE = 8;
 
 export default function BlogPage() {
@@ -96,34 +102,46 @@ export default function BlogPage() {
               {/* Controls Group */}
               <div className="flex items-center gap-3">
                 {/* Sort Dropdown */}
-                <div className="relative">
-                  <select
-                    value={sortBy}
-                    onChange={(e) => {
-                      handleSortChange(e.target.value as "newest" | "oldest" | "popular");
-                      setIsDropdownOpen(false);
-                    }}
-                    onMouseDown={(e) => {
-                      if (isDropdownOpen) {
-                        e.preventDefault();
-                        setIsDropdownOpen(false);
-                      } else {
-                        setIsDropdownOpen(true);
-                      }
-                    }}
-                    onBlur={() => setIsDropdownOpen(false)}
-                    className="appearance-none h-12 pl-4 pr-10 text-sm font-medium bg-muted/30 hover:bg-muted/50 border border-border rounded-full focus:outline-none focus:border-primary transition-colors cursor-pointer [&>option]:rounded-lg [&>option]:py-2 [&>option]:px-4"
-                  >
-                    <option value="newest" className="rounded-lg">Newest</option>
-                    <option value="oldest" className="rounded-lg">Oldest</option>
-                    <option value="popular" className="rounded-lg">Popular</option>
-                  </select>
-                  <ChevronDown 
-                    className={`absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none transition-transform duration-200 ${
-                      isDropdownOpen ? 'rotate-180' : 'rotate-0'
-                    }`} 
-                  />
-                </div>
+                <DropdownMenu onOpenChange={setIsDropdownOpen}>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="h-12 px-4 rounded-full border-border bg-muted/30 hover:bg-muted/50 transition-colors"
+                    >
+                      <span className="text-sm font-medium">
+                        {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : "Popular"}
+                      </span>
+                      <ChevronDown 
+                        className={`ml-2 w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                          isDropdownOpen ? 'rotate-180' : 'rotate-0'
+                        }`} 
+                      />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[140px] rounded-xl">
+                    <DropdownMenuItem 
+                      onClick={() => handleSortChange("newest")}
+                      className="rounded-lg cursor-pointer"
+                    >
+                      <Check className={`mr-2 h-4 w-4 ${sortBy === "newest" ? "opacity-100" : "opacity-0"}`} />
+                      Newest
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleSortChange("oldest")}
+                      className="rounded-lg cursor-pointer"
+                    >
+                      <Check className={`mr-2 h-4 w-4 ${sortBy === "oldest" ? "opacity-100" : "opacity-0"}`} />
+                      Oldest
+                    </DropdownMenuItem>
+                    <DropdownMenuItem 
+                      onClick={() => handleSortChange("popular")}
+                      className="rounded-lg cursor-pointer"
+                    >
+                      <Check className={`mr-2 h-4 w-4 ${sortBy === "popular" ? "opacity-100" : "opacity-0"}`} />
+                      Popular
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
 
                 {/* View Toggle */}
                 <div className="flex items-center bg-muted/30 rounded-full p-1">
