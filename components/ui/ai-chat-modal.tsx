@@ -893,7 +893,7 @@ The final post should be polished and require little to no editing before publis
               </div>
               <div className="mt-3 space-y-1 text-xs opacity-75">
                 <div>💡 <strong>Tip:</strong> Click the + button on any AI response to insert it into your blog editor</div>
-                <div>🗑️ <strong>Tip:</strong> Hover over any message to delete it (deletes user message + AI response together)</div>
+                <div>🗑️ <strong>Tip:</strong> Hover over any message to reveal the delete button on the right</div>
                 <div>⌨️ <strong>Tip:</strong> Press ESC anywhere to close this modal</div>
               </div>
             </div>
@@ -916,15 +916,6 @@ The final post should be polished and require little to no editing before publis
                   {msg.role === "assistant" ? (
                     <>
                       <ReactMarkdown remarkPlugins={[remarkGfm]}>{msg.content}</ReactMarkdown>
-                      <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button
-                          className="p-1.5 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-110"
-                          title="Delete this message"
-                          onClick={() => deleteMessage(idx)}
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
                       <button
                         className="absolute bottom-0 -right-2 p-1 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all duration-200 hover:scale-110"
                         title="Insert this response into the blog editor"
@@ -932,18 +923,19 @@ The final post should be polished and require little to no editing before publis
                       >
                         <Plus className="w-4 h-4" />
                       </button>
+                      <button
+                        className="absolute bottom-3 -right-12 opacity-0 group-hover:opacity-100 group-hover:-right-10 p-2 rounded-lg transition-all duration-300 ease-out hover:scale-110"
+                        title="Delete this message"
+                        onClick={() => deleteMessage(idx)}
+                      >
+                        <Trash2 className="w-4 h-4 text-muted-foreground hover:text-red-500 transition-colors" />
+                      </button>
+                      <div className="text-xs opacity-60 mt-2">
+                        {msg.timestamp.toLocaleTimeString()}
+                      </div>
                     </>
                   ) : (
                     <>
-                      <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                        <button
-                          className="p-1.5 rounded-full bg-red-500 text-white shadow-lg hover:bg-red-600 transition-all duration-200 hover:scale-110"
-                          title="Delete this message and its response"
-                          onClick={() => deleteMessage(idx)}
-                        >
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
                       {msg.attachedFiles && msg.attachedFiles.length > 0 && (
                         <div className="mb-3 space-y-2">
                           {msg.attachedFiles.map((file, fileIdx) => (
@@ -955,11 +947,18 @@ The final post should be polished and require little to no editing before publis
                         </div>
                       )}
                       {msg.content}
+                      <button
+                        className="absolute bottom-3 -left-12 opacity-0 group-hover:opacity-100 group-hover:-left-10 p-2 rounded-lg transition-all duration-300 ease-out hover:scale-110"
+                        title="Delete this message and its response"
+                        onClick={() => deleteMessage(idx)}
+                      >
+                        <Trash2 className="w-4 h-4 text-primary-foreground/70 hover:text-red-400 transition-colors" />
+                      </button>
+                      <div className="text-xs opacity-60 mt-2">
+                        {msg.timestamp.toLocaleTimeString()}
+                      </div>
                     </>
                   )}
-                  <div className="text-xs opacity-60 mt-2">
-                    {msg.timestamp.toLocaleTimeString()}
-                  </div>
                 </div>
               </div>
             );
