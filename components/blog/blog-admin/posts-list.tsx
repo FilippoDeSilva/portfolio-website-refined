@@ -30,9 +30,9 @@ export function PostsList({
   );
 
   return (
-    <div className="flex flex-col justify-between h-full w-full min-h-full gap-6">
-      {/* Posts Grid - Takes remaining space */}
-      <div className="flex-1 min-h-0 overflow-y-auto">
+    <div style={{ position: 'relative', width: '100%', height: '1400px' }}>
+      {/* Posts Grid - Takes remaining space, scrollable if needed */}
+      <div style={{ width: '100%', height: 'calc(100% - 90px)', overflowY: 'auto', overflowX: 'hidden' }}>
         {postsLoading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {[...Array(postsPerPage)].map((_, i) => (
@@ -81,9 +81,21 @@ export function PostsList({
         )}
       </div>
       
-      {/* Pagination - Always at Bottom */}
-      {!postsLoading && posts.length > 0 && (
-        <div className="flex-shrink-0">
+      {/* Pagination - Absolutely positioned at bottom */}
+      {!postsLoading && totalPages > 1 && (
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '80px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          className="border-t border-border bg-background"
+        >
           <Pagination
             currentPage={currentPage}
             totalPages={totalPages}

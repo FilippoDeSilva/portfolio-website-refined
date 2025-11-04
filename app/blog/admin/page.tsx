@@ -282,10 +282,10 @@ export default function BlogAdmin() {
             }}
           />
           {/* Responsive layout: editor first on mobile, posts second */}
-          <div className="flex flex-col md:grid md:grid-cols-2 gap-6 md:items-start">
+          <div className="flex flex-col md:grid md:grid-cols-2 gap-6">
             {/* Post Editor - Modern Card */}
             <div className="order-1 md:order-none">
-              <div className="h-full bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+              <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden min-h-[1000px]">
                 <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-b border-border px-6 py-4">
                   <h2 className="text-xl font-semibold flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -337,8 +337,8 @@ export default function BlogAdmin() {
             </div>
             
             {/* Posts List - Modern Card */}
-            <div className="order-2 md:order-none md:sticky md:top-6">
-              <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden flex flex-col" style={{ height: '800px' }}>
+            <div className="order-2 md:order-none">
+              <div className="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
                 <div className="bg-gradient-to-r from-primary/10 to-primary/5 border-b border-border px-6 py-4">
                   <h2 className="text-xl font-semibold flex items-center gap-2">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -350,7 +350,7 @@ export default function BlogAdmin() {
                     Manage and preview your published content
                   </p>
                 </div>
-                <div className="p-6 flex-1 flex flex-col min-h-0">
+                <div className="p-6">
                   <PostsList
                 posts={posts}
                 postsLoading={postsLoading}
