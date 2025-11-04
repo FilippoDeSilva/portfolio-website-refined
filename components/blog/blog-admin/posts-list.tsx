@@ -30,7 +30,7 @@ export function PostsList({
   );
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '1465px' }}>
+    <div style={{ position: 'relative', width: '100%', height: '1600px' }}>
       {/* Posts Grid - Takes remaining space, scrollable if needed */}
       <div 
         style={{ 

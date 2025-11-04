@@ -462,39 +462,41 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
             </div>
 
             {/* Mobile Title Section - Below cover image */}
-            <div className="sm:hidden bg-background px-4 -mt-32 pt-8 pb-6 border-b border-border/30">
-              <div className="space-y-4">
+            <div className="sm:hidden bg-background px-3 xs:px-4 -mt-32 pt-16 pb-6 border-b border-border/30">
+              <div className="space-y-3 xs:space-y-4">
                 {/* Category Badge */}
-                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                <div className="inline-flex items-center gap-1.5 px-2.5 xs:px-3 py-1 xs:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] xs:text-xs font-semibold">
+                  <svg className="w-3 xs:w-3.5 h-3 xs:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                   Article
                 </div>
                 {/* Title */}
-                <h1 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
+                <h1 className="text-xl xs:text-2xl font-bold text-foreground leading-[1.2] xs:leading-tight tracking-tight break-words pb-2">
                   {post.title}
                 </h1>
                 {/* Meta */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <time className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <div className="flex flex-wrap items-center gap-1.5 xs:gap-2 pt-2">
+                  <time className="flex items-center gap-1 xs:gap-1.5 px-2 xs:px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-[10px] xs:text-xs font-medium whitespace-nowrap">
+                    <svg className="w-3 xs:w-3.5 h-3 xs:h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    {new Date(post.created_at).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    <span className="truncate">
+                      {new Date(post.created_at).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </span>
                   </time>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <div className="flex items-center gap-1 xs:gap-1.5 px-2 xs:px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-[10px] xs:text-xs font-medium whitespace-nowrap">
+                    <svg className="w-3 xs:w-3.5 h-3 xs:h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span>{readingTime} min</span>
                   </div>
-                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <div className="flex items-center gap-1 xs:gap-1.5 px-2 xs:px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-[10px] xs:text-xs font-medium whitespace-nowrap">
+                    <svg className="w-3 xs:w-3.5 h-3 xs:h-3.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>

@@ -379,51 +379,125 @@ export interface AdvancedEditorRef {
 }
 
 const HIGHLIGHT_COLORS = [
-  { name: "Yellow", color: "#fef08a", textColor: "#854d0e", class: "bg-yellow-200" },
-  { name: "Green", color: "#bbf7d0", textColor: "#14532d", class: "bg-green-200" },
-  { name: "Blue", color: "#bfdbfe", textColor: "#1e3a8a", class: "bg-blue-200" },
-  { name: "Pink", color: "#fbcfe8", textColor: "#831843", class: "bg-pink-200" },
-  { name: "Purple", color: "#e9d5ff", textColor: "#581c87", class: "bg-purple-200" },
-  { name: "Orange", color: "#fed7aa", textColor: "#7c2d12", class: "bg-orange-200" },
-  { name: "Red", color: "#fecaca", textColor: "#7f1d1d", class: "bg-red-200" },
-  { name: "Gray", color: "#e5e7eb", textColor: "#1f2937", class: "bg-gray-200" },
-  { name: "Teal", color: "#99f6e4", textColor: "#134e4a", class: "bg-teal-200" },
-  { name: "Indigo", color: "#c7d2fe", textColor: "#312e81", class: "bg-indigo-200" },
+  // Reds
+  { name: "Red 300", color: "#fca5a5", textColor: "#7f1d1d", class: "bg-red-300" },
+  { name: "Red 200", color: "#fecaca", textColor: "#7f1d1d", class: "bg-red-200" },
+  { name: "Red 100", color: "#fee2e2", textColor: "#991b1b", class: "bg-red-100" },
+  { name: "Rose 300", color: "#fda4af", textColor: "#881337", class: "bg-rose-300" },
+  { name: "Rose 200", color: "#fecdd3", textColor: "#881337", class: "bg-rose-200" },
+  { name: "Rose 100", color: "#ffe4e6", textColor: "#9f1239", class: "bg-rose-100" },
+  
+  // Oranges & Yellows
+  { name: "Orange 300", color: "#fdba74", textColor: "#7c2d12", class: "bg-orange-300" },
+  { name: "Orange 200", color: "#fed7aa", textColor: "#7c2d12", class: "bg-orange-200" },
+  { name: "Orange 100", color: "#ffedd5", textColor: "#9a3412", class: "bg-orange-100" },
+  { name: "Amber 300", color: "#fcd34d", textColor: "#78350f", class: "bg-amber-300" },
+  { name: "Amber 200", color: "#fde68a", textColor: "#78350f", class: "bg-amber-200" },
+  { name: "Amber 100", color: "#fef3c7", textColor: "#92400e", class: "bg-amber-100" },
+  { name: "Yellow 300", color: "#fde047", textColor: "#854d0e", class: "bg-yellow-300" },
+  { name: "Yellow 200", color: "#fef08a", textColor: "#854d0e", class: "bg-yellow-200" },
+  { name: "Yellow 100", color: "#fef9c3", textColor: "#713f12", class: "bg-yellow-100" },
+  
+  // Greens
+  { name: "Lime 300", color: "#bef264", textColor: "#365314", class: "bg-lime-300" },
+  { name: "Lime 200", color: "#d9f99d", textColor: "#365314", class: "bg-lime-200" },
+  { name: "Lime 100", color: "#ecfccb", textColor: "#3f6212", class: "bg-lime-100" },
+  { name: "Green 300", color: "#86efac", textColor: "#14532d", class: "bg-green-300" },
+  { name: "Green 200", color: "#bbf7d0", textColor: "#14532d", class: "bg-green-200" },
+  { name: "Green 100", color: "#dcfce7", textColor: "#166534", class: "bg-green-100" },
+  { name: "Emerald 300", color: "#6ee7b7", textColor: "#064e3b", class: "bg-emerald-300" },
+  { name: "Emerald 200", color: "#a7f3d0", textColor: "#064e3b", class: "bg-emerald-200" },
+  { name: "Emerald 100", color: "#d1fae5", textColor: "#065f46", class: "bg-emerald-100" },
+  
+  // Teals & Cyans
+  { name: "Teal 300", color: "#5eead4", textColor: "#134e4a", class: "bg-teal-300" },
+  { name: "Teal 200", color: "#99f6e4", textColor: "#134e4a", class: "bg-teal-200" },
+  { name: "Teal 100", color: "#ccfbf1", textColor: "#115e59", class: "bg-teal-100" },
+  { name: "Cyan 300", color: "#67e8f9", textColor: "#164e63", class: "bg-cyan-300" },
+  { name: "Cyan 200", color: "#a5f3fc", textColor: "#164e63", class: "bg-cyan-200" },
+  { name: "Cyan 100", color: "#cffafe", textColor: "#155e75", class: "bg-cyan-100" },
+  
+  // Blues
+  { name: "Sky 300", color: "#7dd3fc", textColor: "#0c4a6e", class: "bg-sky-300" },
+  { name: "Sky 200", color: "#bae6fd", textColor: "#0c4a6e", class: "bg-sky-200" },
+  { name: "Sky 100", color: "#e0f2fe", textColor: "#075985", class: "bg-sky-100" },
+  { name: "Blue 300", color: "#93c5fd", textColor: "#1e3a8a", class: "bg-blue-300" },
+  { name: "Blue 200", color: "#bfdbfe", textColor: "#1e3a8a", class: "bg-blue-200" },
+  { name: "Blue 100", color: "#dbeafe", textColor: "#1e40af", class: "bg-blue-100" },
+  { name: "Indigo 300", color: "#a5b4fc", textColor: "#312e81", class: "bg-indigo-300" },
+  { name: "Indigo 200", color: "#c7d2fe", textColor: "#312e81", class: "bg-indigo-200" },
+  { name: "Indigo 100", color: "#e0e7ff", textColor: "#3730a3", class: "bg-indigo-100" },
+  
+  // Purples & Pinks
+  { name: "Violet 300", color: "#c4b5fd", textColor: "#4c1d95", class: "bg-violet-300" },
+  { name: "Violet 200", color: "#ddd6fe", textColor: "#4c1d95", class: "bg-violet-200" },
+  { name: "Violet 100", color: "#ede9fe", textColor: "#5b21b6", class: "bg-violet-100" },
+  { name: "Purple 300", color: "#d8b4fe", textColor: "#581c87", class: "bg-purple-300" },
+  { name: "Purple 200", color: "#e9d5ff", textColor: "#581c87", class: "bg-purple-200" },
+  { name: "Purple 100", color: "#f3e8ff", textColor: "#6b21a8", class: "bg-purple-100" },
+  { name: "Fuchsia 300", color: "#f0abfc", textColor: "#701a75", class: "bg-fuchsia-300" },
+  { name: "Fuchsia 200", color: "#f5d0fe", textColor: "#701a75", class: "bg-fuchsia-200" },
+  { name: "Fuchsia 100", color: "#fae8ff", textColor: "#86198f", class: "bg-fuchsia-100" },
+  { name: "Pink 300", color: "#f9a8d4", textColor: "#831843", class: "bg-pink-300" },
+  { name: "Pink 200", color: "#fbcfe8", textColor: "#831843", class: "bg-pink-200" },
+  { name: "Pink 100", color: "#fce7f3", textColor: "#9d174d", class: "bg-pink-100" },
+  
+  // Neutrals
+  { name: "Gray 300", color: "#d1d5db", textColor: "#1f2937", class: "bg-gray-300" },
+  { name: "Gray 200", color: "#e5e7eb", textColor: "#1f2937", class: "bg-gray-200" },
+  { name: "Gray 100", color: "#f3f4f6", textColor: "#374151", class: "bg-gray-100" },
+  { name: "Slate 300", color: "#cbd5e1", textColor: "#1e293b", class: "bg-slate-300" },
+  { name: "Slate 200", color: "#e2e8f0", textColor: "#1e293b", class: "bg-slate-200" },
+  { name: "Slate 100", color: "#f1f5f9", textColor: "#334155", class: "bg-slate-100" },
 ];
 
 const TEXT_COLORS = [
+  // Neutrals - Essential
   { name: "Black", color: "#000000" },
-  { name: "Dark Gray", color: "#374151" },
+  { name: "Charcoal", color: "#1f2937" },
+  { name: "Slate", color: "#475569" },
   { name: "Gray", color: "#6b7280" },
-  { name: "Light Gray", color: "#9ca3af" },
-  { name: "White", color: "#ffffff" },
-  { name: "Red", color: "#dc2626" },
-  { name: "Dark Red", color: "#991b1b" },
-  { name: "Light Red", color: "#f87171" },
-  { name: "Orange", color: "#ea580c" },
-  { name: "Dark Orange", color: "#c2410c" },
+  { name: "Silver", color: "#9ca3af" },
+  { name: "Light Gray", color: "#d1d5db" },
+  
+  // Reds - Attention & Error
+  { name: "Crimson", color: "#dc2626" },
+  { name: "Red", color: "#ef4444" },
+  { name: "Rose", color: "#f43f5e" },
+  { name: "Pink", color: "#ec4899" },
+  
+  // Oranges - Warm & Energetic
+  { name: "Orange", color: "#f97316" },
+  { name: "Coral", color: "#fb923c" },
   { name: "Amber", color: "#f59e0b" },
-  { name: "Yellow", color: "#ca8a04" },
-  { name: "Light Yellow", color: "#facc15" },
-  { name: "Lime", color: "#84cc16" },
-  { name: "Green", color: "#16a34a" },
-  { name: "Dark Green", color: "#15803d" },
+  { name: "Gold", color: "#eab308" },
+  
+  // Greens - Success & Nature
   { name: "Emerald", color: "#10b981" },
-  { name: "Teal", color: "#0d9488" },
+  { name: "Green", color: "#22c55e" },
+  { name: "Lime", color: "#84cc16" },
+  { name: "Teal", color: "#14b8a6" },
+  
+  // Blues - Trust & Professional
   { name: "Cyan", color: "#06b6d4" },
   { name: "Sky", color: "#0ea5e9" },
-  { name: "Blue", color: "#2563eb" },
-  { name: "Dark Blue", color: "#1e40af" },
-  { name: "Light Blue", color: "#60a5fa" },
-  { name: "Indigo", color: "#4f46e5" },
-  { name: "Violet", color: "#7c3aed" },
-  { name: "Purple", color: "#9333ea" },
-  { name: "Dark Purple", color: "#7e22ce" },
-  { name: "Fuchsia", color: "#c026d3" },
-  { name: "Pink", color: "#db2777" },
-  { name: "Rose", color: "#e11d48" },
-  { name: "Brown", color: "#92400e" },
-  { name: "Slate", color: "#475569" },
+  { name: "Blue", color: "#3b82f6" },
+  { name: "Azure", color: "#2563eb" },
+  { name: "Indigo", color: "#6366f1" },
+  
+  // Purples - Creative & Premium
+  { name: "Violet", color: "#8b5cf6" },
+  { name: "Purple", color: "#a855f7" },
+  { name: "Fuchsia", color: "#d946ef" },
+  { name: "Magenta", color: "#e879f9" },
+  
+  // Accent Colors
+  { name: "Navy", color: "#1e40af" },
+  { name: "Forest", color: "#15803d" },
+  { name: "Burgundy", color: "#991b1b" },
+  { name: "Bronze", color: "#92400e" },
+  { name: "Steel", color: "#334155" },
+  { name: "Mint", color: "#5eead4" },
 ];
 
 const BLOG_FONTS = [
@@ -1071,7 +1145,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
             <ChevronDown className="w-3 h-3" />
           </button>
           {showFontPicker && (
-            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 w-[420px] font-picker-container">
+            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 w-[90vw] sm:w-[420px] max-w-[420px] font-picker-container">
               <div className="text-xs font-semibold mb-3 px-1 text-foreground">
                 Choose Font Style
               </div>
@@ -1091,7 +1165,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                           {category}
                         </div>
                       )}
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         {fonts.map((font) => (
                           <button
                             key={font.name}
@@ -1137,7 +1211,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                 <div className="text-xs font-medium mb-3 px-1 text-muted-foreground">
                   Highlight Colors
                 </div>
-                <div className="grid grid-cols-5 gap-2 mb-3">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
                   {HIGHLIGHT_COLORS.map((color) => (
                     <button
                       type="button"
@@ -1189,11 +1263,11 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
               <ChevronDown className="w-3 h-3" />
             </button>
             {showTextColorPicker && (
-              <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 w-[340px] text-color-picker-container">
-                <div className="text-xs font-medium mb-3 px-1 text-muted-foreground">
+              <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-2 sm:p-3 z-50 w-[90vw] sm:w-[340px] max-w-[340px] text-color-picker-container">
+                <div className="text-xs font-medium mb-2 sm:mb-3 px-1 text-muted-foreground">
                   Text Colors
                 </div>
-                <div className="grid grid-cols-6 gap-2 mb-3">
+                <div className="grid grid-cols-3 sm:grid-cols-6 gap-1 sm:gap-2 mb-2 sm:mb-3">
                   {TEXT_COLORS.map((color) => (
                     <button
                       type="button"
@@ -1208,12 +1282,12 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                       title={color.name}
                     >
                       <div
-                        className="w-8 h-8 rounded-md border-2 border-border hover:border-primary transition-all shadow-sm hover:shadow-md hover:scale-110"
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded border sm:border-2 border-border hover:border-primary transition-all shadow-sm hover:shadow-md hover:scale-110"
                         style={{ 
                           backgroundColor: color.color,
                         }}
                       />
-                      <span className="text-[10px] mt-1 text-muted-foreground group-hover:text-foreground transition-colors truncate w-full text-center">
+                      <span className="hidden sm:block text-[10px] mt-1 text-muted-foreground group-hover:text-foreground transition-colors truncate w-full text-center">
                         {color.name}
                       </span>
                     </button>
