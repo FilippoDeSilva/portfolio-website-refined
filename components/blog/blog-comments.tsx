@@ -331,13 +331,13 @@ export default function BlogComments({ postId }: { postId: string }) {
   // Modern responsive theme classes
   const themeClasses = {
     container: "max-w-4xl mx-auto",
-    card: "bg-card border border-border rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:border-primary/30",
-    username: "font-semibold text-foreground text-sm sm:text-base",
-    date: "text-xs text-muted-foreground flex items-center gap-1.5",
-    content: "prose prose-sm dark:prose-invert max-w-none text-foreground/90 leading-relaxed mt-3",
-    actions: "flex flex-wrap items-center gap-2 mt-4 text-sm",
-    reactionBtn: "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200",
-    button: "px-4 py-2.5 rounded-xl font-medium transition-all duration-200",
+    card: "bg-card border border-border rounded-2xl p-3 sm:p-5 md:p-6 transition-all duration-200 hover:border-primary/30",
+    username: "font-semibold text-foreground text-xs sm:text-sm md:text-base",
+    date: "text-[10px] sm:text-xs text-muted-foreground flex items-center gap-1",
+    content: "prose prose-sm dark:prose-invert max-w-none text-foreground/90 leading-relaxed mt-2 sm:mt-3 text-xs sm:text-sm",
+    actions: "flex flex-wrap items-center gap-1.5 sm:gap-2 mt-3 sm:mt-4 text-xs sm:text-sm",
+    reactionBtn: "flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium transition-all duration-200",
+    button: "px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm",
   };
 
   // Stable event handlers that don't cause re-renders
@@ -564,7 +564,12 @@ export default function BlogComments({ postId }: { postId: string }) {
   // Handle reply submission from isolated input
   const handleReplySubmit = useCallback(async (content: string) => {
     if (!userId) return setError("You must be identified to comment.");
-    if (!username) return setError("You must set a display name.");
+    if (!username) {
+      // Store pending reply and show name prompt
+      setPendingComment({ content, replyTo });
+      setShowNamePrompt(true);
+      return;
+    }
 
     const tempId = `temp-reply-${Date.now()}`;
     const payload = {
@@ -867,8 +872,8 @@ export default function BlogComments({ postId }: { postId: string }) {
         className={indentClass}
       >
         <Card className={`${themeClasses.card} ${isReply ? 'border-l-2 border-l-primary' : ''}`}>
-          <div className="flex gap-4">
-            <Avatar className="size-10 sm:size-11 shrink-0">
+          <div className="flex gap-2 sm:gap-3 md:gap-4">
+            <Avatar className="size-8 sm:size-10 md:size-11 shrink-0">
               <AvatarImage src={authorAvatar} alt={c.name || "Avatar"} />
               <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                 {(c.name || "A").charAt(0).toUpperCase()}
@@ -881,14 +886,15 @@ export default function BlogComments({ postId }: { postId: string }) {
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={themeClasses.username}>{c.name || "Anonymous"}</span>
                   {c.user_id === userId && (
-                    <Badge variant="secondary" className="text-xs px-2 py-0.5 rounded-md">
+                    <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-md">
                       You
                     </Badge>
                   )}
                 </div>
                 <span className={themeClasses.date}>
-                  <Clock className="w-3 h-3" />
-                  {new Date(c.created_at).toLocaleDateString([], { hour: "2-digit", minute: "2-digit" })}
+                  <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                  <span className="hidden sm:inline">{new Date(c.created_at).toLocaleDateString([], { hour: "2-digit", minute: "2-digit" })}</span>
+                  <span className="sm:hidden">{new Date(c.created_at).toLocaleDateString([], { month: "short", day: "numeric" })}</span>
                 </span>
               </div>
 
@@ -924,10 +930,10 @@ export default function BlogComments({ postId }: { postId: string }) {
                   variant="ghost"
                   size="sm"
                   onClick={() => setReplyTo(replyTo === c.id ? null : c.id)}
-                  className={`h-8 gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full ${replyTo === c.id ? 'bg-primary/10 text-primary' : ''}`}
+                  className={`h-7 sm:h-8 gap-1 sm:gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full px-2 sm:px-3 ${replyTo === c.id ? 'bg-primary/10 text-primary' : ''}`}
                 >
-                  <CornerUpLeft size={14} />
-                  <span className="text-xs">{replyTo === c.id ? 'Cancel' : 'Reply'}</span>
+                  <CornerUpLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span className="text-[10px] sm:text-xs">{replyTo === c.id ? 'Cancel' : 'Reply'}</span>
                 </Button>
 
                 {/* Show Replies Button */}
@@ -944,26 +950,26 @@ export default function BlogComments({ postId }: { postId: string }) {
                       }
                       return newSet;
                     })}
-                    className="h-8 gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full"
+                    className="h-7 sm:h-8 gap-1 sm:gap-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full px-2 sm:px-3"
                   >
-                    {showRepliesForThis ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                    <span className="text-xs">{showRepliesForThis ? 'Hide' : 'Show'} ({replies.filter(r => r.parent_id === c.id).length})</span>
+                    {showRepliesForThis ? <ChevronUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                    <span className="text-[10px] sm:text-xs">{showRepliesForThis ? 'Hide' : 'Show'} ({replies.filter(r => r.parent_id === c.id).length})</span>
                   </Button>
                 )}
 
                 {userId && c.user_id === userId && (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
-                        <MoreHorizontal size={16} />
+                      <Button variant="ghost" size="sm" className="h-7 w-7 sm:h-8 sm:w-8 p-0 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full">
+                        <MoreHorizontal className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-36 rounded-xl">
-                      <DropdownMenuItem onClick={() => handleEditComment(c.id, c.content)} className="gap-2 rounded-lg">
-                        <Edit2 size={14} /> Edit
+                      <DropdownMenuItem onClick={() => handleEditComment(c.id, c.content)} className="gap-2 rounded-lg text-xs sm:text-sm">
+                        <Edit2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Edit
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteComment(c.id)} className="gap-2 text-destructive rounded-lg">
-                        <Trash2 size={14} /> Delete
+                      <DropdownMenuItem onClick={() => handleDeleteComment(c.id)} className="gap-2 text-destructive rounded-lg text-xs sm:text-sm">
+                        <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -971,7 +977,7 @@ export default function BlogComments({ postId }: { postId: string }) {
               </div>
 
               {/* Reactions */}
-              <div className="flex flex-wrap gap-2 mt-3 pt-3 border-t border-border/50">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border/50">
                 {REACTIONS.map(({ key, Icon, color }) => {
                   const count = reactionCounts[key];
                   const isSelected = userReaction === key;
@@ -986,19 +992,19 @@ export default function BlogComments({ postId }: { postId: string }) {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleReaction(c.id, key)}
-                        className={`h-8 px-2.5 rounded-full transition-all ${
+                        className={`h-6 sm:h-7 md:h-8 px-2 sm:px-2.5 rounded-full transition-all ${
                           isSelected 
                             ? 'bg-primary/10 border border-primary/20' 
                             : 'hover:bg-muted'
                         }`}
                       >
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-1 sm:gap-1.5">
                           <Icon 
-                            className={`w-4 h-4 transition-all ${isSelected ? color : 'text-muted-foreground'}`}
+                            className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 transition-all ${isSelected ? color : 'text-muted-foreground'}`}
                             strokeWidth={isSelected ? 2.5 : 2}
                           />
                           {count > 0 && (
-                            <span className={`text-xs font-medium transition-colors ${
+                            <span className={`text-[10px] sm:text-xs font-medium transition-colors ${
                               isSelected ? 'text-foreground' : 'text-muted-foreground'
                             }`}>
                               {count}
@@ -1104,61 +1110,81 @@ export default function BlogComments({ postId }: { postId: string }) {
   return (
     <div className={`${themeClasses.container} mt-8`}>
       {/* Header */}
-      <div className="flex items-center gap-3 mb-6">
-        <div className="p-2 rounded-full bg-primary/10">
-          <MessageCircle className="w-6 h-6 text-primary" />
+      <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+        <div className="p-1.5 sm:p-2 rounded-full bg-primary/10">
+          <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-primary" />
         </div>
         <div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-gray-100">Comments</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400">Join the conversation</p>
+          <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-gray-100">Comments</h3>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Join the conversation</p>
         </div>
       </div>
 
-      {/* Username prompt */}
-      {showNamePrompt && (
-        <motion.form
-          onSubmit={handleNamePromptSubmit}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="flex flex-col sm:flex-row gap-3 mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-2xl border border-blue-200/50 dark:border-blue-800/50"
+      {/* Username prompt - Only show at top if not replying */}
+      {showNamePrompt && !replyTo && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-2 border-primary/20 shadow-lg max-w-md"
         >
-          <div className="flex items-center gap-3">
-            <User className="w-5 h-5 text-blue-600" />
-            <span className="text-sm font-medium text-blue-900 dark:text-blue-100">Set your display name</span>
-          </div>
-          <StableUsernameInput
-            value={username || ""}
-            onChange={handleUsernameChange}
-            inputRef={usernameInputRef}
-          />
-          <div className="flex gap-2">
-            <Button type="submit" className="bg-blue-600 hover:bg-blue-700">
-              Continue
-            </Button>
-            <Button type="button" variant="outline" onClick={handleCancelUsername}>
-              Cancel
-            </Button>
-          </div>
-        </motion.form>
+          {/* Decorative background elements */}
+          <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+          <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/5 rounded-full blur-xl" />
+          
+          <motion.form
+            onSubmit={handleNamePromptSubmit}
+            className="relative p-3"
+          >
+            <div className="flex items-center gap-2 mb-2">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
+                <User className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs font-bold text-foreground">Welcome! 👋</h4>
+                <p className="text-[10px] text-muted-foreground">Set your name</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2">
+              <StableUsernameInput
+                value={username || ""}
+                onChange={handleUsernameChange}
+                inputRef={usernameInputRef}
+              />
+              <Button 
+                type="submit" 
+                className="flex-shrink-0 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all text-xs font-semibold px-3 h-8"
+              >
+                <Check className="w-3 h-3" />
+              </Button>
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleCancelUsername} 
+                className="flex-shrink-0 text-xs px-2 h-8 border-2 hover:bg-muted/50"
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          </motion.form>
+        </motion.div>
       )}
 
       {/* Top-level composer - Always visible */}
-      {!showNamePrompt && (
-        <div className="mb-8">
-          <IsolatedCommentInput
-            onSubmit={handleCommentSubmit}
-            placeholder="Add a comment (Markdown supported)..."
-            submitText="Post"
-          />
-        </div>
-      )}
+      <div className="mb-6 sm:mb-8">
+        <IsolatedCommentInput
+          onSubmit={handleCommentSubmit}
+          placeholder="Add a comment (Markdown supported)..."
+          submitText="Post"
+        />
+      </div>
 
       {/* Error display */}
       {error && (
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-4 p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-sm"
+          className="mb-3 sm:mb-4 p-2.5 sm:p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl text-red-700 dark:text-red-300 text-xs sm:text-sm"
         >
           {error}
         </motion.div>
@@ -1186,13 +1212,13 @@ export default function BlogComments({ postId }: { postId: string }) {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center py-12"
+          className="text-center py-8 sm:py-12"
         >
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-            <MessageCircle className="w-8 h-8 text-gray-400" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+            <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8 text-gray-400" />
           </div>
-          <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">No comments yet</h4>
-          <p className="text-gray-600 dark:text-gray-400">Be the first to share your thoughts!</p>
+          <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1.5 sm:mb-2">No comments yet</h4>
+          <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Be the first to share your thoughts!</p>
         </motion.div>
       ) : (
         <ul className="space-y-4" ref={scrollRef}>
@@ -1209,13 +1235,63 @@ export default function BlogComments({ postId }: { postId: string }) {
                     exit={{ opacity: 0, height: 0 }}
                     className="mt-3 ml-6 sm:ml-8 lg:ml-12"
                   >
-                    <IsolatedCommentInput
-                      onSubmit={handleReplySubmit}
-                      onCancel={handleCancelReply}
-                      placeholder="Write a reply (Markdown supported)..."
-                      submitText="Reply"
-                      showCancel={true}
-                    />
+                    {/* Show name prompt if needed */}
+                    {showNamePrompt && replyTo === comment.id ? (
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 via-primary/10 to-primary/5 border-2 border-primary/20 shadow-lg"
+                      >
+                        {/* Decorative background elements */}
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+                        <div className="absolute bottom-0 left-0 w-20 h-20 bg-primary/5 rounded-full blur-xl" />
+                        
+                        <motion.form
+                          onSubmit={handleNamePromptSubmit}
+                          className="relative p-3"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md">
+                              <User className="w-4 h-4 text-primary-foreground" strokeWidth={2.5} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="text-xs font-bold text-foreground">Quick setup! 👋</h4>
+                              <p className="text-[10px] text-muted-foreground">Set your name</p>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <StableUsernameInput
+                              value={username || ""}
+                              onChange={handleUsernameChange}
+                              inputRef={usernameInputRef}
+                            />
+                            <Button 
+                              type="submit" 
+                              className="flex-shrink-0 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all text-xs font-semibold px-3 h-8"
+                            >
+                              <Check className="w-3 h-3" />
+                            </Button>
+                            <Button 
+                              type="button" 
+                              variant="outline" 
+                              onClick={handleCancelUsername} 
+                              className="flex-shrink-0 text-xs px-2 h-8 border-2 hover:bg-muted/50"
+                            >
+                              <X className="w-3 h-3" />
+                            </Button>
+                          </div>
+                        </motion.form>
+                      </motion.div>
+                    ) : (
+                      <IsolatedCommentInput
+                        onSubmit={handleReplySubmit}
+                        onCancel={handleCancelReply}
+                        placeholder="Write a reply (Markdown supported)..."
+                        submitText="Reply"
+                        showCancel={true}
+                      />
+                    )}
                   </motion.div>
                 )}
 

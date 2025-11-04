@@ -740,7 +740,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
 
             {/* Comments */}
             <div className="mt-16 pt-12 border-t border-border/30">
-              <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
+              <h2 className="text-2xl font-bold mb-8 flex items-center gap-3">
                 <div className="w-1 h-10 bg-primary rounded-full" />
                 Discussion
               </h2>
@@ -753,14 +753,14 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
         <section className="bg-muted/30 border-y border-border/30">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
             <div className="text-center mb-16">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
+              {/* <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium mb-6">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
                 More to Explore
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                Continue Your Journey
+              </div> */}
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                More Blog Posts
               </h2>
               <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Discover more insights, stories, and ideas that matter
