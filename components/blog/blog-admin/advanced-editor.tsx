@@ -374,6 +374,22 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
     }
   }, [showColorPicker]);
 
+  // Close shortcuts modal with Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && showShortcutsModal) {
+        e.stopPropagation();
+        e.preventDefault();
+        setShowShortcutsModal(false);
+      }
+    };
+
+    if (showShortcutsModal) {
+      window.addEventListener('keydown', handleEscape, true); // Use capture phase
+      return () => window.removeEventListener('keydown', handleEscape, true);
+    }
+  }, [showShortcutsModal]);
+
   // Expose insertContent method via ref - MUST be before early return
   useImperativeHandle(ref, () => ({
     insertContent: (html: string) => {
@@ -980,7 +996,10 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
           >
             {/* Modal Header */}
             <div className="sticky top-0 bg-background border-b border-border px-6 py-4 flex items-center justify-between">
-              <h2 className="text-xl font-semibold">⌨️ Keyboard Shortcuts & Tips</h2>
+              <div>
+                <h2 className="text-xl font-semibold">⌨️ Keyboard Shortcuts & Tips</h2>
+                <p className="text-xs text-muted-foreground mt-1">Press <kbd className="px-1.5 py-0.5 bg-muted border border-border rounded text-xs font-mono">Esc</kbd> to close</p>
+              </div>
               <button
                 type="button"
                 onClick={() => setShowShortcutsModal(false)}
@@ -1106,6 +1125,10 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                   <div className="flex items-center justify-between p-2.5 bg-muted/30 rounded hover:bg-muted/50 transition-colors">
                     <span className="font-medium">Find</span>
                     <kbd className="px-2 py-1 bg-background border border-border rounded text-xs font-mono shadow-sm">Ctrl+F</kbd>
+                  </div>
+                  <div className="flex items-center justify-between p-2.5 bg-muted/30 rounded hover:bg-muted/50 transition-colors">
+                    <span className="font-medium">Logout</span>
+                    <kbd className="px-2 py-1 bg-background border border-border rounded text-xs font-mono shadow-sm">Esc</kbd>
                   </div>
                 </div>
               </div>

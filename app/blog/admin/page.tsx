@@ -77,6 +77,18 @@ export default function BlogAdmin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, postsInitialized]);
 
+  // Handle escape key to logout
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && user && !deleteModal.open && !aiModalOpen) {
+        handleLogout();
+      }
+    };
+
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [user, deleteModal.open, aiModalOpen, handleLogout]);
+
   // --- Upload Handlers ---
   async function handleCoverImageUpload(file: File) {
     const url = await BlogUploadService.uploadCoverImage(
