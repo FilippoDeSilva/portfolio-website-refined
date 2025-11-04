@@ -589,6 +589,21 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
     }
   }, [showColorPicker]);
 
+  // Close font picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.font-picker-container')) {
+        setShowFontPicker(false);
+      }
+    };
+
+    if (showFontPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showFontPicker]);
+
   // Close shortcuts modal with Escape key
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
@@ -891,31 +906,14 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
             tooltip="Strikethrough"
           />
           {/* Color Picker Dropdown */}
-          <div className="relative color-picker-container flex gap-0">
-            <ToolbarButton
-              onClick={() => {
-                // If text is already highlighted, remove it
-                if (editor.isActive("highlight")) {
-                  editor.chain().focus().unsetMark('highlight').run();
-                } else {
-                  // Otherwise, apply last used color
-                  editor.chain().focus().toggleMark('highlight', lastUsedColor.current).run();
-                }
-              }}
-              isActive={editor.isActive("highlight")}
-              icon={<Highlighter className="w-4 h-4" />}
-              tooltip="Highlight (Click to toggle)"
-            />
-            {/* Dropdown arrow for color picker */}
+          <div className="relative color-picker-container">
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowColorPicker(!showColorPicker);
-              }}
-              className="p-2 rounded-md transition-colors hover:bg-muted border-l border-border ml-0.5"
-              title="Choose color"
+              onClick={() => setShowColorPicker(!showColorPicker)}
+              className="px-3 py-2 rounded-md hover:bg-muted transition-colors text-sm font-medium flex items-center gap-1 focus:outline-none"
+              title="Highlight Colors"
             >
+              <Highlighter className="w-4 h-4" />
               <ChevronDown className="w-3 h-3" />
             </button>
             {showColorPicker && (
@@ -986,7 +984,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
         </div>
 
         {/* Font Family */}
-        <div className="relative border-r border-border pr-2">
+        <div className="relative border-r border-border pr-2 font-picker-container">
           <button
             type="button"
             onClick={() => setShowFontPicker(!showFontPicker)}
@@ -999,7 +997,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
             <ChevronDown className="w-3 h-3" />
           </button>
           {showFontPicker && (
-            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-2 z-50 min-w-[240px] max-w-[280px]">
+            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-2 z-50 min-w-[240px] max-w-[280px] font-picker-container">
               <div className="text-xs font-semibold mb-3 px-2 text-foreground">
                 Choose Font Style
               </div>
