@@ -32,7 +32,17 @@ export function PostsList({
   return (
     <div style={{ position: 'relative', width: '100%', height: '1465px' }}>
       {/* Posts Grid - Takes remaining space, scrollable if needed */}
-      <div style={{ width: '100%', height: 'calc(100% - 90px)', overflowY: 'auto', overflowX: 'hidden' }}>
+      <div 
+        style={{ 
+          width: '100%', 
+          height: 'calc(100% - 90px)', 
+          overflowY: 'auto', 
+          overflowX: 'hidden',
+          scrollbarWidth: 'none', /* Firefox */
+          msOverflowStyle: 'none', /* IE and Edge */
+        }}
+        className="hide-scrollbar"
+      >
         {postsLoading ? (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {[...Array(postsPerPage)].map((_, i) => (
