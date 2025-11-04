@@ -394,11 +394,11 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
         {/* Hero Section with Cover Image */}
         {post.cover_image && (
           <>
-            {/* Cover Image - Mobile: no overlay, Desktop: with overlay */}
-            <div className="relative w-full h-[50vh] sm:h-[75vh] md:h-[85vh] overflow-hidden">
-              {/* Sophisticated multi-layer gradient - Desktop only */}
-              <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent z-10" />
-              <div className="hidden sm:block absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10" />
+            {/* Cover Image - Full width with overlay */}
+            <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[85vh] overflow-hidden">
+              {/* Sophisticated multi-layer gradient */}
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent z-10" />
+              <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10" />
               
               {/* Light mode cotton-like soft shade effect below cover - Desktop only */}
               {mounted && theme === 'light' && (
@@ -412,48 +412,50 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                 src={post.cover_image}
                 alt={post.title}
                 fill
-                className="object-contain sm:object-cover object-top"
+                className="object-cover object-center"
                 priority
               />
-              {/* Hero Content Overlay - Desktop only */}
-              <div className="hidden sm:flex absolute inset-0 z-20 items-end">
+              {/* Hero Content Overlay - All screens */}
+              <div className="absolute inset-0 z-20 flex items-end">
                 <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
                   <div className="space-y-4">
                     {/* Category Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white text-sm font-semibold shadow-lg">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white text-xs sm:text-sm font-semibold shadow-lg">
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                         <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                       Article
                     </div>
                     {/* Title */}
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.2] tracking-tight drop-shadow-2xl">
+                    <h1 className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.2] tracking-tight drop-shadow-2xl">
                       {post.title}
                     </h1>
                     {/* Meta */}
-                    <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                      <time className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-lg">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3 md:gap-4">
+                      <time className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium shadow-lg">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        {new Date(post.created_at).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        <span className="whitespace-nowrap">
+                          {new Date(post.created_at).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
                       </time>
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-lg">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium shadow-lg whitespace-nowrap">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>{readingTime} min read</span>
+                        <span>{readingTime} min</span>
                       </div>
-                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-lg">
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                      <div className="flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-xs sm:text-sm font-medium shadow-lg whitespace-nowrap">
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                           <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         </svg>
-                        <span>{post.view_count?.toLocaleString() || 0} views</span>
+                        <span>{post.view_count?.toLocaleString() || 0}</span>
                       </div>
                     </div>
                   </div>
@@ -462,7 +464,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
             </div>
 
             {/* Mobile Title Section - Below cover image */}
-            <div className="sm:hidden bg-background px-3 xs:px-4 -mt-32 pt-16 pb-6 border-b border-border/30">
+            <div className="sm:hidden bg-background px-3 xs:px-4 pt-6 pb-6 border-b border-border/30 relative z-30">
               <div className="space-y-3 xs:space-y-4">
                 {/* Category Badge */}
                 <div className="inline-flex items-center gap-1.5 px-2.5 xs:px-3 py-1 xs:py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] xs:text-xs font-semibold">
