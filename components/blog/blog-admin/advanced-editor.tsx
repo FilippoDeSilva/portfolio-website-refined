@@ -13,7 +13,58 @@ import javascript from "highlight.js/lib/languages/javascript";
 import typescript from "highlight.js/lib/languages/typescript";
 import python from "highlight.js/lib/languages/python";
 import TextStyle from "@tiptap/extension-text-style";
+import { Extension } from "@tiptap/core";
 import { Node } from "@tiptap/core";
+
+// Custom FontFamily extension
+const FontFamily = Extension.create({
+  name: 'fontFamily',
+  
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontFamily: {
+            default: null,
+            parseHTML: element => element.style.fontFamily?.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.fontFamily) {
+                return {};
+              }
+              return {
+                style: `font-family: ${attributes.fontFamily}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+  
+  addCommands() {
+    return {
+      setFontFamily: fontFamily => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { fontFamily })
+          .run();
+      },
+      unsetFontFamily: () => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { fontFamily: null })
+          .removeEmptyTextStyle()
+          .run();
+      },
+    };
+  },
+});
+
 import {
   Bold,
   Italic,
@@ -287,6 +338,168 @@ const HIGHLIGHT_COLORS = [
   { name: "Indigo", color: "#c7d2fe", textColor: "#312e81", class: "bg-indigo-200" },
 ];
 
+const BLOG_FONTS = [
+  { name: 'Default', value: '', category: '' },
+  
+  // Professional & Clean
+  { name: 'Oxygen', value: 'Oxygen, sans-serif', category: 'Professional' },
+  { name: 'Space Grotesk', value: '"Space Grotesk", sans-serif', category: 'Professional' },
+  { name: 'Fira Sans Condensed', value: '"Fira Sans Condensed", sans-serif', category: 'Professional' },
+  { name: 'Unbounded', value: 'Unbounded, sans-serif', category: 'Professional' },
+  { name: 'Philosopher', value: 'Philosopher, sans-serif', category: 'Professional' },
+  
+  // Classic & Elegant
+  { name: 'Noto Serif', value: '"Noto Serif", serif', category: 'Classic' },
+  { name: 'Old Standard TT', value: '"Old Standard TT", serif', category: 'Classic' },
+  { name: 'Almendra', value: 'Almendra, serif', category: 'Classic' },
+  
+  // Modern & Stylish
+  { name: 'Momo Trust Display', value: '"Momo Trust Display", sans-serif', category: 'Modern' },
+  { name: 'Bitcount Grid Single', value: '"Bitcount Grid Single", monospace', category: 'Modern' },
+  { name: 'Sixtyfour', value: 'Sixtyfour, sans-serif', category: 'Modern' },
+  { name: 'Rubik 80s Fade', value: '"Rubik 80s Fade", sans-serif', category: 'Modern' },
+  { name: 'Tourney', value: 'Tourney, sans-serif', category: 'Modern' },
+  { name: 'Monoton', value: 'Monoton, cursive', category: 'Modern' },
+  
+  // Handwriting & Script
+  { name: 'Momo Signature', value: '"Momo Signature", cursive', category: 'Handwriting' },
+  { name: 'Dancing Script', value: '"Dancing Script", cursive', category: 'Handwriting' },
+  { name: 'Caveat', value: 'Caveat, cursive', category: 'Handwriting' },
+  { name: 'Pacifico', value: 'Pacifico, cursive', category: 'Handwriting' },
+  { name: 'Shadows Into Light', value: '"Shadows Into Light", cursive', category: 'Handwriting' },
+  { name: 'Indie Flower', value: '"Indie Flower", cursive', category: 'Handwriting' },
+  { name: 'Permanent Marker', value: '"Permanent Marker", cursive', category: 'Handwriting' },
+  { name: 'Architects Daughter', value: '"Architects Daughter", cursive', category: 'Handwriting' },
+  { name: 'Cabin Sketch', value: '"Cabin Sketch", cursive', category: 'Handwriting' },
+  
+  // Decorative & Fancy
+  { name: 'Lobster Two', value: '"Lobster Two", cursive', category: 'Decorative' },
+  { name: 'Great Vibes', value: '"Great Vibes", cursive', category: 'Decorative' },
+  { name: 'Oleo Script', value: '"Oleo Script", cursive', category: 'Decorative' },
+  { name: 'Kaushan Script', value: '"Kaushan Script", cursive', category: 'Decorative' },
+  { name: 'WindSong', value: 'WindSong, cursive', category: 'Decorative' },
+  { name: 'Aguafina Script', value: '"Aguafina Script", cursive', category: 'Decorative' },
+  { name: 'Vujahday Script', value: '"Vujahday Script", cursive', category: 'Decorative' },
+  { name: 'Homemade Apple', value: '"Homemade Apple", cursive', category: 'Decorative' },
+  
+  // Fun & Playful
+  { name: 'Jersey 10', value: '"Jersey 10", sans-serif', category: 'Fun' },
+  { name: 'Gravitas One', value: '"Gravitas One", cursive', category: 'Fun' },
+  { name: 'Are You Serious', value: '"Are You Serious", cursive', category: 'Fun' },
+  { name: 'Freckle Face', value: '"Freckle Face", cursive', category: 'Fun' },
+  { name: 'Trade Winds', value: '"Trade Winds", cursive', category: 'Fun' },
+  { name: 'Aladin', value: 'Aladin, cursive', category: 'Fun' },
+  { name: 'Sancreek', value: 'Sancreek, cursive', category: 'Fun' },
+  
+  // Technical & Code
+  { name: 'Google Sans Code', value: '"Google Sans Code", monospace', category: 'Technical' },
+  { name: 'Kode Mono', value: '"Kode Mono", monospace', category: 'Technical' },
+  { name: 'Special Elite', value: '"Special Elite", cursive', category: 'Technical' },
+  { name: 'Libertinus Keyboard', value: '"Libertinus Keyboard", monospace', category: 'Technical' },
+  
+  // Bold & Impactful
+  { name: 'Bungee Tint', value: '"Bungee Tint", cursive', category: 'Bold' },
+  { name: 'Bungee Spice', value: '"Bungee Spice", cursive', category: 'Bold' },
+  { name: 'Faster One', value: '"Faster One", cursive', category: 'Bold' },
+  { name: 'New Rocker', value: '"New Rocker", cursive', category: 'Bold' },
+  { name: 'Metal Mania', value: '"Metal Mania", cursive', category: 'Bold' },
+  { name: 'Rubik Glitch', value: '"Rubik Glitch", cursive', category: 'Bold' },
+  
+  // Horror & Spooky
+  { name: 'Creepster', value: 'Creepster, cursive', category: 'Horror' },
+  { name: 'Butcherman', value: 'Butcherman, cursive', category: 'Horror' },
+  { name: 'Eater', value: 'Eater, cursive', category: 'Horror' },
+  { name: 'Nosifer', value: 'Nosifer, cursive', category: 'Horror' },
+  { name: 'Londrina Sketch', value: '"Londrina Sketch", cursive', category: 'Horror' },
+  
+  // Artistic & Unique
+  { name: 'Manufacturing Consent', value: '"Manufacturing Consent", sans-serif', category: 'Artistic' },
+  { name: 'Menbere', value: 'Menbere, sans-serif', category: 'Artistic' },
+  { name: 'Codystar', value: 'Codystar, cursive', category: 'Artistic' },
+  { name: 'Nova Script', value: '"Nova Script", cursive', category: 'Artistic' },
+  { name: 'Water Brush', value: '"Water Brush", cursive', category: 'Artistic' },
+  { name: 'Neonderthaw', value: 'Neonderthaw, cursive', category: 'Artistic' },
+  { name: 'Love Light', value: '"Love Light", cursive', category: 'Artistic' },
+  { name: 'Cherish', value: 'Cherish, cursive', category: 'Artistic' },
+  { name: 'Splash', value: 'Splash, cursive', category: 'Artistic' },
+  { name: 'Matemasie', value: 'Matemasie, sans-serif', category: 'Artistic' },
+  { name: 'Nabla', value: 'Nabla, system-ui', category: 'Artistic' },
+  
+  // Vintage & Retro
+  { name: 'Road Rage', value: '"Road Rage", cursive', category: 'Vintage' },
+  { name: 'Jolly Lodger', value: '"Jolly Lodger", cursive', category: 'Vintage' },
+  { name: 'Germania One', value: '"Germania One", cursive', category: 'Vintage' },
+  { name: 'Lemon', value: 'Lemon, cursive', category: 'Vintage' },
+  { name: 'Akronim', value: 'Akronim, cursive', category: 'Vintage' },
+  { name: 'Astloch', value: 'Astloch, cursive', category: 'Vintage' },
+  { name: 'Piedra', value: 'Piedra, cursive', category: 'Vintage' },
+  { name: 'Miltonian', value: 'Miltonian, cursive', category: 'Vintage' },
+  { name: 'Arbutus', value: 'Arbutus, cursive', category: 'Vintage' },
+  { name: 'Plaster', value: 'Plaster, cursive', category: 'Vintage' },
+  { name: 'New Amsterdam', value: '"New Amsterdam", sans-serif', category: 'Vintage' },
+  { name: 'Griffy', value: 'Griffy, cursive', category: 'Vintage' },
+  { name: 'Tulpen One', value: '"Tulpen One", cursive', category: 'Vintage' },
+  { name: 'Jim Nightshade', value: '"Jim Nightshade", cursive', category: 'Vintage' },
+  { name: 'Oldenburg', value: 'Oldenburg, cursive', category: 'Vintage' },
+  
+  // Experimental & Glitch
+  { name: 'Rubik Moonrocks', value: '"Rubik Moonrocks", cursive', category: 'Experimental' },
+  { name: 'Rubik Scribble', value: '"Rubik Scribble", cursive', category: 'Experimental' },
+  { name: 'Londrina Shadow', value: '"Londrina Shadow", cursive', category: 'Experimental' },
+  { name: 'Zen Tokyo Zoo', value: '"Zen Tokyo Zoo", cursive', category: 'Experimental' },
+  { name: 'Almendra Display', value: '"Almendra Display", cursive', category: 'Experimental' },
+  { name: 'Alumni Sans Pinstripe', value: '"Alumni Sans Pinstripe", sans-serif', category: 'Experimental' },
+  { name: 'Jacquard 12', value: '"Jacquard 12", system-ui', category: 'Experimental' },
+  { name: 'Bitcount Prop Double', value: '"Bitcount Prop Double", monospace', category: 'Experimental' },
+  { name: 'Lugrasimo', value: 'Lugrasimo, cursive', category: 'Experimental' },
+  { name: 'Bungee Outline', value: '"Bungee Outline", cursive', category: 'Experimental' },
+  { name: 'Jersey 20', value: '"Jersey 20", sans-serif', category: 'Experimental' },
+  { name: 'Rubik Distressed', value: '"Rubik Distressed", cursive', category: 'Experimental' },
+  { name: 'Kumar One Outline', value: '"Kumar One Outline", cursive', category: 'Experimental' },
+  { name: 'Flavors', value: 'Flavors, cursive', category: 'Experimental' },
+  { name: 'Rubik Vinyl', value: '"Rubik Vinyl", cursive', category: 'Experimental' },
+  { name: 'Bonbon', value: 'Bonbon, cursive', category: 'Experimental' },
+  { name: 'Trochut', value: 'Trochut, cursive', category: 'Experimental' },
+  { name: 'Rubik Gemstones', value: '"Rubik Gemstones", cursive', category: 'Experimental' },
+  { name: 'Hanalei Fill', value: '"Hanalei Fill", cursive', category: 'Experimental' },
+  { name: 'Purple Purse', value: '"Purple Purse", cursive', category: 'Experimental' },
+  { name: 'Bruno Ace SC', value: '"Bruno Ace SC", sans-serif', category: 'Experimental' },
+  { name: 'Foldit', value: 'Foldit, cursive', category: 'Experimental' },
+  { name: 'Alumni Sans Inline One', value: '"Alumni Sans Inline One", sans-serif', category: 'Experimental' },
+  { name: 'Emblema One', value: '"Emblema One", cursive', category: 'Experimental' },
+  { name: 'Wittgenstein', value: 'Wittgenstein, serif', category: 'Experimental' },
+  { name: 'Rubik Glitch Pop', value: '"Rubik Glitch Pop", system-ui', category: 'Experimental' },
+  { name: 'GFS Neohellenic', value: '"GFS Neohellenic", sans-serif', category: 'Experimental' },
+  { name: 'Jacquard 24', value: '"Jacquard 24", system-ui', category: 'Experimental' },
+  { name: 'Rubik Beastly', value: '"Rubik Beastly", system-ui', category: 'Experimental' },
+  { name: 'Rubik Microbe', value: '"Rubik Microbe", system-ui', category: 'Experimental' },
+  { name: 'Ruge Boogie', value: '"Ruge Boogie", cursive', category: 'Experimental' },
+  { name: 'Protest Guerrilla', value: '"Protest Guerrilla", sans-serif', category: 'Experimental' },
+  { name: 'Rubik Puddles', value: '"Rubik Puddles", cursive', category: 'Experimental' },
+  { name: 'Moo Lah Lah', value: '"Moo Lah Lah", cursive', category: 'Experimental' },
+  { name: 'Rubik Marker Hatch', value: '"Rubik Marker Hatch", cursive', category: 'Experimental' },
+  { name: 'Labrada', value: 'Labrada, serif', category: 'Experimental' },
+  { name: 'Workbench', value: 'Workbench, system-ui', category: 'Experimental' },
+  { name: 'Kalnia Glaze', value: '"Kalnia Glaze", serif', category: 'Experimental' },
+  { name: 'Sixtyfour Convergence', value: '"Sixtyfour Convergence", sans-serif', category: 'Experimental' },
+  { name: 'Hanalei', value: 'Hanalei, cursive', category: 'Experimental' },
+  { name: 'Rubik Maps', value: '"Rubik Maps", system-ui', category: 'Experimental' },
+  { name: 'Rubik Doodle Triangles', value: '"Rubik Doodle Triangles", system-ui', category: 'Experimental' },
+  { name: 'Jacquard 12 Charted', value: '"Jacquard 12 Charted", system-ui', category: 'Experimental' },
+  { name: 'Jersey 25 Charted', value: '"Jersey 25 Charted", system-ui', category: 'Experimental' },
+  { name: 'Rubik Storm', value: '"Rubik Storm", system-ui', category: 'Experimental' },
+  { name: 'Rubik Maze', value: '"Rubik Maze", system-ui', category: 'Experimental' },
+  { name: 'Rubik Lines', value: '"Rubik Lines", system-ui', category: 'Experimental' },
+  
+  // Educational & Handwriting
+  { name: 'Edu VIC WA NT Beginner', value: '"Edu VIC WA NT Beginner", cursive', category: 'Educational' },
+  { name: 'Arsenal SC', value: '"Arsenal SC", sans-serif', category: 'Educational' },
+  { name: 'Abyssinica SIL', value: '"Abyssinica SIL", serif', category: 'Educational' },
+  
+  // Emoji & Symbols
+  { name: 'Noto Color Emoji', value: '"Noto Color Emoji", sans-serif', category: 'Emoji' },
+];
+
 export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>(function AdvancedEditor({
   content,
   onChange,
@@ -295,6 +508,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
   onOpenAI,
 }, ref) {
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showFontPicker, setShowFontPicker] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showMediaModal, setShowMediaModal] = useState<'image' | 'video' | null>(null);
   const [mediaUrl, setMediaUrl] = useState('');
@@ -312,6 +526,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
         codeBlock: false, // Disable default codeBlock to use CodeBlockLowlight
       }),
       TextStyle,
+      FontFamily,
       CustomImage.configure({
         allowBase64: true,
       }),
@@ -768,6 +983,53 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
             icon={<Heading3 className="w-4 h-4" />}
             tooltip="Heading 3"
           />
+        </div>
+
+        {/* Font Family */}
+        <div className="relative border-r border-border pr-2">
+          <button
+            type="button"
+            onClick={() => setShowFontPicker(!showFontPicker)}
+            className="px-3 py-2 rounded-md hover:bg-muted transition-colors text-sm font-medium flex items-center gap-1 focus:outline-none"
+            title="Font Family"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {showFontPicker && (
+            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-2 z-50 min-w-[240px] max-w-[280px]">
+              <div className="text-xs font-semibold mb-3 px-2 text-foreground">
+                Choose Font Style
+              </div>
+              <div className="max-h-[400px] overflow-y-auto space-y-1">
+                {BLOG_FONTS.map((font, index) => (
+                  <div key={font.name}>
+                    {font.category && BLOG_FONTS[index - 1]?.category !== font.category && (
+                      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 py-2 mt-2">
+                        {font.category}
+                      </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (font.value) {
+                          editor.chain().focus().setFontFamily(font.value).run();
+                        } else {
+                          editor.chain().focus().unsetFontFamily().run();
+                        }
+                        setShowFontPicker(false);
+                      }}
+                      className="w-full text-left px-3 py-2.5 rounded hover:bg-muted transition-colors text-sm focus:outline-none"
+                      style={{ fontFamily: font.value || 'inherit' }}
+                    >
+                      {font.name}
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Lists */}
@@ -1245,7 +1507,7 @@ function ToolbarButton({
       title={tooltip}
       className={`
         ${size === "sm" ? "p-1.5" : "p-2"}
-        rounded-md transition-colors
+        rounded-md transition-colors focus:outline-none
         ${isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted"}
         ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
       `}
