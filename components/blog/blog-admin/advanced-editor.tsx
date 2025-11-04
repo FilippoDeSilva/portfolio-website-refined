@@ -825,7 +825,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
         </div>
 
         {/* Undo/Redo */}
-        <div className="flex gap-1 border-r border-border pr-2">
+        <div className="flex gap-1 pr-2">
           <ToolbarButton
             onClick={() => editor.chain().focus().undo().run()}
             disabled={!editor.can().undo()}
@@ -966,7 +966,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                         }
                       }}
                       placeholder={`https://example.com/${showMediaModal}.${showMediaModal === 'image' ? 'jpg' : 'mp4'}`}
-                      className="w-full px-3 py-2 bg-background border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                      className="w-full px-3 py-2 bg-background border-2 border-border rounded-md focus:outline-none focus:border-primary transition-colors text-sm"
                     />
                   </div>
                 </div>

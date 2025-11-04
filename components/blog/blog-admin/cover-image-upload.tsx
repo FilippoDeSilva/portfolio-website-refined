@@ -108,7 +108,7 @@ export function CoverImageUpload({
               <input
                 type="text"
                 placeholder="Paste image URL here..."
-                className="w-full px-4 py-3 border border-border rounded-lg text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border-2 border-border rounded-lg text-sm bg-background focus:outline-none focus:border-primary transition-colors"
                 value={urlInput}
                 onChange={(e) => setUrlInput(e.target.value)}
                 onBlur={handleUrlBlur}

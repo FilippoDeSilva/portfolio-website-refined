@@ -62,7 +62,7 @@ export function AttachmentUpload({
             <input
               type="text"
               placeholder="Or paste file URL..."
-              className="flex-1 px-3 py-2 border border-border rounded-lg text-xs sm:text-sm bg-background focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all min-w-0"
+              className="flex-1 px-3 py-2 border-2 border-border rounded-lg text-xs sm:text-sm bg-background focus:outline-none focus:border-primary transition-colors min-w-0"
               value={urlInput}
               onChange={(e) => setUrlInput(e.target.value)}
               onKeyDown={(e) => {

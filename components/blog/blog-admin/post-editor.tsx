@@ -93,7 +93,7 @@ export function PostEditor({
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               required
-              className="w-full rounded-lg border border-border bg-background px-4 py-2 text-lg shadow-inner focus:outline-none focus:ring-2 focus:ring-primary/30 transition"
+              className="w-full rounded-lg border-2 border-border bg-background px-4 py-2 text-lg shadow-inner focus:outline-none focus:border-primary transition-colors"
               placeholder="Enter a captivating title..."
             />
           </div>
