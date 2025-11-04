@@ -1,5 +1,4 @@
 "use client";
-// @ts-nocheck - TipTap types are complex and don't affect functionality
 
 import { EditorContent, useEditor, BubbleMenu, FloatingMenu } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
@@ -16,6 +15,20 @@ import TextStyle from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import { Extension } from "@tiptap/core";
 import { Node } from "@tiptap/core";
+
+// Extend TipTap types for custom commands
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    fontFamily: {
+      setFontFamily: (fontFamily: string) => ReturnType;
+      unsetFontFamily: () => ReturnType;
+    };
+    fontSize: {
+      setFontSize: (fontSize: string) => ReturnType;
+      unsetFontSize: () => ReturnType;
+    };
+  }
+}
 
 // Custom FontFamily extension
 const FontFamily = Extension.create({
@@ -51,12 +64,12 @@ const FontFamily = Extension.create({
   
   addCommands() {
     return {
-      setFontFamily: fontFamily => ({ chain }) => {
+      setFontFamily: (fontFamily: string) => ({ chain }: any) => {
         return chain()
           .setMark('textStyle', { fontFamily })
           .run();
       },
-      unsetFontFamily: () => ({ chain }) => {
+      unsetFontFamily: () => ({ chain }: any) => {
         return chain()
           .setMark('textStyle', { fontFamily: null })
           .removeEmptyTextStyle()
