@@ -13,6 +13,7 @@ import javascript from "highlight.js/lib/languages/javascript";
 import typescript from "highlight.js/lib/languages/typescript";
 import python from "highlight.js/lib/languages/python";
 import TextStyle from "@tiptap/extension-text-style";
+import { Color } from "@tiptap/extension-color";
 import { Extension } from "@tiptap/core";
 import { Node } from "@tiptap/core";
 
@@ -338,6 +339,21 @@ const HIGHLIGHT_COLORS = [
   { name: "Indigo", color: "#c7d2fe", textColor: "#312e81", class: "bg-indigo-200" },
 ];
 
+const TEXT_COLORS = [
+  { name: "Black", color: "#000000" },
+  { name: "Dark Gray", color: "#374151" },
+  { name: "Gray", color: "#6b7280" },
+  { name: "Red", color: "#dc2626" },
+  { name: "Orange", color: "#ea580c" },
+  { name: "Yellow", color: "#ca8a04" },
+  { name: "Green", color: "#16a34a" },
+  { name: "Teal", color: "#0d9488" },
+  { name: "Blue", color: "#2563eb" },
+  { name: "Indigo", color: "#4f46e5" },
+  { name: "Purple", color: "#9333ea" },
+  { name: "Pink", color: "#db2777" },
+];
+
 const BLOG_FONTS = [
   { name: 'Default', value: '', category: '' },
   
@@ -508,6 +524,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
   onOpenAI,
 }, ref) {
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showTextColorPicker, setShowTextColorPicker] = useState(false);
   const [showFontPicker, setShowFontPicker] = useState(false);
   const [showShortcutsModal, setShowShortcutsModal] = useState(false);
   const [showMediaModal, setShowMediaModal] = useState<'image' | 'video' | null>(null);
@@ -526,6 +543,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
         codeBlock: false, // Disable default codeBlock to use CodeBlockLowlight
       }),
       TextStyle,
+      Color,
       FontFamily,
       CustomImage.configure({
         allowBase64: true,
@@ -603,6 +621,21 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [showFontPicker]);
+
+  // Close text color picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('.text-color-picker-container')) {
+        setShowTextColorPicker(false);
+      }
+    };
+
+    if (showTextColorPicker) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showTextColorPicker]);
 
   // Close shortcuts modal with Escape key
   useEffect(() => {
@@ -956,6 +989,65 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                     </button>
                   ))}
                 </div>
+              </div>
+            )}
+          </div>
+          {/* Text Color Picker */}
+          <div className="relative text-color-picker-container">
+            <button
+              type="button"
+              onClick={() => setShowTextColorPicker(!showTextColorPicker)}
+              className="px-3 py-2 rounded-md hover:bg-muted transition-colors text-sm font-medium flex items-center gap-1 focus:outline-none"
+              title="Text Color"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+              </svg>
+              <ChevronDown className="w-3 h-3" />
+            </button>
+            {showTextColorPicker && (
+              <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 min-w-[240px] text-color-picker-container">
+                <div className="text-xs font-medium mb-3 px-1 text-muted-foreground">
+                  Text Colors
+                </div>
+                <div className="grid grid-cols-4 gap-2 mb-3">
+                  {TEXT_COLORS.map((color) => (
+                    <button
+                      type="button"
+                      key={color.name}
+                      onClick={() => {
+                        if (editor) {
+                          editor.chain().focus().setColor(color.color).run();
+                        }
+                        setShowTextColorPicker(false);
+                      }}
+                      className="group relative flex flex-col items-center"
+                      title={color.name}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-md border-2 border-border hover:border-primary transition-all shadow-sm hover:shadow-md hover:scale-110"
+                        style={{ 
+                          backgroundColor: color.color,
+                        }}
+                      />
+                      <span className="text-[10px] mt-1 text-muted-foreground group-hover:text-foreground transition-colors truncate w-full text-center">
+                        {color.name}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (editor) {
+                      editor.chain().focus().unsetColor().run();
+                    }
+                    setShowTextColorPicker(false);
+                  }}
+                  className="w-full px-3 py-2 text-xs rounded hover:bg-muted transition-colors border border-border"
+                >
+                  Reset Color
+                </button>
               </div>
             )}
           </div>
