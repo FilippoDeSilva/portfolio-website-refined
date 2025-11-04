@@ -14,11 +14,14 @@ export default function BlogPostLayout({
 
   useEffect(() => {
     setMounted(true);
-    // Set default theme to system if not already set
-    if (!theme) {
+  }, []);
+
+  useEffect(() => {
+    // Set default theme to system on first load
+    if (mounted && !theme) {
       setTheme("system");
     }
-  }, [theme, setTheme]);
+  }, [mounted, theme, setTheme]);
 
   const cycleTheme = () => {
     if (theme === "dark") {
