@@ -89,30 +89,30 @@ export default function BlogPage() {
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-4xl mx-auto">
               {/* Search */}
               <div className="relative flex-1 max-w-md">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground" />
                 <Input
                   type="text"
                   placeholder="Search posts..."
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="pl-11 h-12 text-sm rounded-full border-border bg-muted/30 hover:bg-muted/50 focus:bg-background transition-colors"
+                  className="pl-9 sm:pl-11 h-10 sm:h-12 text-xs sm:text-sm rounded-full border-border bg-muted/30 hover:bg-muted/50 focus:bg-background transition-colors"
                 />
               </div>
 
               {/* Controls Group */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center justify-end sm:justify-start gap-2 sm:gap-3">
                 {/* Sort Dropdown */}
                 <DropdownMenu onOpenChange={setIsDropdownOpen}>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="outline"
-                      className="h-12 px-4 rounded-full border-border bg-muted/30 hover:bg-muted/50 transition-colors"
+                      className="h-10 sm:h-12 px-3 sm:px-4 rounded-full border-border bg-muted/30 hover:bg-muted/50 transition-colors"
                     >
-                      <span className="text-sm font-medium">
+                      <span className="text-xs sm:text-sm font-medium">
                         {sortBy === "newest" ? "Newest" : sortBy === "oldest" ? "Oldest" : "Popular"}
                       </span>
                       <ChevronDown 
-                        className={`ml-2 w-4 h-4 text-muted-foreground transition-transform duration-200 ${
+                        className={`ml-1 sm:ml-2 w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground transition-transform duration-200 ${
                           isDropdownOpen ? 'rotate-180' : 'rotate-0'
                         }`} 
                       />
@@ -144,26 +144,26 @@ export default function BlogPage() {
                 </DropdownMenu>
 
                 {/* View Toggle */}
-                <div className="flex items-center bg-muted/30 rounded-full p-1">
+                <div className="flex items-center bg-muted/30 rounded-full p-0.5 sm:p-1">
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleViewModeChange("grid")}
-                    className={`h-10 w-10 p-0 rounded-full transition-all ${
-                      viewMode === "grid" ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-muted/50'
+                    className={`h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-full transition-all ${
+                      viewMode === "grid" ? 'bg-primary hover:bg-primary/90 [&>svg]:text-white' : 'hover:bg-muted/50 [&>svg]:text-muted-foreground'
                     }`}
                   >
-                    <Grid3X3 className="w-4 h-4" />
+                    <Grid3X3 className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={viewMode === "grid" ? 2.5 : 2} />
                   </Button>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleViewModeChange("list")}
-                    className={`h-10 w-10 p-0 rounded-full transition-all ${
-                      viewMode === "list" ? 'bg-primary text-primary-foreground hover:bg-primary/90' : 'hover:bg-muted/50'
+                    className={`h-8 w-8 sm:h-10 sm:w-10 p-0 rounded-full transition-all ${
+                      viewMode === "list" ? 'bg-primary hover:bg-primary/90 [&>svg]:text-white' : 'hover:bg-muted/50 [&>svg]:text-muted-foreground'
                     }`}
                   >
-                    <List className="w-4 h-4" />
+                    <List className="w-3 h-3 sm:w-4 sm:h-4" strokeWidth={viewMode === "list" ? 2.5 : 2} />
                   </Button>
                 </div>
               </div>
