@@ -1,5 +1,4 @@
 import type React from "react"
-import "@/app/globals.css"
 import { ThemeProvider } from "@/components/shared"
 // import { Inter } from "next/font/google"
 import './globals.css'

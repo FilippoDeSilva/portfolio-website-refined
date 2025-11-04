@@ -67,7 +67,7 @@ export function PostEditor({
   const editorRef = externalEditorRef || internalEditorRef;
   
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-background via-muted/60 to-background/80 shadow-xl border-0 rounded-2xl">
+    <Card className="w-full max-w-2xl mx-auto bg-gradient-to-br from-background via-muted/60 to-background/80 shadow-xl border-0 rounded-2xl overflow-visible">
       <CardHeader className="pb-2">
         <CardTitle className="text-2xl font-bold tracking-tight mb-1">
           {editingId ? "Edit Post" : "New Post"}
@@ -78,7 +78,7 @@ export function PostEditor({
         </CardDescription>
       </CardHeader>
       <form onSubmit={onSubmit}>
-        <CardContent className="space-y-5">
+        <CardContent className="space-y-5 overflow-visible">
           <div>
             <label
               htmlFor="title"

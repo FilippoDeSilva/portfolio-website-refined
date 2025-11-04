@@ -961,28 +961,6 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
           </div>
         </div>
 
-        {/* Headings */}
-        <div className="flex gap-1 border-r border-border pr-2">
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            isActive={editor.isActive("heading", { level: 1 })}
-            icon={<Heading1 className="w-4 h-4" />}
-            tooltip="Heading 1"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            isActive={editor.isActive("heading", { level: 2 })}
-            icon={<Heading2 className="w-4 h-4" />}
-            tooltip="Heading 2"
-          />
-          <ToolbarButton
-            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            isActive={editor.isActive("heading", { level: 3 })}
-            icon={<Heading3 className="w-4 h-4" />}
-            tooltip="Heading 3"
-          />
-        </div>
-
         {/* Font Family */}
         <div className="relative border-r border-border pr-2 font-picker-container">
           <button
@@ -1028,6 +1006,28 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
               </div>
             </div>
           )}
+        </div>
+
+        {/* Headings */}
+        <div className="flex gap-1 border-r border-border pr-2">
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+            isActive={editor.isActive("heading", { level: 1 })}
+            icon={<Heading1 className="w-4 h-4" />}
+            tooltip="Heading 1"
+          />
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+            isActive={editor.isActive("heading", { level: 2 })}
+            icon={<Heading2 className="w-4 h-4" />}
+            tooltip="Heading 2"
+          />
+          <ToolbarButton
+            onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+            isActive={editor.isActive("heading", { level: 3 })}
+            icon={<Heading3 className="w-4 h-4" />}
+            tooltip="Heading 3"
+          />
         </div>
 
         {/* Lists */}
