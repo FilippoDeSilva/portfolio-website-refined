@@ -856,7 +856,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
           <button
             type="button"
             onClick={() => setShowShortcutsModal(true)}
-            className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            className="p-2 rounded-md hover:bg-muted transition-colors text-muted-foreground hover:text-foreground focus:outline-none"
             title="Keyboard Shortcuts"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1128,7 +1128,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                   </div>
                   <div className="flex items-center justify-between p-2.5 bg-muted/30 rounded hover:bg-muted/50 transition-colors">
                     <span className="font-medium">Logout</span>
-                    <kbd className="px-2 py-1 bg-background border border-border rounded text-xs font-mono shadow-sm">Esc</kbd>
+                    <kbd className="px-2 py-1 bg-background border border-border rounded text-xs font-mono shadow-sm">Ctrl+Q</kbd>
                   </div>
                 </div>
               </div>

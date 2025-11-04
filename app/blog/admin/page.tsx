@@ -77,16 +77,17 @@ export default function BlogAdmin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, postsInitialized]);
 
-  // Handle escape key to logout
+  // Handle Ctrl+Q (or Cmd+Q on Mac) to logout
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && user && !deleteModal.open && !aiModalOpen) {
+    const handleLogoutShortcut = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'q' && user && !deleteModal.open && !aiModalOpen) {
+        e.preventDefault();
         handleLogout();
       }
     };
 
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
+    window.addEventListener('keydown', handleLogoutShortcut);
+    return () => window.removeEventListener('keydown', handleLogoutShortcut);
   }, [user, deleteModal.open, aiModalOpen, handleLogout]);
 
   // --- Upload Handlers ---
