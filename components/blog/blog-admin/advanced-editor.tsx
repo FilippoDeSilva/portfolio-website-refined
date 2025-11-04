@@ -395,15 +395,35 @@ const TEXT_COLORS = [
   { name: "Black", color: "#000000" },
   { name: "Dark Gray", color: "#374151" },
   { name: "Gray", color: "#6b7280" },
+  { name: "Light Gray", color: "#9ca3af" },
+  { name: "White", color: "#ffffff" },
   { name: "Red", color: "#dc2626" },
+  { name: "Dark Red", color: "#991b1b" },
+  { name: "Light Red", color: "#f87171" },
   { name: "Orange", color: "#ea580c" },
+  { name: "Dark Orange", color: "#c2410c" },
+  { name: "Amber", color: "#f59e0b" },
   { name: "Yellow", color: "#ca8a04" },
+  { name: "Light Yellow", color: "#facc15" },
+  { name: "Lime", color: "#84cc16" },
   { name: "Green", color: "#16a34a" },
+  { name: "Dark Green", color: "#15803d" },
+  { name: "Emerald", color: "#10b981" },
   { name: "Teal", color: "#0d9488" },
+  { name: "Cyan", color: "#06b6d4" },
+  { name: "Sky", color: "#0ea5e9" },
   { name: "Blue", color: "#2563eb" },
+  { name: "Dark Blue", color: "#1e40af" },
+  { name: "Light Blue", color: "#60a5fa" },
   { name: "Indigo", color: "#4f46e5" },
+  { name: "Violet", color: "#7c3aed" },
   { name: "Purple", color: "#9333ea" },
+  { name: "Dark Purple", color: "#7e22ce" },
+  { name: "Fuchsia", color: "#c026d3" },
   { name: "Pink", color: "#db2777" },
+  { name: "Rose", color: "#e11d48" },
+  { name: "Brown", color: "#92400e" },
+  { name: "Slate", color: "#475569" },
 ];
 
 const BLOG_FONTS = [
@@ -878,6 +898,50 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
           
           <div className="w-px h-6 bg-border mx-1" />
           
+          {/* Font Size */}
+          <ToolbarButton
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const selectedText = editor.state.doc.textBetween(from, to);
+              if (selectedText) {
+                const currentSize = editor.getAttributes('textStyle').fontSize || '16px';
+                const sizeValue = parseInt(currentSize);
+                const newSize = Math.max(8, sizeValue - 2);
+                editor.chain().focus().setFontSize(`${newSize}px`).run();
+              }
+            }}
+            icon={
+              <div className="flex items-center gap-0.5">
+                <span className="text-xs">A</span>
+                <Minus className="w-2.5 h-2.5" />
+              </div>
+            }
+            tooltip="A-"
+            size="sm"
+          />
+          <ToolbarButton
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const selectedText = editor.state.doc.textBetween(from, to);
+              if (selectedText) {
+                const currentSize = editor.getAttributes('textStyle').fontSize || '16px';
+                const sizeValue = parseInt(currentSize);
+                const newSize = Math.min(72, sizeValue + 2);
+                editor.chain().focus().setFontSize(`${newSize}px`).run();
+              }
+            }}
+            icon={
+              <div className="flex items-center gap-0.5">
+                <span className="text-sm">A</span>
+                <Plus className="w-2.5 h-2.5" />
+              </div>
+            }
+            tooltip="A+"
+            size="sm"
+          />
+          
+          <div className="w-px h-6 bg-border mx-1" />
+          
           {/* Headings */}
           <ToolbarButton
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -1125,11 +1189,11 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
               <ChevronDown className="w-3 h-3" />
             </button>
             {showTextColorPicker && (
-              <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 min-w-[240px] text-color-picker-container">
+              <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 w-[340px] text-color-picker-container">
                 <div className="text-xs font-medium mb-3 px-1 text-muted-foreground">
                   Text Colors
                 </div>
-                <div className="grid grid-cols-4 gap-2 mb-3">
+                <div className="grid grid-cols-6 gap-2 mb-3">
                   {TEXT_COLORS.map((color) => (
                     <button
                       type="button"
