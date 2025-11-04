@@ -116,7 +116,7 @@ export default function TitleBar({
             <BrandLogo name={userInfo?.name} />
           </div>
 
-          <span className="hidden xs:block text-base sm:text-lg font-medium tracking-tight truncate max-w-[120px] sm:max-w-[200px]">
+          <span className="text-base xs:text-sm sm:text-base md:text-lg font-medium tracking-tight truncate max-w-[140px] xs:max-w-[160px] sm:max-w-[200px]">
             {userInfo?.name || ""}
           </span>
         </Link>
