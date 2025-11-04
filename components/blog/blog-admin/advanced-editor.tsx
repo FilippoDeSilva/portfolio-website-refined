@@ -374,25 +374,6 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
     }
   }, [showColorPicker]);
 
-  // Close modals on ESC key
-  useEffect(() => {
-    const handleEscKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        if (showMediaModal) {
-          setShowMediaModal(null);
-          setMediaUrl('');
-        } else if (showShortcutsModal) {
-          setShowShortcutsModal(false);
-        }
-      }
-    };
-
-    if (showMediaModal || showShortcutsModal) {
-      document.addEventListener('keydown', handleEscKey);
-      return () => document.removeEventListener('keydown', handleEscKey);
-    }
-  }, [showMediaModal, showShortcutsModal]);
-
   // Expose insertContent method via ref - MUST be before early return
   useImperativeHandle(ref, () => ({
     insertContent: (html: string) => {
@@ -1193,13 +1174,6 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
                     <div>
                       <strong className="text-foreground">Markdown shortcuts</strong>
                       <p className="text-muted-foreground mt-0.5">Type ** for bold, * for italic, ` for code, &gt; for quote</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3 p-3 bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg border border-primary/20">
-                    <span className="text-xl">⎋</span>
-                    <div>
-                      <strong className="text-foreground">Press ESC to close modals</strong>
-                      <p className="text-muted-foreground mt-0.5">Quickly dismiss any open modal or dialog</p>
                     </div>
                   </div>
                 </div>

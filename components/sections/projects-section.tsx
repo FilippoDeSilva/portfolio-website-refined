@@ -11,7 +11,7 @@ interface ProjectsSectionProps {
 export const ProjectsSection = forwardRef<HTMLElement, ProjectsSectionProps>(
   ({ githubProjects }, ref) => {
     return (
-      <section id="projects" className="py-32" ref={ref}>
+      <section id="projects" className="w-full py-20 md:py-24 lg:py-32" ref={ref}>
         <div className="container">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -22,7 +22,7 @@ export const ProjectsSection = forwardRef<HTMLElement, ProjectsSectionProps>(
           >
             {/* Section Label */}
             <div className="mb-12">
-              <span className="text-sm font-medium text-primary">Projects</span>
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">Projects</span>
               <h2 className="text-3xl sm:text-4xl font-bold mt-2 mb-4">
                 Selected Work
               </h2>

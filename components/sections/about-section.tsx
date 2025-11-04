@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import ShinyText from "@/components/ui/shiny-text";
 
 interface AboutSectionProps {
   resumeUrl: string;
@@ -10,7 +11,7 @@ interface AboutSectionProps {
 
 export function AboutSection({ resumeUrl }: AboutSectionProps) {
   return (
-    <section id="about" className="py-32">
+    <section id="about" className="w-full py-20 md:py-24 lg:py-32">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -21,7 +22,7 @@ export function AboutSection({ resumeUrl }: AboutSectionProps) {
         >
           {/* Section Label */}
           <div className="mb-12">
-            <span className="text-sm font-medium text-primary">About</span>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">About</span>
             <h2 className="text-3xl sm:text-4xl font-bold mt-2 mb-4">Who I Am</h2>
             <div className="w-12 h-1 bg-primary"></div>
           </div>
@@ -47,18 +48,19 @@ export function AboutSection({ resumeUrl }: AboutSectionProps) {
           </div>
 
           {/* CTA */}
-          <div className="flex flex-wrap gap-4 pt-12">
-            <Link href="#contact">
+          <div className="flex flex-col sm:flex-row gap-4 pt-12">
+            <Link href="#contact" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300"
+                className="w-full sm:w-auto shadow-lg hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 group"
               >
-                Get In Touch
+                <ShinyText text="Get In Touch" disabled={false} speed={2} className='custom-class' />
               </Button>
             </Link>
             <Button
               size="lg"
               variant="outline"
+              className="w-full sm:w-auto"
               onClick={() => {
                 window.location.href = resumeUrl;
               }}

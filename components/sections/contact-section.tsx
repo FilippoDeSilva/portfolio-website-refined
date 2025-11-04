@@ -7,7 +7,7 @@ import { SocialLinks } from "./social-links";
 
 export function ContactSection() {
   return (
-    <section id="contact" className="py-32">
+    <section id="contact" className="w-full py-20 md:py-24 lg:py-32">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -18,7 +18,7 @@ export function ContactSection() {
         >
           {/* Section Label */}
           <div className="mb-12">
-            <span className="text-sm font-medium text-primary">Contact</span>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">Contact</span>
             <h2 className="text-3xl sm:text-4xl font-bold mt-2 mb-4">
               Let's Work Together
             </h2>

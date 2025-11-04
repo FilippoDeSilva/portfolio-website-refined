@@ -53,17 +53,17 @@ export default function BlogPage() {
     <>
     <main className="flex-1 pt-2">
       <TitleBar title="Blog"/>
-      <section className="py-24 sm:py-32">
+      <section className="py-20 sm:py-32">
         <div className="container mx-auto px-4 max-w-6xl">
           {/* Hero Section */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-20"
+            className="text-center mb-10"
           >
             <div className="max-w-4xl mx-auto">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
@@ -84,7 +84,7 @@ export default function BlogPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mb-16"
+            className="mb-10"
           >
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-4xl mx-auto">
               {/* Search */}

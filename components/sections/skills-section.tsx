@@ -6,7 +6,7 @@ import { skills } from "@/lib/constants";
 
 export function SkillsSection() {
   return (
-    <section id="skills" className="py-32">
+    <section id="skills" className="w-full py-20 md:py-24 lg:py-32">
       <div className="container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -17,7 +17,7 @@ export function SkillsSection() {
         >
           {/* Section Label */}
           <div className="mb-12">
-            <span className="text-sm font-medium text-primary">Skills</span>
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">Skills</span>
             <h2 className="text-3xl sm:text-4xl font-bold mt-2 mb-4">
               Technical Expertise
             </h2>

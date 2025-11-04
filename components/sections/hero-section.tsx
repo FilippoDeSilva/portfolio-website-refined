@@ -8,7 +8,7 @@ export function HeroSection() {
   return (
     <section
       id="home"
-      className="relative min-h-[90vh] flex items-center py-32 scroll-mt-16"
+      className="relative min-h-[80vh] sm:min-h-screen flex items-start sm:items-center justify-center pt-16 sm:pt-0 scroll-mt-16"
     >
       <div className="container relative z-10">
         <motion.div
@@ -23,7 +23,7 @@ export function HeroSection() {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="mb-6"
           >
-            <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
               <span className="relative flex size-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full size-2 bg-primary"></span>
@@ -36,21 +36,20 @@ export function HeroSection() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.6 }}
-            className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl mb-6"
+            className="text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl mb-6 leading-tight"
           >
-            Fullstack Developer with focus on{" "}
-            <span className="text-primary">user-centered</span> solutions
+            Crafting digital experiences that{" "}
+            <span className="text-primary">matter</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-3xl"
+            className="text-lg sm:text-xl text-muted-foreground leading-relaxed mb-8 max-w-2xl"
           >
-            I design digital experiences that solve real problems for users
-            while meeting business objectives. My approach combines
-            research, strategy, and thoughtful design execution.
+            Fullstack developer turning complex problems into elegant, 
+            user-focused solutions.
           </motion.p>
 
           <motion.div
@@ -67,7 +66,7 @@ export function HeroSection() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7, duration: 0.6 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center"
+        className="absolute -bottom-10 sm:bottom-10 lg:bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center"
       >
         <span className="text-sm text-muted-foreground mb-2">
           Scroll to explore

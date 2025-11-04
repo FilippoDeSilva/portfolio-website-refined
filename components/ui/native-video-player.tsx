@@ -378,15 +378,55 @@ onClick={togglePlay}
               )}
 
               {/* Download */}
-              <a
-                href={src}
-                download
+              <button
+                type="button"
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  try {
+                    const filename = name || 'video';
+                    const downloadUrl = src.includes('?') 
+                      ? `${src}&download=${encodeURIComponent(filename)}` 
+                      : `${src}?download=${encodeURIComponent(filename)}`;
+                    
+                    const response = await fetch(downloadUrl);
+                    const blob = await response.blob();
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = filename;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+                  } catch (error) {
+                    console.error('Download failed, trying proxy:', error);
+                    try {
+                      const filename = name || 'video';
+                      const proxyUrl = `/api/download?url=${encodeURIComponent(src)}&filename=${encodeURIComponent(filename)}`;
+                      const response = await fetch(proxyUrl);
+                      const blob = await response.blob();
+                      const blobUrl = window.URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = blobUrl;
+                      a.download = filename;
+                      document.body.appendChild(a);
+                      a.click();
+                      document.body.removeChild(a);
+                      setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
+                    } catch (proxyError) {
+                      console.error('Proxy also failed:', proxyError);
+                      window.open(src, '_blank');
+                    }
+                  }
+                }}
                 className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-secondary/80 text-secondary-foreground shadow-sm hover:bg-secondary transition-all duration-150 hover:scale-110"
                 title="Download"
                 aria-label="Download"
               >
                 <Download className="w-4 h-4" />
-              </a>
+              </button>
 
               {/* Fullscreen */}
               <button
