@@ -19,6 +19,7 @@ import { CustomAudioPlayer } from "@/components/media";
 import { CustomVideoPlayer } from "@/components/media";
 import { LinkPreviewCard } from "@/components/media";
 import { blogCache, getPostCacheKey } from "@/lib/blog-cache";
+import { Share2, Check } from "lucide-react";
 
 interface BlogPostContentProps {
   postId: string;
@@ -26,27 +27,67 @@ interface BlogPostContentProps {
 
 function BlogPostSkeleton() {
   return (
-    <div className="min-h-screen bg-background text-foreground animate-pulse">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Cover Image Skeleton */}
-        <div className="w-full h-96 bg-muted rounded-xl mb-8" />
+    <div className="min-h-screen bg-background pt-16">
+      {/* Hero Skeleton - Matches actual hero layout */}
+      <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[85vh] overflow-hidden bg-muted animate-pulse">
+        {/* Gradient overlays */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent z-10" />
+        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
         
-        {/* Title Skeleton */}
-        <div className="h-12 bg-muted rounded-lg mb-4 w-3/4" />
-        
-        {/* Meta Skeleton */}
-        <div className="flex gap-4 mb-8">
-          <div className="h-4 bg-muted rounded w-32" />
-          <div className="h-4 bg-muted rounded w-24" />
-        </div>
-        
-        {/* Content Skeleton */}
-        <div className="space-y-3 mb-8">
-          <div className="h-4 bg-muted rounded w-full" />
-          <div className="h-4 bg-muted rounded w-full" />
-          <div className="h-4 bg-muted rounded w-5/6" />
+        {/* Hero Content Skeleton */}
+        <div className="absolute inset-0 z-20 flex items-end">
+          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
+            <div className="space-y-4">
+              {/* Category Badge Skeleton */}
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20">
+                <div className="w-16 h-4 bg-white/20 rounded" />
+              </div>
+              
+              {/* Title Skeleton */}
+              <div className="space-y-3">
+                <div className="h-8 sm:h-10 md:h-12 bg-white/20 rounded-lg w-full max-w-2xl" />
+                <div className="h-8 sm:h-10 md:h-12 bg-white/20 rounded-lg w-3/4 max-w-xl" />
+              </div>
+              
+              {/* Meta Skeleton */}
+              <div className="flex flex-wrap items-center gap-4">
+                <div className="h-4 bg-white/20 rounded w-32" />
+                <div className="w-1 h-1 rounded-full bg-white/50" />
+                <div className="h-4 bg-white/20 rounded w-24" />
+                <div className="w-1 h-1 rounded-full bg-white/50" />
+                <div className="h-4 bg-white/20 rounded w-28" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Article Content Skeleton */}
+      <article className="relative">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          {/* Content Lines */}
+          <div className="space-y-4 mb-12 animate-pulse">
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-11/12" />
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-10/12" />
+            <div className="h-6 bg-muted rounded w-0 mt-8" /> {/* Spacer */}
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-full" />
+            <div className="h-4 bg-muted rounded w-9/12" />
+          </div>
+          
+          {/* Engagement Section Skeleton */}
+          <div className="mt-20 pt-12 border-t-2 border-border/30 animate-pulse">
+            <div className="flex justify-center gap-4">
+              <div className="w-16 h-16 bg-muted rounded-full" />
+              <div className="w-16 h-16 bg-muted rounded-full" />
+              <div className="w-16 h-16 bg-muted rounded-full" />
+            </div>
+          </div>
+        </div>
+      </article>
     </div>
   );
 }
@@ -80,11 +121,44 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [audioThumbnails, setAudioThumbnails] = useState<Record<number, string>>({});
+  const [shareSuccess, setShareSuccess] = useState(false);
 
   // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Share functionality
+  const handleShare = async () => {
+    const shareData = {
+      title: post?.title || 'Blog Post',
+      text: `Check out this article: ${post?.title}`,
+      url: window.location.href,
+    };
+
+    try {
+      // Check if native share is available (mobile devices)
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        // Fallback to clipboard copy
+        await navigator.clipboard.writeText(window.location.href);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+      }
+    } catch (error) {
+      // If share is cancelled or fails, try clipboard
+      if (error instanceof Error && error.name !== 'AbortError') {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          setShareSuccess(true);
+          setTimeout(() => setShareSuccess(false), 2000);
+        } catch (clipboardError) {
+          console.error('Failed to copy link:', clipboardError);
+        }
+      }
+    }
+  };
 
   // Fetch audio thumbnails
   useEffect(() => {
@@ -277,17 +351,66 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
       )}
 
       <div className="min-h-screen bg-background pt-16">
+        {/* Floating Share Button - Fixed position for easy access */}
+        <button
+          onClick={handleShare}
+          className="fixed bottom-5 right-5 z-50 group"
+          aria-label="Share this post"
+        >
+          <div className="relative">
+            {/* Main button */}
+            <div className={`
+              w-11 h-11 rounded-full flex items-center justify-center
+              shadow-md hover:shadow-xl
+              transition-all duration-500 ease-out
+              transform hover:scale-110 active:scale-90
+              ${shareSuccess 
+                ? 'bg-gradient-to-br from-green-400 to-green-600 rotate-[360deg]' 
+                : 'bg-gradient-to-br from-primary to-primary/80 hover:rotate-12'
+              }
+            `}>
+              {shareSuccess ? (
+                <Check 
+                  className="w-5 h-5 text-white animate-in zoom-in-50 duration-300" 
+                  strokeWidth={2.5}
+                />
+              ) : (
+                <Share2 
+                  className="w-5 h-5 text-white transition-transform duration-300 group-hover:translate-y-[-2px]" 
+                  strokeWidth={2}
+                />
+              )}
+            </div>
+            
+            {/* Pulse ring effect on success */}
+            {shareSuccess && (
+              <div className="absolute inset-0 rounded-full border-2 border-green-400 animate-ping" />
+            )}
+            
+            {/* Glow effect on hover */}
+            <div className="absolute inset-0 rounded-full bg-primary/20 blur-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
+          </div>
+        </button>
         {/* Hero Section with Cover Image */}
         {post.cover_image && (
-          <div className="relative w-full h-[75vh] md:h-[85vh] overflow-hidden">
+          <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[85vh] overflow-hidden">
             {/* Sophisticated multi-layer gradient */}
             <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent z-10" />
             <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
+            
+            {/* Light mode cotton-like soft shade effect below cover */}
+            {mounted && theme === 'light' && (
+              <>
+                <div className="absolute -bottom-10 left-0 right-0 h-48 bg-gradient-to-b from-background/0 via-background/70 to-background z-20" />
+                <div className="absolute -bottom-24 left-0 right-0 h-40 bg-gradient-to-b from-background/0 via-background/50 to-background/95 z-20" />
+                <div className="absolute -bottom-16 left-0 right-0 h-32 bg-gradient-to-b from-background/0 via-background/80 to-background z-20" />
+              </>
+            )}
             <Image
               src={post.cover_image}
               alt={post.title}
               fill
-              className="object-contain lg:object-cover"
+              className="object-cover"
               priority
             />
             {/* Hero Content Overlay */}
