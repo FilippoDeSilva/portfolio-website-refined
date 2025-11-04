@@ -393,73 +393,117 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
         </button>
         {/* Hero Section with Cover Image */}
         {post.cover_image && (
-          <div className="relative w-full h-[60vh] sm:h-[75vh] md:h-[85vh] overflow-hidden">
-            {/* Sophisticated multi-layer gradient */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/5 via-transparent to-transparent z-10" />
-            <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-10" />
-            
-            {/* Light mode cotton-like soft shade effect below cover */}
-            {mounted && theme === 'light' && (
-              <>
-                <div className="absolute -bottom-10 left-0 right-0 h-48 bg-gradient-to-b from-background/0 via-background/70 to-background z-20" />
-                <div className="absolute -bottom-24 left-0 right-0 h-40 bg-gradient-to-b from-background/0 via-background/50 to-background/95 z-20" />
-                <div className="absolute -bottom-16 left-0 right-0 h-32 bg-gradient-to-b from-background/0 via-background/80 to-background z-20" />
-              </>
-            )}
-            <Image
-              src={post.cover_image}
-              alt={post.title}
-              fill
-              className="object-cover"
-              priority
-            />
-            {/* Hero Content Overlay */}
-            <div className="absolute inset-0 z-20 flex items-end">
-              <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
-                <div className="space-y-4">
-                  {/* Category Badge */}
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-medium">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    Article
-                  </div>
-                  {/* Title */}
-                  <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.2] tracking-tight drop-shadow-2xl">
-                    {post.title}
-                  </h1>
-                  {/* Meta */}
-                  <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm">
-                    <time className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <>
+            {/* Cover Image - Mobile: no overlay, Desktop: with overlay */}
+            <div className="relative w-full h-[50vh] sm:h-[75vh] md:h-[85vh] overflow-hidden">
+              {/* Sophisticated multi-layer gradient - Desktop only */}
+              <div className="hidden sm:block absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-transparent z-10" />
+              <div className="hidden sm:block absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-black/95 via-black/70 to-transparent z-10" />
+              
+              {/* Light mode cotton-like soft shade effect below cover - Desktop only */}
+              {mounted && theme === 'light' && (
+                <>
+                  <div className="hidden sm:block absolute -bottom-10 left-0 right-0 h-48 bg-gradient-to-b from-background/0 via-background/70 to-background z-20" />
+                  <div className="hidden sm:block absolute -bottom-24 left-0 right-0 h-40 bg-gradient-to-b from-background/0 via-background/50 to-background/95 z-20" />
+                  <div className="hidden sm:block absolute -bottom-16 left-0 right-0 h-32 bg-gradient-to-b from-background/0 via-background/80 to-background z-20" />
+                </>
+              )}
+              <Image
+                src={post.cover_image}
+                alt={post.title}
+                fill
+                className="object-contain sm:object-cover object-top"
+                priority
+              />
+              {/* Hero Content Overlay - Desktop only */}
+              <div className="hidden sm:flex absolute inset-0 z-20 items-end">
+                <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pb-8 md:pb-12">
+                  <div className="space-y-4">
+                    {/* Category Badge */}
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-md border border-white/30 text-white text-sm font-semibold shadow-lg">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
-                      {new Date(post.created_at).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
-                    </time>
-                    <span className="w-1 h-1 rounded-full bg-white/50" />
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                      <span>{readingTime} min read</span>
+                      Article
                     </div>
-                    <span className="w-1 h-1 rounded-full bg-white/50" />
-                    <div className="flex items-center gap-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                      <span>{post.view_count?.toLocaleString() || 0} views</span>
+                    {/* Title */}
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-[1.2] tracking-tight drop-shadow-2xl">
+                      {post.title}
+                    </h1>
+                    {/* Meta */}
+                    <div className="flex flex-wrap items-center gap-3 md:gap-4">
+                      <time className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-lg">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        {new Date(post.created_at).toLocaleDateString("en-US", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })}
+                      </time>
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-lg">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span>{readingTime} min read</span>
+                      </div>
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-sm font-medium shadow-lg">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        <span>{post.view_count?.toLocaleString() || 0} views</span>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            {/* Mobile Title Section - Below cover image */}
+            <div className="sm:hidden bg-background px-4 -mt-32 pt-8 pb-6 border-b border-border/30">
+              <div className="space-y-4">
+                {/* Category Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  </svg>
+                  Article
+                </div>
+                {/* Title */}
+                <h1 className="text-2xl font-bold text-foreground leading-tight tracking-tight">
+                  {post.title}
+                </h1>
+                {/* Meta */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <time className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    {new Date(post.created_at).toLocaleDateString("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </time>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>{readingTime} min</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-muted text-muted-foreground text-xs font-medium">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <span>{post.view_count?.toLocaleString() || 0}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
 
         {/* Article Content */}
@@ -481,13 +525,14 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
             {/* Attachments */}
             {post.attachments && post.attachments.length > 0 && (
               <div className="mt-16 pt-12 border-t border-border/30">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold flex items-center gap-3">
-                    <div className="w-1 h-8 bg-primary rounded-full" />
-                    Resources & Attachments
+                <div className="flex items-center justify-between mb-4 sm:mb-6">
+                  <h2 className="text-lg sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
+                    <div className="w-1 h-6 sm:h-8 bg-primary rounded-full" />
+                    <span className="hidden sm:inline">Resources & Attachments</span>
+                    <span className="sm:hidden">Resources</span>
                   </h2>
-                  <span className="text-sm text-muted-foreground px-3 py-1 rounded-full bg-muted/50">
-                    {post.attachments.length} {post.attachments.length === 1 ? 'file' : 'files'}
+                  <span className="text-xs sm:text-sm text-muted-foreground px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-muted/50">
+                    {post.attachments.length} <span className="hidden xs:inline">{post.attachments.length === 1 ? 'file' : 'files'}</span>
                   </span>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -607,7 +652,7 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                                       </svg>
                                     </div>
-                                    <p className="text-sm font-semibold text-white drop-shadow-md">Audio Track</p>
+                                    <p className="text-xs sm:text-sm font-semibold text-white drop-shadow-md">Audio Track</p>
                                   </div>
                                 </div>
                               )
@@ -619,24 +664,26 @@ export function BlogPostContent({ postId }: BlogPostContentProps) {
                               </div>
                             )}
                             
-                            {/* Extension Badge */}
-                            <div className="absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10">
+                            {/* Extension Badge - Hidden on small screens for audio */}
+                            <div className={`absolute top-3 right-3 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-sm border border-white/10 ${
+                              isAudio ? 'hidden sm:block' : ''
+                            }`}>
                               <span className="text-xs font-bold text-white">{getFileExtension(att.name)}</span>
                             </div>
                           </div>
                         )}
 
                         {/* File Info */}
-                        <div className="p-4">
-                            <div className="flex items-start justify-between gap-3 mb-3">
+                        <div className="p-3 sm:p-4">
+                            <div className="flex items-start justify-between gap-2 sm:gap-3 mb-3">
                               <div className="flex-1 min-w-0">
-                                <h3 className="font-semibold text-base truncate group-hover:text-primary transition-colors mb-1">
+                                <h3 className="font-semibold text-sm sm:text-base truncate group-hover:text-primary transition-colors mb-1">
                                   {att.name}
                                 </h3>
-                                <p className="text-sm text-muted-foreground truncate">{att.type || 'Unknown type'}</p>
+                                <p className="text-xs sm:text-sm text-muted-foreground truncate">{att.type || 'Unknown type'}</p>
                               </div>
                               <div className="flex-shrink-0">
-                                <span className="px-2.5 py-1 rounded-md bg-primary/10 text-primary text-xs font-bold">
+                                <span className="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-md bg-primary/10 text-primary text-[10px] sm:text-xs font-bold">
                                   {getFileExtension(att.name)}
                                 </span>
                               </div>
