@@ -708,7 +708,7 @@ The final post should be polished and require little to no editing before publis
                                 type="text"
                                 value={editingTitle}
                                 onChange={(e) => setEditingTitle(e.target.value)}
-                                className="w-full px-2 py-1 text-sm border border-border rounded bg-white dark:bg-zinc-900 focus:outline-none focus:ring-2 focus:ring-primary/30"
+                                className="w-full px-2 py-1 text-sm border-2 border-border rounded bg-white dark:bg-zinc-900 focus:outline-none focus:border-primary transition-colors"
                                 autoFocus
                                 onKeyDown={(e) => {
                                   if (e.key === 'Enter') saveTitle();
@@ -1048,7 +1048,7 @@ The final post should be polished and require little to no editing before publis
             <div className="flex-1 relative">
               <textarea
                 ref={textareaRef}
-                className="focus:ring-2 ai-chat-textarea w-full rounded-2xl border border-border/50 px-5 py-4 pr-14 resize-none bg-background dark:bg-zinc-900 focus:outline-none focus:border-primary/50 transition-all duration-200 placeholder:text-muted-foreground max-h-[200px] shadow-sm hover:shadow-md"
+                className="ai-chat-textarea w-full rounded-2xl border-2 border-border px-5 py-4 pr-14 resize-none bg-background dark:bg-zinc-900 focus:outline-none focus:border-primary transition-colors placeholder:text-muted-foreground max-h-[200px] shadow-sm hover:shadow-md"
                 rows={1}
                 placeholder="Message AI Assistant..."
                 value={input}
