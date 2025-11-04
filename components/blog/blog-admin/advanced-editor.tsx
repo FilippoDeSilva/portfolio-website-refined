@@ -66,6 +66,55 @@ const FontFamily = Extension.create({
   },
 });
 
+// Custom FontSize extension
+const FontSize = Extension.create({
+  name: 'fontSize',
+  
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize,
+            renderHTML: attributes => {
+              if (!attributes.fontSize) {
+                return {};
+              }
+              return {
+                style: `font-size: ${attributes.fontSize}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+  
+  addCommands() {
+    return {
+      setFontSize: (fontSize: string) => ({ chain }: any) => {
+        return chain()
+          .setMark('textStyle', { fontSize })
+          .run();
+      },
+      unsetFontSize: () => ({ chain }: any) => {
+        return chain()
+          .setMark('textStyle', { fontSize: null })
+          .removeEmptyTextStyle()
+          .run();
+      },
+    };
+  },
+});
+
 import {
   Bold,
   Italic,
@@ -87,6 +136,9 @@ import {
   Video as VideoIcon,
   X,
   Sparkles,
+  Type,
+  Plus,
+  Minus,
 } from "lucide-react";
 import { renderToString } from 'react-dom/server';
 import { useEffect, useState, useRef, forwardRef, useImperativeHandle } from "react";
@@ -545,6 +597,7 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
       TextStyle,
       Color,
       FontFamily,
+      FontSize,
       CustomImage.configure({
         allowBase64: true,
       }),
@@ -938,6 +991,72 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
             icon={<Strikethrough className="w-4 h-4" />}
             tooltip="Strikethrough"
           />
+        </div>
+
+        {/* Font Family */}
+        <div className="relative border-r border-border pr-2 font-picker-container">
+          <button
+            type="button"
+            onClick={() => setShowFontPicker(!showFontPicker)}
+            className="px-3 py-2 rounded-md hover:bg-muted transition-colors text-sm font-medium flex items-center gap-1 focus:outline-none"
+            title="Font Family"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
+            </svg>
+            <ChevronDown className="w-3 h-3" />
+          </button>
+          {showFontPicker && (
+            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-3 z-50 w-[420px] font-picker-container">
+              <div className="text-xs font-semibold mb-3 px-1 text-foreground">
+                Choose Font Style
+              </div>
+              <div className="max-h-[450px] overflow-y-auto">
+                {(() => {
+                  const categories: { [key: string]: typeof BLOG_FONTS } = {};
+                  BLOG_FONTS.forEach(font => {
+                    const cat = font.category || 'Other';
+                    if (!categories[cat]) categories[cat] = [];
+                    categories[cat].push(font);
+                  });
+                  
+                  return Object.entries(categories).map(([category, fonts]) => (
+                    <div key={category} className="mb-4">
+                      {category && (
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-1 mb-2">
+                          {category}
+                        </div>
+                      )}
+                      <div className="grid grid-cols-2 gap-2">
+                        {fonts.map((font) => (
+                          <button
+                            key={font.name}
+                            onClick={() => {
+                              if (font.value) {
+                                editor.chain().focus().setFontFamily(font.value).run();
+                              } else {
+                                editor.chain().focus().unsetFontFamily().run();
+                              }
+                              setShowFontPicker(false);
+                            }}
+                            className="text-left px-3 py-2.5 rounded hover:bg-muted transition-colors text-sm focus:outline-none border border-border/50 hover:border-border"
+                            style={{ fontFamily: font.value || 'inherit' }}
+                            title={font.name}
+                          >
+                            <div className="truncate">{font.name}</div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ));
+                })()}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Text Formatting - Highlight Color */}
+        <div className="flex gap-1 border-r border-border pr-2">
           {/* Color Picker Dropdown */}
           <div className="relative color-picker-container">
             <button
@@ -1053,51 +1172,48 @@ export const AdvancedEditor = forwardRef<AdvancedEditorRef, AdvancedEditorProps>
           </div>
         </div>
 
-        {/* Font Family */}
-        <div className="relative border-r border-border pr-2 font-picker-container">
-          <button
-            type="button"
-            onClick={() => setShowFontPicker(!showFontPicker)}
-            className="px-3 py-2 rounded-md hover:bg-muted transition-colors text-sm font-medium flex items-center gap-1 focus:outline-none"
-            title="Font Family"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-            </svg>
-            <ChevronDown className="w-3 h-3" />
-          </button>
-          {showFontPicker && (
-            <div className="absolute top-full left-0 mt-1 bg-popover border border-border rounded-lg shadow-lg p-2 z-50 min-w-[240px] max-w-[280px] font-picker-container">
-              <div className="text-xs font-semibold mb-3 px-2 text-foreground">
-                Choose Font Style
+        {/* Font Size */}
+        <div className="flex gap-1 border-r border-border pr-2">
+          <ToolbarButton
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const selectedText = editor.state.doc.textBetween(from, to);
+              if (selectedText) {
+                // Get current font size or default to 16px
+                const currentSize = editor.getAttributes('textStyle').fontSize || '16px';
+                const sizeValue = parseInt(currentSize);
+                const newSize = Math.max(8, sizeValue - 2); // Decrease by 2px, minimum 8px
+                editor.chain().focus().setFontSize(`${newSize}px`).run();
+              }
+            }}
+            icon={
+              <div className="flex items-center gap-0.5">
+                <span className="text-sm">A</span>
+                <Minus className="w-3 h-3" />
               </div>
-              <div className="max-h-[400px] overflow-y-auto space-y-1">
-                {BLOG_FONTS.map((font, index) => (
-                  <div key={font.name}>
-                    {font.category && BLOG_FONTS[index - 1]?.category !== font.category && (
-                      <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground px-2 py-2 mt-2">
-                        {font.category}
-                      </div>
-                    )}
-                    <button
-                      onClick={() => {
-                        if (font.value) {
-                          editor.chain().focus().setFontFamily(font.value).run();
-                        } else {
-                          editor.chain().focus().unsetFontFamily().run();
-                        }
-                        setShowFontPicker(false);
-                      }}
-                      className="w-full text-left px-3 py-2.5 rounded hover:bg-muted transition-colors text-sm focus:outline-none"
-                      style={{ fontFamily: font.value || 'inherit' }}
-                    >
-                      {font.name}
-                    </button>
-                  </div>
-                ))}
+            }
+            tooltip="Decrease Font Size (A-)"
+          />
+          <ToolbarButton
+            onClick={() => {
+              const { from, to } = editor.state.selection;
+              const selectedText = editor.state.doc.textBetween(from, to);
+              if (selectedText) {
+                // Get current font size or default to 16px
+                const currentSize = editor.getAttributes('textStyle').fontSize || '16px';
+                const sizeValue = parseInt(currentSize);
+                const newSize = Math.min(72, sizeValue + 2); // Increase by 2px, maximum 72px
+                editor.chain().focus().setFontSize(`${newSize}px`).run();
+              }
+            }}
+            icon={
+              <div className="flex items-center gap-0.5">
+                <span className="text-base">A</span>
+                <Plus className="w-3 h-3" />
               </div>
-            </div>
-          )}
+            }
+            tooltip="Increase Font Size (A+)"
+          />
         </div>
 
         {/* Headings */}
