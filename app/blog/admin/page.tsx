@@ -405,8 +405,10 @@ export default function BlogAdmin() {
           />
         </div>
       )}
-      <div className="h-3">
-        <Footer />
+      
+      {/* Footer with divider */}
+      <div className="mt-auto pt-16 h-3">
+          <Footer />
       </div>
     </div>
     </>

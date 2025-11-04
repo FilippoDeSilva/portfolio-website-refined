@@ -87,14 +87,15 @@ export function PostsList({
           style={{
             position: 'absolute',
             bottom: 0,
-            left: 0,
             right: 0,
             height: '80px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            paddingLeft: '24px',
+            paddingRight: '24px',
           }}
-          className="border-t border-border bg-background"
+          className="bg-background"
         >
           <Pagination
             currentPage={currentPage}
